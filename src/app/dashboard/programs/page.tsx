@@ -3,7 +3,7 @@
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useEffect, useState } from 'react';
-import { Play } from 'lucide-react';
+import { Play, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProgramsPage() {
@@ -71,12 +71,20 @@ export default function ProgramsPage() {
                                     </p>
                                 </div>
 
-                                <div className="relative z-10 mt-8 pt-6 border-t border-stone-100">
+                                <div className="relative z-10 mt-8 pt-6 border-t border-stone-100 flex flex-col gap-2">
                                     <Link href={`/dashboard/programs/${program.id}`}>
                                         <button className="w-full rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-500 hover:shadow-md hover:shadow-rose-500/20 active:scale-95">
-                                            Смотреть Курс
+                                            {program.price === 0 ? '▶ Начать бесплатно' : '👀 Смотреть программу'}
                                         </button>
                                     </Link>
+                                    {program.price > 0 && (
+                                        <Link href={`/payment?plan=${encodeURIComponent(program.title)}`}>
+                                            <button className="w-full rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 transition-all hover:bg-rose-500 hover:text-white hover:border-transparent hover:shadow-md hover:shadow-rose-500/20 active:scale-95 flex items-center justify-center gap-2">
+                                                <ShoppingBag className="h-4 w-4" />
+                                                Приобрести за ${(program.price / 100).toFixed(0)}
+                                            </button>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         ))}

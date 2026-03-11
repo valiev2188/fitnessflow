@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { workouts, subscriptions, users } from '@/db/schema';
+import { workouts, subscriptions, users, programs } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 
@@ -21,7 +21,21 @@ export async function GET(req: Request, props: { params: Promise<{ workoutId: st
             return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
         }
 
-        // Access Control
+        // Check if the parent program is free
+        let isFreeProgram = false;
+        if (workout.programId) {
+            const program = await db.select().from(programs).where(eq(programs.id, workout.programId)).limit(1).then(res => res[0]);
+            if (program && program.price === 0) {
+                isFreeProgram = true;
+            }
+        }
+
+        // Free programs are always accessible
+        if (isFreeProgram) {
+            return NextResponse.json({ workout: { ...workout, isLocked: false } });
+        }
+
+        // Access Control for paid programs
         const authHeader = req.headers.get('authorization');
         let hasAccess = false;
 
