@@ -43,16 +43,27 @@ export async function POST(req: Request) {
         const initialRole = isAdmin ? 'admin' : 'user';
 
         // Find or create user
-        let user = await db.select().from(users).where(eq(users.telegramId, telegramId)).limit(1).then(res => res[0]);
+        let user;
+        try {
+            user = await db.select().from(users).where(eq(users.telegramId, telegramId)).limit(1).then(res => res[0]);
+        } catch (dbError: any) {
+            console.error('Database Query Error details:', dbError);
+            throw new Error(`Database Error: ${dbError.message || 'Unknown database error'}`);
+        }
 
         if (!user) {
-            const result = await db.insert(users).values({
-                telegramId,
-                username: tgUser.username || null,
-                name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'Unknown User',
-                role: initialRole,
-            }).returning();
-            user = result[0];
+            try {
+                const result = await db.insert(users).values({
+                    telegramId,
+                    username: tgUser.username || null,
+                    name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'Unknown User',
+                    role: initialRole,
+                }).returning();
+                user = result[0];
+            } catch (dbInsertError: any) {
+                console.error('Database Insert Error details:', dbInsertError);
+                throw new Error(`Database Insert Error: ${dbInsertError.message || 'Unknown database error'}`);
+            }
         } else if (isAdmin && user.role !== 'admin') {
             // Upgrade existing user to admin if they match the ID
             const updated = await db.update(users).set({ role: 'admin' }).where(eq(users.id, user.id)).returning();
