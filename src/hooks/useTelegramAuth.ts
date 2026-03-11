@@ -11,37 +11,50 @@ export function useTelegramAuth() {
     useEffect(() => {
         async function authenticate() {
             try {
-                let initData = null;
-                if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-                    const tg = (window as any).Telegram.WebApp;
-                    tg.ready();
-                    initData = tg.initData;
+                let initData: string | null = null;
+
+                // Try to get real Telegram initData
+                // Wait a moment for the SDK to finish loading
+                if (typeof window !== 'undefined') {
+                    // Small delay to ensure telegram-web-app.js has initialized
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const tg = (window as any).Telegram?.WebApp;
+                    if (tg) {
+                        tg.ready();
+                        tg.expand(); // Expand to full height
+                        if (tg.initData && tg.initData.length > 0) {
+                            initData = tg.initData;
+                            console.log('✅ Got real Telegram initData');
+                        }
+                    }
                 }
 
                 // Fallback for web browser access (outside Telegram)
-                // Uses a generic non-admin ID so regular users don't get admin access
                 if (!initData) {
-                    console.warn("No Telegram initData found - using web demo user");
-                    initData = "user=" + encodeURIComponent(JSON.stringify({ id: 99999999, first_name: "Гость", last_name: "", username: "guest_user" })) + "&hash=mocked_hash";
+                    console.warn("No Telegram initData - using web guest fallback");
+                    initData = "user=" + encodeURIComponent(JSON.stringify({
+                        id: 99999999,
+                        first_name: "Гость",
+                        last_name: "",
+                        username: "web_guest"
+                    })) + "&hash=mocked_hash";
                 }
 
                 const response = await fetch('/api/auth', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ initData }),
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to authenticate with backend');
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Failed to authenticate with backend');
                 }
 
                 const data = await response.json();
                 setToken(data.token);
                 setUser(data.user);
-
-                // Store in localStorage for subsequent requests
                 localStorage.setItem('fitness_token', data.token);
             } catch (err: any) {
                 setError(err.message);
@@ -55,3 +68,4 @@ export function useTelegramAuth() {
 
     return { user, token, error, loading };
 }
+
