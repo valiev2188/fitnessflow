@@ -10,8 +10,8 @@ function PaymentContent() {
     const plan = searchParams.get('plan');
     const [copied, setCopied] = useState(false);
 
-    // Kaspi details (Mock for now, Lola can change these later)
-    const kaspiNumber = "+7 777 000 0000";
+    // Humo details
+    const humoCard = "8600030457183980";
     const receiverName = "Лола Р.";
 
     let price = "0";
@@ -36,14 +36,14 @@ function PaymentContent() {
     }
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(kaspiNumber);
+        navigator.clipboard.writeText(humoCard);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
     const handleSendReceipt = () => {
         const message = encodeURIComponent(`Здравствуйте! Я хочу оплатить тариф "${planName}" за ${price}. Прикрепляю чек об оплате:`);
-        window.open(`https://t.me/testfref_bot?start=${message}`, '_blank');
+        window.open(`https://t.me/vvveins?text=${message}`, '_blank');
     };
 
     return (
@@ -85,7 +85,7 @@ function PaymentContent() {
                             </h3>
 
                             <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                                <p className="text-stone-500 font-light mb-4 text-sm">Переведите точную сумму на Kaspi (или альтернативную карту) по указанному номеру.</p>
+                                <p className="text-stone-500 font-light mb-4 text-sm">Переведите точную сумму на карту Humo по указанному номеру.</p>
 
                                 <div className="flex flex-col gap-4">
                                     <div>
@@ -94,9 +94,9 @@ function PaymentContent() {
                                     </div>
 
                                     <div>
-                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Номер Kaspi</div>
+                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Номер Humo</div>
                                         <div className="flex items-center gap-3">
-                                            <div className="text-xl font-mono text-stone-900 font-medium tracking-wider">{kaspiNumber}</div>
+                                            <div className="text-xl font-mono text-stone-900 font-medium tracking-wider">{humoCard}</div>
                                             <button
                                                 onClick={handleCopy}
                                                 className="p-2 rounded-lg hover:bg-stone-200 text-stone-500 transition-colors"
@@ -115,7 +115,7 @@ function PaymentContent() {
                 <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10">
                     <h3 className="text-xl font-serif mb-3">Оплатили? Отлично!</h3>
                     <p className="text-stone-300 font-light mb-8 text-sm max-w-md mx-auto">
-                        Сделайте снимок экрана (скриншот) с чеком об оплате и отправьте его нашему боту в Telegram. Я проверю перевод и открою вам доступ к тренировкам.
+                        Сделайте снимок экрана (скриншот) с чеком об оплате и отправьте его администратору в Telegram (@vvveins). Я проверю перевод и открою вам доступ к тренировкам.
                     </p>
 
                     <button
@@ -123,7 +123,7 @@ function PaymentContent() {
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
                     >
                         <Send className="w-4 h-4" />
-                        Отправить чек в Telegram
+                        Отправить администратору
                     </button>
                 </div>
             </div>

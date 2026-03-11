@@ -18,15 +18,11 @@ export function useTelegramAuth() {
                     initData = tg.initData;
                 }
 
-                // Mock data for local testing outside Telegram
-                if (!initData && process.env.NODE_ENV === 'development') {
-                    console.warn("Using mock user for local development");
-                    initData = "user=" + encodeURIComponent(JSON.stringify({ id: 12345, first_name: "Test", last_name: "User", username: "testuser" })) + "&hash=mocked_hash";
-                }
-
+                // Fallback for testing outside Telegram (e.g. browser)
                 if (!initData) {
-                    // For local development, throw error or use mock data
-                    throw new Error('No initData available - Are you running inside Telegram?');
+                    console.warn("Using mock user for web testing");
+                    // Using the admin's ID for mock testing to grant admin access
+                    initData = "user=" + encodeURIComponent(JSON.stringify({ id: 5369141852, first_name: "Web", last_name: "User", username: "webuser" })) + "&hash=mocked_hash";
                 }
 
                 const response = await fetch('/api/auth', {
