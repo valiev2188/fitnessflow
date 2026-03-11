@@ -1,65 +1,286 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 selection:bg-rose-200">
+      <header className="fixed top-0 z-50 w-full border-b border-stone-200/50 bg-[#FDFBF7]/80 backdrop-blur-md">
+        <div className="container mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+          <div className="text-2xl font-serif tracking-tight font-medium">
+            <span className="text-stone-900">Lola</span>
+            <span className="text-rose-400 italic">Fitness</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+            <Link href="#about" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Об Авторе</Link>
+            <Link href="#features" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Подход</Link>
+            <Link href="#pricing" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Тарифы</Link>
+          </nav>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 -mr-48 -mt-48 h-[600px] w-[600px] rounded-full bg-rose-200/40 blur-3xl opacity-50 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -ml-48 -mb-48 h-[600px] w-[600px] rounded-full bg-stone-200/50 blur-3xl opacity-50 pointer-events-none" />
+
+          <div className="container relative mx-auto max-w-6xl px-6">
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+
+              <div className="flex-1 text-left">
+                <div className="mb-6 inline-flex rounded-full border border-rose-200 bg-rose-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-rose-500">
+                  ✨ Здоровое и красивое тело
+                </div>
+
+                <h1 className="text-5xl font-serif tracking-tight sm:text-6xl lg:text-7xl text-stone-900 leading-[1.1]">
+                  Эстетика и <br />
+                  <span className="text-rose-400 italic">женственность</span> <br />
+                  от Лолы
+                </h1>
+
+                <p className="mt-8 max-w-xl text-lg text-stone-600 leading-relaxed font-light">
+                  Фитнес как проявление искренней любви к себе и создание внутренней опоры. Премиальный подход, забота о вашем здоровье и индивидуальные тренировки прямо в вашем смартфоне.
+                </p>
+
+                <div className="mt-10 flex flex-col gap-4 sm:flex-row items-center">
+                  <Link
+                    href="#pricing"
+                    className="w-full sm:w-auto text-center rounded-full bg-stone-900 px-8 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Начать Трансформацию
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="w-full sm:w-auto text-center rounded-full border border-stone-300 bg-transparent px-8 py-4 text-sm font-medium text-stone-700 transition-all hover:border-rose-400 hover:text-rose-500"
+                  >
+                    Демо Кабинета
+                  </Link>
+                </div>
+              </div>
+
+              {/* Image Placeholder for Lola */}
+              <div className="flex-1 relative w-full max-w-md lg:max-w-none">
+                <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-stone-200 shadow-2xl shadow-rose-900/10 relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1000&auto=format&fit=crop"
+                    alt="Тренер Лола"
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 to-transparent" />
+                  <div className="absolute bottom-8 left-8 text-white">
+                    <p className="font-serif text-2xl font-medium">Лола</p>
+                    <p className="text-sm opacity-80 font-light tracking-wide">Дипломированный тренер</p>
+                  </div>
+                </div>
+                {/* Decorative element */}
+                <div className="absolute -bottom-6 -right-6 h-32 w-32 rounded-full border border-rose-300 opacity-50" />
+                <div className="absolute -top-6 -left-6 h-24 w-24 rounded-full border border-stone-300 opacity-50" />
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* About Me Section - Мой Путь */}
+        <section id="about" className="py-24 bg-white border-t border-stone-100">
+          <div className="container mx-auto max-w-6xl px-6">
+            <div className="flex flex-col lg:flex-row gap-16 items-center">
+              <div className="flex-1 relative w-full h-[600px] overflow-hidden rounded-[2rem] bg-stone-200 shadow-2xl shadow-rose-900/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=1000&auto=format&fit=crop"
+                  alt="Тренер Лола на тренировке"
+                  className="object-cover w-full h-full"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-stone-900/60 to-transparent p-8">
+                  <p className="font-serif text-3xl text-white font-medium mb-1">Лoла</p>
+                  <p className="text-white/80 font-light text-sm tracking-widest uppercase">22 года • Тренер-универсал</p>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl mb-6">
+                  Мой путь: фитнес как <br /><span className="text-rose-400 italic">любовь к себе</span> ❤️
+                </h2>
+                <div className="space-y-4 text-stone-600 font-light leading-relaxed">
+                  <p>
+                    Моя история началась не с поддержки, а с мечты, которую пришлось защищать. В детстве спорт был под запретом. Пока я шла по «правильному» пути к IT-диплому, я втайне сбегала в зал, оплачивая тренировки деньгами с обедов.
+                  </p>
+                  <p>
+                    Система готовила меня стать программистом. Но внутреннее стремление быть в движении оказалось сильнее. Я инвестировала всё в знания: конвенции, мастер-классы, новые методики. Получив диплом IT, я могла бы выбрать стабильность, но я выбрала людей.
+                  </p>
+                  <p className="font-medium text-stone-800">
+                    Для меня фитнес — это новое качество жизни, внутренняя опора и раскрытие вашей безупречной женственности.
+                  </p>
+                </div>
+
+                <div className="mt-8 space-y-6">
+                  <div className="bg-[#FDFBF7] p-6 rounded-3xl border border-stone-100">
+                    <h4 className="font-medium text-stone-900 mb-4 uppercase tracking-widest text-xs">Моя Экспертиза</h4>
+                    <ul className="space-y-3 text-sm text-stone-600 font-light">
+                      <li className="flex items-start gap-3">
+                        <span className="text-rose-400 mt-0.5">•</span>
+                        <span><b className="font-medium text-stone-800">Силовой и функциональный тренинг:</b> Lab, Make Body, Functional, Pump, HIIT, Bootcamp, Step.</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-rose-400 mt-0.5">•</span>
+                        <span><b className="font-medium text-stone-800">Mind & Body:</b> Пилатес (Mat, Reformer, Cadillac, Chair, Ladder Barrel, Spine Corrector), Core и стретчинг.</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-rose-400 mt-0.5">•</span>
+                        <span><b className="font-medium text-stone-800">Нутрициология:</b> Консультирую по питанию, помогая достигать целей комплексно и без голодовок.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Experience / Logos Section */}
+        <section id="experience" className="py-20 bg-[#FDFBF7] border-t border-stone-100">
+          <div className="container mx-auto max-w-6xl px-6 text-center">
+            <h2 className="text-2xl font-serif text-stone-900 mb-3">
+              Опыт в лучших <span className="text-rose-400 italic">студиях</span>
+            </h2>
+            <p className="text-stone-500 font-light max-w-2xl mx-auto mb-12 text-sm">
+              За последние 3 года я прошла путь через ведущие фитнес-клубы, чтобы дать вам сервис высшего уровня.
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+              <div className="text-2xl font-serif font-bold text-stone-800 tracking-wider">Savage</div>
+              <div className="text-2xl font-sans font-medium text-stone-800 tracking-widest">Befit <span className="text-emerald-600 font-light">Eco</span></div>
+              <div className="text-2xl font-serif font-bold text-stone-800 tracking-wider">WORLD CLASS</div>
+              <div className="text-xl font-sans font-light text-stone-800 tracking-widest">X-FIT <span className="text-rose-500 font-medium tracking-normal text-sm">PREMIUM</span></div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="py-24 bg-white border-t border-stone-100">
+          <div className="container mx-auto max-w-6xl px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
+                Грация и <span className="text-rose-400 italic">Результат</span>
+              </h2>
+              <p className="mt-4 text-stone-500 font-light max-w-2xl mx-auto">
+                Комплексный подход для достижения формы вашей мечты с заботой о женском здоровье.
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
+                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <h3 className="text-xl font-medium text-stone-900 mb-3">Детальные видео</h3>
+                <p className="text-stone-500 font-light leading-relaxed">Правильная техника выполнения каждого упражнения с учетом биомеханики.</p>
+              </div>
+
+              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
+                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                </div>
+                <h3 className="text-xl font-medium text-stone-900 mb-3">Дневник прогресса</h3>
+                <p className="text-stone-500 font-light leading-relaxed">Визуализируйте свои достижения с помощью встроенного умного трекера.</p>
+              </div>
+
+              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
+                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                </div>
+                <h3 className="text-xl font-medium text-stone-900 mb-3">Прямо в Telegram</h3>
+                <p className="text-stone-500 font-light leading-relaxed">Удобный доступ к курсу без лишних приложений. Тренируйтесь там, где вам комфортно.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-24 bg-[#FDFBF7] border-t border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mr-48 -mt-48 h-[600px] w-[600px] rounded-full bg-rose-50 blur-3xl opacity-80 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -ml-48 -mb-48 h-[600px] w-[600px] rounded-full bg-stone-100 blur-3xl opacity-50 pointer-events-none" />
+
+          <div className="container relative mx-auto max-w-6xl px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
+                Выберите ваш <span className="text-rose-400 italic">тариф</span>
+              </h2>
+              <p className="mt-4 text-stone-500 font-light max-w-2xl mx-auto">
+                Инвестируйте в свое здоровье и красоту по самой выгодной цене. Чем премиальнее тариф, тем больше ценности вы получаете.
+              </p>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-3 max-w-6xl mx-auto items-stretch">
+              {/* 1. Легкий старт */}
+              <div className="rounded-3xl bg-white p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 flex flex-col">
+                <h3 className="text-2xl font-serif text-stone-900 mb-2">Легкий старт</h3>
+                <p className="text-sm text-stone-500 font-light mb-6">Идеально для самостоятельных девушек</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-4xl font-bold tracking-tight text-stone-900">$40</span>
+                </div>
+                <div className="bg-stone-50 rounded-2xl p-5 mb-8 flex-grow">
+                  <p className="font-medium text-sm text-stone-900 mb-4 border-b border-stone-200 pb-2">В тариф входит:</p>
+                  <ul className="space-y-4 text-stone-600 font-light text-sm">
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Авторская программа на 21 день</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Подробные видео-инструкции</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Удобный дневник в Telegram WebApp</li>
+                  </ul>
+                </div>
+                <Link href="/payment?plan=Легкий старт" className="block w-full text-center rounded-2xl bg-stone-900 px-6 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800">Выбрать тариф</Link>
+              </div>
+
+              {/* 2. Продвинутый (Групповой) */}
+              <div className="relative rounded-3xl bg-white p-8 border-2 border-rose-200 shadow-xl shadow-rose-900/10 transform lg:-translate-y-4 flex flex-col">
+                <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                  <span className="rounded-full bg-rose-400 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white shadow-md shadow-rose-400/30">Оптимальный выбор</span>
+                </div>
+                <h3 className="text-2xl font-serif text-stone-900 mb-2 mt-2">Продвинутый</h3>
+                <p className="text-sm text-stone-500 font-light mb-6">Поддержка комьюнити и тренера</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-4xl font-bold tracking-tight text-stone-900">$80</span>
+                </div>
+                <div className="bg-rose-50/50 rounded-2xl p-5 mb-8 flex-grow border border-rose-100/50">
+                  <p className="font-medium text-sm text-rose-600 mb-4 border-b border-rose-100 pb-2">Всё из «Легкого старта», А ТАКЖЕ:</p>
+                  <ul className="space-y-4 text-stone-700 font-medium text-sm">
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Доступ в закрытый VIP чат участниц</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Личная поддержка и ответы от Лолы</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Разбор вашей продуктовой корзины</li>
+                  </ul>
+                </div>
+                <Link href="/payment?plan=Продвинутый" className="block w-full text-center rounded-2xl bg-rose-500 px-6 py-4 text-sm font-medium text-white transition-all hover:bg-rose-600 shadow-md shadow-rose-500/30">Выбрать продвинутый</Link>
+              </div>
+
+              {/* 3. Индивидуальный */}
+              <div className="rounded-3xl bg-white p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 overflow-hidden relative flex flex-col">
+                <div className="absolute -right-12 top-7 rotate-45 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-widest px-12 py-1.5 shadow-lg">Premium</div>
+                <h3 className="text-2xl font-serif text-stone-900 mb-2">Личное Ведение</h3>
+                <p className="text-sm text-stone-500 font-light mb-2">Максимальный фокус на вас</p>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-bold tracking-tight text-stone-900">$200</span>
+                </div>
+                <p className="text-rose-500 text-xs font-semibold mb-4 uppercase tracking-wider leading-relaxed bg-rose-50 inline-block px-3 py-1 rounded-full border border-rose-100 mt-2">Sale: Невменяемо низкая цена!</p>
+
+                <div className="bg-stone-50 rounded-2xl p-5 mb-8 flex-grow">
+                  <p className="font-medium text-sm text-stone-900 mb-4 border-b border-stone-200 pb-2">Всё из «Продвинутого», А ТАКЖЕ:</p>
+                  <ul className="space-y-4 text-stone-800 font-medium text-sm">
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> 2 персональные офлайн встречи</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Индивидуальная корректировка техники</li>
+                    <li className="flex gap-3"><svg className="h-5 w-5 shrink-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Личный чат 24/7 с Лолой</li>
+                  </ul>
+                </div>
+                <Link href="/payment?plan=Индивидуальный" className="block w-full text-center rounded-2xl bg-stone-900 px-6 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800">Занять место</Link>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <footer className="py-12 bg-white text-center text-xs font-light text-stone-400 border-t border-stone-100">
+        <p>© 2026 Lola Fitness. Все права защищены.</p>
+      </footer>
     </div>
   );
 }
