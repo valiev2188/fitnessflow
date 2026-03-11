@@ -18,11 +18,11 @@ export function useTelegramAuth() {
                     initData = tg.initData;
                 }
 
-                // Fallback for testing outside Telegram (e.g. browser)
+                // Fallback for web browser access (outside Telegram)
+                // Uses a generic non-admin ID so regular users don't get admin access
                 if (!initData) {
-                    console.warn("Using mock user for web testing");
-                    // Using the admin's ID for mock testing to grant admin access
-                    initData = "user=" + encodeURIComponent(JSON.stringify({ id: 5369141852, first_name: "Web", last_name: "User", username: "webuser" })) + "&hash=mocked_hash";
+                    console.warn("No Telegram initData found - using web demo user");
+                    initData = "user=" + encodeURIComponent(JSON.stringify({ id: 99999999, first_name: "Гость", last_name: "", username: "guest_user" })) + "&hash=mocked_hash";
                 }
 
                 const response = await fetch('/api/auth', {

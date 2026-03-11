@@ -1,60 +1,95 @@
 import { db } from '../src/db/index';
 import { programs, workouts } from '../src/db/schema';
 import * as dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ override: true });
 
 async function seed() {
-    console.log('Seeding database...');
+    console.log('🌱 Seeding database...');
     try {
-        const insertedPrograms = await db.insert(programs).values([
-            {
-                title: '30-Day Fat Burn',
-                description: 'A high-intensity program designed to burn fat and build lean muscle.',
-                durationDays: 30,
-                price: 0,
-            },
-            {
-                title: 'Strength Foundations',
-                description: 'Build core strength with fundamental lifting techniques.',
-                durationDays: 14,
-                price: 999, // $9.99
-            }
-        ]).returning();
-
-        console.log('Inserted programs:', insertedPrograms.map(p => p.title));
-
-        const program1Id = insertedPrograms[0].id;
-        const program2Id = insertedPrograms[1].id;
+        // -------------------------------------------------------
+        // PROGRAM 1: Free Demo / Test Course
+        // -------------------------------------------------------
+        const [demoProgram] = await db.insert(programs).values({
+            title: 'Демо: Попробуй 3 дня',
+            description: 'Бесплатный пробный курс — 3 дня с Лолой. Почувствуй, как изменится твоё тело и настроение уже за 72 часа.',
+            durationDays: 3,
+            price: 0,
+        }).returning();
 
         await db.insert(workouts).values([
             {
-                programId: program1Id,
+                programId: demoProgram.id,
                 dayNumber: 1,
-                title: 'Full Body HIIT',
-                videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-                description: '1. Jumping Jacks (45s)\n2. High Knees (45s)\n3. Burpees (30s)\nRepeat 3 times.',
+                title: '🔥 День 1: Пробуждение тела',
+                description: 'Знакомство с нашим методом. Лёгкая разминка, активация мышц кора.\n\n**Программа:**\n1. Суставная гимнастика — 5 мин\n2. Приседания (3×15)\n3. Планка — 30 сек × 3\n4. Растяжка — 5 мин\n\n*Помни: главное — сделать, а не "сделать идеально"* 💪',
+                videoUrl: '',
             },
             {
-                programId: program1Id,
+                programId: demoProgram.id,
                 dayNumber: 2,
-                title: 'Core Crusher',
-                videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-                description: '1. Crunches (20 reps)\n2. Plank (60s)\n3. Russian Twists (30 reps)\nRepeat 3 times.',
+                title: '💫 День 2: Ускоряем метаболизм',
+                description: 'Интервальная тренировка для разгона обмена веществ.\n\n**Программа:**\n1. Разминка — 5 мин\n2. Берпи — 10 × 3\n3. Выпады — 15 × 3 на каждую ногу\n4. Прыжки на месте — 45 сек × 3\n5. Заминка — 5 мин',
+                videoUrl: '',
             },
             {
-                programId: program2Id,
-                dayNumber: 1,
-                title: 'Upper Body Basics',
-                videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-                description: '1. Pushups (3 sets of 10)\n2. Dumbbell Rows (3 sets of 12)',
-            }
+                programId: demoProgram.id,
+                dayNumber: 3,
+                title: '✨ День 3: Сила и баланс',
+                description: 'Финальный день пробника. Работаем со стабилизаторами.\n\n**Программа:**\n1. Разминка — 5 мин\n2. Мост на одной ноге — 12 × 3\n3. Боковая планка — 30 сек × 3\n4. Отжимания (модифицированные) — 10 × 3\n5. Йога-растяжка — 10 мин\n\n*Поздравляю — ты прошла 3 дня! Готова к полному курсу?* 🌟',
+                videoUrl: '',
+            },
         ]);
-        console.log('Inserted workouts.');
+        console.log(`✅ Demo program "${demoProgram.title}" seeded with 3 workouts.`);
 
-        console.log('Seeding complete!');
+        // -------------------------------------------------------
+        // PROGRAM 2: Main 21-Day Selling Course
+        // -------------------------------------------------------
+        const [mainProgram] = await db.insert(programs).values({
+            title: '21 день: Твоя Трансформация с Лолой',
+            description: 'Авторский курс от Лолы — дипломированного тренера с опытом работы в лучших студиях. 21 день структурированных тренировок, которые изменят твоё тело и отношение к себе навсегда.',
+            durationDays: 21,
+            price: 4000, // $40
+        }).returning();
+
+        const mainWorkouts = [
+            { day: 1, title: '🌱 Старт: Знакомство с телом', desc: 'Диагностика, постановка целей. Суставная гимнастика и первые базовые движения. Учимся правильно дышать во время нагрузки.' },
+            { day: 2, title: '🔥 Кардио-активация', desc: 'Умеренное кардио для разгона метаболизма. Ходьба с ускорениями, приставные шаги, "горизонт". 3 круга по 4 упражнения.' },
+            { day: 3, title: '💪 База: Нижняя часть тела', desc: 'Приседания, выпады, жим ногами стоя. Акцент на форму, не на вес. 4 подхода по 12 повторений.' },
+            { day: 4, title: '🧘 Активное восстановление', desc: 'Пилатес-стретч, работа с фасцией. Ролл для мышц, глубокое дыхание. Задача — уменьшить крепатуру.' },
+            { day: 5, title: '✨ Core: Кор без скуки', desc: 'Планки, скручивания, "мёртвый жук", боковой кор. Без единого кранча — современный подход к прессу.' },
+            { day: 6, title: '🏃 Интервальный жир-бёрнер', desc: 'ВИИТ-тренировка 20/40. 6 упражнений, 3 раунда. Пульс в целевой зоне для максимального жиросжигания.' },
+            { day: 7, title: '😴 День отдыха — но не совсем', desc: 'Только лёгкая прогулка 30 мин или растяжка на всё тело. Дать мышцам восстановиться — это тоже тренировка.' },
+            { day: 8, title: '💎 Верхняя часть тела: старт', desc: 'Отжимания, тяга резинки, разводка. Формируем красивые руки и плечи. 3×12 с акцентом на эксцентрику.' },
+            { day: 9, title: '🔥 Ускорение: Tabata', desc: '4 блока Табата по 20/10 сек. Самая короткая и самая эффективная тренировка курса. Только 16 минут!' },
+            { day: 10, title: '🦋 Ягодичный день №1', desc: 'Ягодичный мост, кикбэк, отведения. Прицельно формируем контур. 4×15 с пика-сжатием наверху.' },
+            { day: 11, title: '⚡ Силовая: Весь корпус', desc: 'Суперсеты: верх + низ. Без паузы между упражнениями в паре. Жжение гарантировано (+мотивация).' },
+            { day: 12, title: '🌊 Пилатес для позвоночника', desc: 'Работа с глубокими мышцами спины, разгибатели, "кошка-корова". Убираем дискомфорт в пояснице.' },
+            { day: 13, title: '💪 Функциональный день', desc: 'Упражнения из повседневных движений: тяга, толчок, скручивание. Тело становится ловким и сильным.' },
+            { day: 14, title: '🎉 Финиш Недели 2: Марафон', desc: 'Повторяем лучшие упражнения первых двух недель. Замечаем прогресс, фотографируемся для сравнения!' },
+            { day: 15, title: '🏆 Неделя 3: Интенсив-старт', desc: 'Увеличиваем нагрузку. Добавляем отягощения или резинки. Организм адаптировался — пора пушить дальше.' },
+            { day: 16, title: '🔮 Ягодичный день №2', desc: 'Продвинутые вариации: болгарские выпады, одноногий мост, приседание-сумо с импульсом.' },
+            { day: 17, title: '🌺 Верхняя часть: финал', desc: 'Отжимания с хлопком, тяга гантели в наклоне, жим над головой. Плечи и руки на финишной прямой.' },
+            { day: 18, title: '🌀 Круговая тренировка', desc: '6 станций, 3 круга. 45 сек работы / 15 сек отдых. Весь организм — от шеи до пяток.' },
+            { day: 19, title: '🧘 Йога-день: Баланс и Гибкость', desc: 'Виньяса-поток, балансы, глубокая растяжка. Снижаем кортизол, улучшаем осанку и самочувствие.' },
+            { day: 20, title: '💥 Предфинальный: Всё и Сразу', desc: 'Самая насыщенная тренировка курса. Каждая группа мышц, каждый энергетический путь. Выложись на 100%!' },
+            { day: 21, title: '🌟 ФИНАЛ: 21 день позади!', desc: 'Лёгкая тренировка-отмечание + финальная растяжка. Ты сделала это! Твоё тело изменилось. Документируй результат и поделись с нами! 💖' },
+        ];
+
+        await db.insert(workouts).values(
+            mainWorkouts.map(w => ({
+                programId: mainProgram.id,
+                dayNumber: w.day,
+                title: w.title,
+                description: w.desc,
+                videoUrl: '',
+            }))
+        );
+        console.log(`✅ Main 21-day program "${mainProgram.title}" seeded with 21 workouts.`);
+
+        console.log('\n🎉 Seeding complete! Database is ready.');
         process.exit(0);
     } catch (err) {
-        console.error('Seeding failed:', err);
+        console.error('❌ Seeding failed:', err);
         process.exit(1);
     }
 }
