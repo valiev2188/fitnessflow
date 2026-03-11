@@ -158,6 +158,120 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Program Preview Section */}
+        <section id="program" className="py-24 bg-[#FAF8F5] border-t border-stone-100 overflow-hidden">
+          <div className="container mx-auto max-w-6xl px-6">
+            <div className="mb-16">
+              <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
+                Программа курса включает <span className="relative whitespace-nowrap"><span className="relative z-10 text-stone-900">21 тренировку</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-rose-400" preserveAspectRatio="none" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"><path d="M 0 50 Q 50 100 100 50" /></svg></span>:
+              </h2>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-16 items-start relative">
+              <div className="flex flex-wrap gap-3">
+                {/* Simulated pill list of workouts based on the provided screenshot */}
+                {[
+                  "1. Фуллбоди пробуждение",
+                  "2. Гибкая спина и красивая осанка",
+                  "3. Ягодицы мечты + МФР",
+                  "4. Пилатес кор: плоский живот",
+                  "5. Мобильность суставов всего тела",
+                  "6. Верх тела: руки, грудь, спина",
+                  "7. Восстанавливающая растяжка",
+                  "8. Лёгкие ноги (антиотёк)",
+                  "9. Пилатес заряд энергии",
+                  "10. Пресс с акцентом",
+                  "11. Ягодицы со своим весом",
+                  "12. Здоровая шея на каждый день"
+                ].map((title, i) => (
+                  <div key={i} className="inline-flex items-center px-5 py-2.5 rounded-full border border-stone-900 bg-transparent text-stone-900 font-medium text-sm hover:bg-stone-900 hover:text-white transition-colors cursor-default shadow-sm">
+                    {title}
+                  </div>
+                ))}
+                <div className="inline-flex items-center px-5 py-2.5 rounded-full border border-dashed border-stone-300 text-stone-500 font-light text-sm italic bg-stone-50/50">
+                  и еще 9 авторских тренировок...
+                </div>
+              </div>
+
+              <div className="relative mt-8 lg:mt-0 lg:ml-8">
+                {/* Decorative abstract elements behind tablet */}
+                <div className="absolute -top-12 -right-12 w-64 h-64 bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+                <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+
+                {/* Simulated App / Tablet Frame */}
+                <div className="rounded-[2.5rem] bg-stone-900 p-3 pb-0 shadow-2xl relative overflow-hidden ring-1 ring-stone-900/5 rotate-2 hover:rotate-0 transition-transform duration-500 max-w-lg mx-auto">
+                  <div className="bg-[#FDFBF7] rounded-t-[2rem] h-[480px] overflow-hidden flex flex-col relative">
+                    {/* App Header */}
+                    <div className="bg-white px-6 py-4 border-b border-stone-100 flex items-center justify-between z-10">
+                      <span className="font-serif text-lg font-medium">Мой Курс</span>
+                      <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-xs">Л</div>
+                    </div>
+
+                    <div className="p-6 overflow-y-auto flex-1 pb-12 relative">
+                      <h3 className="font-serif text-xl text-stone-900 mb-4 font-bold flex items-center gap-2">
+                        <span className="text-sm font-sans font-normal text-stone-500">Неделя 1 •</span>
+                        Фуллбоди Старт
+                      </h3>
+
+                      {/* Simulated Week Progress */}
+                      <div className="flex gap-2 mb-8">
+                        {[1, 2, 3, 4, 5, 6, 7].map(d => (
+                          <div key={d} className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium border transition-colors cursor-pointer ${d === 1 ? 'bg-rose-400 text-white border-rose-400 shadow-md shadow-rose-400/30' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}>
+                            {d}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Simulated Active Workout Card */}
+                      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 group cursor-pointer hover:shadow-md transition-shadow">
+                        <div className="h-32 bg-stone-200 relative overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1000&auto=format&fit=crop" alt="Workout cover" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-stone-900/20 group-hover:bg-stone-900/40 transition-colors" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-white/90 text-rose-500 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                              <svg className="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                            </div>
+                          </div>
+                          <div className="absolute top-3 right-3 bg-rose-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">
+                            20 МИН
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-medium text-stone-900 text-[15px] mb-1 leading-tight group-hover:text-rose-600 transition-colors">Фуллбоди пробуждение</h4>
+                          <p className="text-xs text-stone-500 font-light mb-3">Мягкая активация мышц всего тела</p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded uppercase tracking-wider font-medium">Без инвентаря</span>
+                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded uppercase tracking-wider font-medium">Начинающий</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Next workout faded */}
+                      <div className="mt-4 flex items-center justify-between p-4 rounded-2xl border border-stone-100 bg-white/60 opacity-60">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 font-medium text-sm">2</div>
+                          <div>
+                            <h4 className="font-medium text-stone-800 text-sm">Гибкая спина</h4>
+                            <p className="text-xs text-stone-500">Завтра</p>
+                          </div>
+                        </div>
+                        <div className="w-8 h-8 rounded-full border-2 border-stone-200" />
+                      </div>
+                    </div>
+
+                    {/* Faded gradient at bottom of screen to show scroll */}
+                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FDFBF7] to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Tablet Home Indicator */}
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section id="features" className="py-24 bg-white border-t border-stone-100">
           <div className="container mx-auto max-w-6xl px-6">
