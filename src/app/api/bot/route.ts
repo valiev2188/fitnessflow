@@ -97,7 +97,7 @@ async function handleStatus(chatId: number, telegramId: string) {
         statusText = '👑 <b>Администратор</b> — полный доступ ко всем курсам';
     } else if (sub && sub.status === 'active' && new Date(sub.expiresAt!) > new Date()) {
         const expiry = new Date(sub.expiresAt!).toLocaleDateString('ru-RU');
-        statusText = `✅ <b>Подписка активна</b>\nТариф: ${sub.tier || 'Стандарт'}\nДо: ${expiry}`;
+        statusText = `✅ <b>Подписка активна</b>\nТариф: ${sub.plan || 'Стандарт'}\nДо: ${expiry}`;
     } else {
         statusText = `⏳ <b>Нет активной подписки</b>\n\nБесплатный демо-курс (3 дня) доступен всем!`;
     }
