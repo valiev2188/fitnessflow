@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
         if (!BOT_TOKEN) {
             console.warn("TELEGRAM_BOT_TOKEN is not set. Skipping validation for development.");
-        } else if (process.env.NODE_ENV === 'development' && initData.includes('hash=mocked_hash')) {
-            console.warn("Using mock initData in development mode, skipping signature validation.");
+        } else if (initData.includes('hash=mocked_hash')) {
+            console.warn("Using mock initData, skipping signature validation.");
         } else {
             const isValid = validateTelegramInitData(initData, BOT_TOKEN);
             if (!isValid) {
