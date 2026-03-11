@@ -205,6 +205,13 @@ export default function Home() {
 
           <div className="container relative mx-auto max-w-6xl px-6">
             <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-600 text-sm font-medium mb-6 animate-pulse">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                Скидка -30% на все тарифы 24 часа!
+              </div>
               <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
                 Выберите ваш <span className="text-rose-400 italic">тариф</span>
               </h2>
@@ -218,8 +225,9 @@ export default function Home() {
               <div className="rounded-3xl bg-white p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 flex flex-col">
                 <h3 className="text-2xl font-serif text-stone-900 mb-2">Легкий старт</h3>
                 <p className="text-sm text-stone-500 font-light mb-6">Идеально для самостоятельных девушек</p>
-                <div className="flex items-baseline gap-1 mb-6">
+                <div className="flex items-baseline gap-2 mb-6">
                   <span className="text-4xl font-bold tracking-tight text-stone-900">$40</span>
+                  <span className="text-xl font-medium text-stone-300 line-through">$60</span>
                 </div>
                 <div className="bg-stone-50 rounded-2xl p-5 mb-8 flex-grow">
                   <p className="font-medium text-sm text-stone-900 mb-4 border-b border-stone-200 pb-2">В тариф входит:</p>
@@ -239,8 +247,9 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-serif text-stone-900 mb-2 mt-2">Продвинутый</h3>
                 <p className="text-sm text-stone-500 font-light mb-6">Поддержка комьюнити и тренера</p>
-                <div className="flex items-baseline gap-1 mb-6">
+                <div className="flex items-baseline gap-2 mb-6">
                   <span className="text-4xl font-bold tracking-tight text-stone-900">$80</span>
+                  <span className="text-xl font-medium text-stone-300 line-through">$120</span>
                 </div>
                 <div className="bg-rose-50/50 rounded-2xl p-5 mb-8 flex-grow border border-rose-100/50">
                   <p className="font-medium text-sm text-rose-600 mb-4 border-b border-rose-100 pb-2">Всё из «Легкого старта», А ТАКЖЕ:</p>
@@ -258,10 +267,10 @@ export default function Home() {
                 <div className="absolute -right-12 top-7 rotate-45 bg-[#171717] text-white text-[10px] font-bold uppercase tracking-widest px-12 py-1.5 shadow-lg">Premium</div>
                 <h3 className="text-2xl font-serif text-stone-900 mb-2">Личное Ведение</h3>
                 <p className="text-sm text-stone-500 font-light mb-2">Максимальный фокус на вас</p>
-                <div className="flex items-baseline gap-1 mb-2">
+                <div className="flex items-baseline gap-2 mb-6">
                   <span className="text-4xl font-bold tracking-tight text-stone-900">$200</span>
+                  <span className="text-xl font-medium text-stone-300 line-through">$300</span>
                 </div>
-                <p className="text-rose-500 text-xs font-semibold mb-4 uppercase tracking-wider leading-relaxed bg-rose-50 inline-block px-3 py-1 rounded-full border border-rose-100 mt-2">Sale: Невменяемо низкая цена!</p>
 
                 <div className="bg-stone-50 rounded-2xl p-5 mb-8 flex-grow">
                   <p className="font-medium text-sm text-stone-900 mb-4 border-b border-stone-200 pb-2">Всё из «Продвинутого», А ТАКЖЕ:</p>

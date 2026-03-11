@@ -15,19 +15,23 @@ function PaymentContent() {
     const receiverName = "Лола Р.";
 
     let price = "0";
+    let oldPrice = "";
     let planName = "Неизвестный тариф";
 
     switch (plan) {
         case 'Легкий старт':
             price = "40$";
+            oldPrice = "60$";
             planName = "Легкий старт (21 день)";
             break;
         case 'Продвинутый':
             price = "80$";
+            oldPrice = "120$";
             planName = "Продвинутый (с чатом)";
             break;
         case 'Индивидуальный':
             price = "200$";
+            oldPrice = "300$";
             planName = "Личное Ведение (офлайн)";
             break;
         default:
@@ -48,16 +52,23 @@ function PaymentContent() {
 
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-stone-900 font-sans selection:bg-rose-200">
-            <div className="max-w-2xl mx-auto px-6 py-12 md:py-24">
+            <div className="max-w-2xl mx-auto px-6 py-12 md:py-20">
                 <button
                     onClick={() => router.push('/')}
-                    className="group flex w-fit items-center gap-2 text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors mb-12"
+                    className="group flex w-fit items-center gap-2 text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors mb-10"
                 >
                     <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                     Вернуться на главную
                 </button>
 
-                <div className="text-center mb-12">
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-600 text-sm font-medium mb-6 animate-pulse">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                        </span>
+                        Скидка -30% действует сегодня!
+                    </div>
                     <h1 className="text-4xl md:text-5xl font-serif text-stone-900 tracking-tight mb-4">Оформление доступа</h1>
                     <p className="text-stone-500 font-light text-lg">Вы выбрали потрясающий путь к трансформации.</p>
                 </div>
@@ -72,9 +83,14 @@ function PaymentContent() {
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-400 mb-1">Ваш тариф</h3>
                                 <div className="text-2xl font-serif text-stone-900">{planName}</div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-left md:text-right">
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-400 mb-1">Сумма к оплате</h3>
-                                <div className="text-3xl font-medium text-rose-500">{price}</div>
+                                <div className="flex items-end md:justify-end gap-3">
+                                    {oldPrice && (
+                                        <div className="text-xl font-medium text-stone-300 line-through mb-1">{oldPrice}</div>
+                                    )}
+                                    <div className="text-4xl font-semibold text-rose-500">{price}</div>
+                                </div>
                             </div>
                         </div>
 
@@ -112,7 +128,7 @@ function PaymentContent() {
                     </div>
                 </div>
 
-                <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10">
+                <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10 mb-12">
                     <h3 className="text-xl font-serif mb-3">Оплатили? Отлично!</h3>
                     <p className="text-stone-300 font-light mb-8 text-sm max-w-md mx-auto">
                         Сделайте снимок экрана (скриншот) с чеком об оплате и отправьте его администратору в Telegram (@vvveins). Я проверю перевод и открою вам доступ к тренировкам.
@@ -125,6 +141,32 @@ function PaymentContent() {
                         <Send className="w-4 h-4" />
                         Отправить администратору
                     </button>
+                </div>
+
+                {/* Testimonials */}
+                <div className="pt-8 border-t border-stone-200">
+                    <h3 className="text-2xl font-serif text-stone-900 text-center mb-8">Что говорят девочки</h3>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm">
+                            <div className="flex items-center gap-1 mb-3">
+                                {[1, 2, 3, 4, 5].map(i => <span key={i} className="text-yellow-400 text-lg">★</span>)}
+                            </div>
+                            <p className="text-stone-600 font-light italic mb-4">
+                                «Лола, это лучшее решение! За 21 день минус 4 кг, я наконец-то влезла в свои любимые джинсы. Тренировки огонь, всем советую!»
+                            </p>
+                            <p className="text-sm font-medium text-stone-900">— Малика Т.</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm">
+                            <div className="flex items-center gap-1 mb-3">
+                                {[1, 2, 3, 4, 5].map(i => <span key={i} className="text-yellow-400 text-lg">★</span>)}
+                            </div>
+                            <p className="text-stone-600 font-light italic mb-4">
+                                «Я никогда не любила спорт, но тут прям втянулась. Всё очень понятно, Лола объясняет каждую мелочь. Чувствую себя потрясающе!»
+                            </p>
+                            <p className="text-sm font-medium text-stone-900">— Диана А.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
