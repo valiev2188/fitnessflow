@@ -9,6 +9,19 @@ export const users = sqliteTable("users", {
     createdAt: integer("created_at", { mode: 'timestamp' }).notNull().defaultNow(),
 });
 
+export const userProfiles = sqliteTable("user_profiles", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id).notNull().unique(),
+    goal: text("goal"),          // "lose_weight" | "gain_muscle" | "tone" | "health"
+    level: text("level"),        // "beginner" | "intermediate" | "advanced"
+    age: integer("age"),
+    weight: integer("weight"),   // optional, in kg
+    phone: text("phone"),        // optional
+    notifications: integer("notifications", { mode: 'boolean' }).default(true),
+    onboardingCompleted: integer("onboarding_completed", { mode: 'boolean' }).default(false),
+    updatedAt: integer("updated_at", { mode: 'timestamp' }).defaultNow(),
+});
+
 export const programs = sqliteTable("programs", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
