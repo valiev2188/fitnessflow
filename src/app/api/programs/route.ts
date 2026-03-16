@@ -8,8 +8,11 @@ export async function GET() {
     try {
         const allPrograms = await db.select().from(programs);
         return NextResponse.json({ programs: allPrograms });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Programs get error:', error);
-        return NextResponse.json({ error: 'Failed to fetch programs' }, { status: 500 });
+        return NextResponse.json({ 
+            error: 'Failed to fetch programs', 
+            details: error.message 
+        }, { status: 500 });
     }
 }
