@@ -1,20 +1,14 @@
 import { db } from '../src/db/index';
 import { programs, workouts } from '../src/db/schema';
-import { eq } from 'drizzle-orm';
 import * as dotenv from 'dotenv';
-
-// Override env vars with the user's provided Turso URL
-process.env.TURSO_DB_URL = 'libsql://turso-db-create-fitnessflow-abdulazizvaliev.aws-eu-west-1.turso.io';
-process.env.TURSO_AUTH_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NzMxODgyODUsImlkIjoiMDE5Y2RhM2ItODkwMS03YzRlLWJhODItNzhlMDNkMTc1ZjliIiwicmlkIjoiNjEwNGIwMTUtZGYzMi00YTQyLWE4OGItZDIwNDFkOWUwOWY4In0.F8PtUN9VDmXmTOxibL8bRMr-glPnoarbZ8hJSGU_9kbFwWK24olTWfWNx6nUdKBV-daalLcU5lpu4rM1OzLbBg';
-process.env.DATABASE_URL = `${process.env.TURSO_DB_URL}?authToken=${process.env.TURSO_AUTH_TOKEN}`;
 
 dotenv.config({ override: true });
 
 async function seed() {
-    console.log('🌱 Connecting to remote Turso database...');
+    console.log('🌱 Connecting to database...');
     try {
-        // Clear existing programs (this will cascade fail if not careful, but let's just delete the records)
-        console.log('🧹 Clearing old workouts and programs...');
+        // Clear existing programs
+        console.log('Sweep: 🧹 Clearing old workouts and programs...');
         await db.delete(workouts);
         await db.delete(programs);
 
@@ -55,7 +49,7 @@ async function seed() {
         console.log(`✅ Program "${startProgram.title}" seeded with 12 workouts.`);
 
         // -------------------------------------------------------
-        // PROGRAM 2: Продвинутый (Только дома / основной)
+        // PROGRAM 2: Продвинутый
         // -------------------------------------------------------
         const [advProgram] = await db.insert(programs).values({
             title: 'Продвинутый',
@@ -75,7 +69,6 @@ async function seed() {
             { day: 8, title: 'Ягодицы дома. Часть 2' },
         ];
         
-        // Fill the rest with placeholders up to 21
         for (let i = 9; i <= 21; i++) {
             advWorkouts.push({ day: i, title: `Тренировка ${i}` });
         }
@@ -91,7 +84,7 @@ async function seed() {
         );
         console.log(`✅ Program "${advProgram.title}" seeded with 21 workouts.`);
 
-        console.log('\n🎉 Remote Seeding complete! Database is ready.');
+        console.log('\n🎉 Seeding complete! Database is ready.');
         process.exit(0);
     } catch (err) {
         console.error('❌ Seeding failed:', err);

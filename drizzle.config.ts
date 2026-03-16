@@ -5,7 +5,7 @@ dotenv.config({ override: true });
 export default defineConfig({
   schema: './src/db/schema.ts',
   out: './src/db/migrations',
-  dialect: 'sqlite',
+  dialect: 'postgresql',
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
