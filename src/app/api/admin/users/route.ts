@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, subscriptions } from '@/db/schema';
+import { users, subscriptions, userProfiles } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
@@ -37,12 +37,15 @@ export async function GET(req: Request) {
 
         const allUsers = await db.select().from(users).orderBy(desc(users.createdAt));
         const allSubs = await db.select().from(subscriptions);
+        const allProfiles = await db.select().from(userProfiles);
 
         const usersWithSubs = allUsers.map(user => {
             const sub = allSubs.find(s => s.userId === user.id);
+            const profile = allProfiles.find(p => p.userId === user.id);
             return {
                 ...user,
-                subscription: sub || null
+                subscription: sub || null,
+                profile: profile || null
             };
         });
 

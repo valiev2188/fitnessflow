@@ -17,6 +17,13 @@ type User = {
         status: string;
         expiresAt: string;
     } | null;
+    profile?: {
+        phone: string | null;
+        goal: string | null;
+        level: string | null;
+        age: number | null;
+        weight: number | null;
+    } | null;
 };
 
 export default function AdminDashboard() {
@@ -182,9 +189,10 @@ export default function AdminDashboard() {
                         <table className="w-full text-left text-sm border-collapse">
                             <thead>
                                 <tr className="border-b border-stone-100">
-                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Telegram ID</th>
-                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Текущий тариф</th>
-                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Управление доступом</th>
+                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Пользователь</th>
+                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Профиль</th>
+                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Доступ</th>
+                                    <th className="px-6 py-5 text-xs font-semibold text-stone-400 uppercase tracking-widest bg-stone-50/50">Управление</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-stone-50">
@@ -205,6 +213,24 @@ export default function AdminDashboard() {
                                             </div>
                                         </td>
                                         
+                                        <td className="px-6 py-5 align-middle">
+                                            {user.profile ? (
+                                                <div className="flex flex-col gap-1 text-[11px] text-stone-500">
+                                                    {user.profile.phone && <div className="flex items-center gap-1.5"><span className="text-stone-400">📞</span> {user.profile.phone}</div>}
+                                                    {user.profile.goal && <div className="flex items-center gap-1.5"><span className="text-stone-400">🎯</span> {user.profile.goal}</div>}
+                                                    {(user.profile.age || user.profile.weight || user.profile.level) && (
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            {user.profile.level && <span className="bg-stone-100 px-1.5 py-0.5 rounded text-stone-600">{user.profile.level}</span>}
+                                                            {user.profile.age && <span>{user.profile.age} лет</span>}
+                                                            {user.profile.weight && <span>{user.profile.weight} кг</span>}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <span className="text-[11px] text-stone-400 italic">Нет профиля</span>
+                                            )}
+                                        </td>
+
                                         <td className="px-6 py-5 align-middle">
                                             {user.subscription?.status === 'active' ? (
                                                 <div className="flex flex-col items-start gap-1">
