@@ -1,4 +1,7 @@
+import Image from "next/image";
 import Link from 'next/link';
+import { ProgramsSection } from '@/components/ProgramsSection';
+import LaunchTimer from '@/components/LaunchTimer';
 
 export default function Home() {
   return (
@@ -82,6 +85,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Launch Countdown Timer Section */}
+        <LaunchTimer />
 
         {/* Features / Наше решение — moved right after Hero */}
         <section id="features" className="py-24 bg-[#1C1C1A] text-white border-t border-stone-800">
