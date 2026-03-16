@@ -43,7 +43,7 @@ export default function Home() {
 
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row items-center">
                   <a
-                    href="https://t.me/LolaFitnessBot"
+                    href="https://t.me/@testfref_bot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full sm:w-auto text-center rounded-full bg-stone-900 px-8 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5"
