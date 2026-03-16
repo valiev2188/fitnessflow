@@ -1,11 +1,23 @@
 import { db } from '../src/db/index';
 import { programs, workouts } from '../src/db/schema';
+import { eq } from 'drizzle-orm';
 import * as dotenv from 'dotenv';
+
+// Override env vars with the user's provided Turso URL
+process.env.TURSO_DB_URL = 'libsql://turso-db-create-fitnessflow-abdulazizvaliev.aws-eu-west-1.turso.io';
+process.env.TURSO_AUTH_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NzMxODgyODUsImlkIjoiMDE5Y2RhM2ItODkwMS03YzRlLWJhODItNzhlMDNkMTc1ZjliIiwicmlkIjoiNjEwNGIwMTUtZGYzMi00YTQyLWE4OGItZDIwNDFkOWUwOWY4In0.F8PtUN9VDmXmTOxibL8bRMr-glPnoarbZ8hJSGU_9kbFwWK24olTWfWNx6nUdKBV-daalLcU5lpu4rM1OzLbBg';
+process.env.DATABASE_URL = `${process.env.TURSO_DB_URL}?authToken=${process.env.TURSO_AUTH_TOKEN}`;
+
 dotenv.config({ override: true });
 
 async function seed() {
-    console.log('🌱 Seeding database...');
+    console.log('🌱 Connecting to remote Turso database...');
     try {
+        // Clear existing programs (this will cascade fail if not careful, but let's just delete the records)
+        console.log('🧹 Clearing old workouts and programs...');
+        await db.delete(workouts);
+        await db.delete(programs);
+
         // -------------------------------------------------------
         // PROGRAM 1: Старт
         // -------------------------------------------------------
@@ -43,16 +55,16 @@ async function seed() {
         console.log(`✅ Program "${startProgram.title}" seeded with 12 workouts.`);
 
         // -------------------------------------------------------
-        // PROGRAM 2: Продвинутый (Дома)
+        // PROGRAM 2: Продвинутый (Только дома / основной)
         // -------------------------------------------------------
-        const [advHomeProgram] = await db.insert(programs).values({
-            title: 'Продвинутый (Дома)',
-            description: '21 домашняя тренировка (без инвентаря). Для тех, кто уже в теме и хочет настоящих результатов. Чередуй с залом или выбирай только домашний формат.',
+        const [advProgram] = await db.insert(programs).values({
+            title: 'Продвинутый',
+            description: 'Продвинутый модуль курса. Для тех, кто уже в теме и хочет настоящих результатов.',
             durationDays: 21,
             price: 450000, 
         }).returning();
 
-        const advHomeWorkouts = [
+        const advWorkouts = [
             { day: 1, title: 'Фуллбоди активация' },
             { day: 2, title: 'Ягодицы: сила + памп' },
             { day: 3, title: 'Нижняя часть: ноги полностью' },
@@ -65,54 +77,21 @@ async function seed() {
         
         // Fill the rest with placeholders up to 21
         for (let i = 9; i <= 21; i++) {
-            advHomeWorkouts.push({ day: i, title: `Тренировка дома ${i}` });
+            advWorkouts.push({ day: i, title: `Тренировка ${i}` });
         }
 
         await db.insert(workouts).values(
-            advHomeWorkouts.map(w => ({
-                programId: advHomeProgram.id,
+            advWorkouts.map(w => ({
+                programId: advProgram.id,
                 dayNumber: w.day,
                 title: w.title,
                 description: 'Домашняя продвинутая тренировка',
                 videoUrl: '',
             }))
         );
-        console.log(`✅ Program "${advHomeProgram.title}" seeded with 21 workouts.`);
+        console.log(`✅ Program "${advProgram.title}" seeded with 21 workouts.`);
 
-        // -------------------------------------------------------
-        // PROGRAM 3: Продвинутый (В зале)
-        // -------------------------------------------------------
-        const [advGymProgram] = await db.insert(programs).values({
-            title: 'Продвинутый (В зале)',
-            description: '12 тренировок для зала со снарядами. Входит в пакет "Продвинутый". Прицельная работа с весами для максимального мышечного тонуса.',
-            durationDays: 12,
-            price: 450000, 
-        }).returning();
-
-        const advGymWorkouts = [
-            { day: 1, title: 'Нижняя часть: штанга и гантели' },
-            { day: 2, title: 'Верх тела: грудь, спина, руки' },
-            { day: 3, title: 'Ягодицы в зале: hip thrust' },
-            { day: 4, title: 'Плечи, трицепс, бицепс' },
-        ];
-
-        // Fill the rest up to 12
-        for (let i = 5; i <= 12; i++) {
-            advGymWorkouts.push({ day: i, title: `Зальная тренировка ${i}` });
-        }
-
-        await db.insert(workouts).values(
-            advGymWorkouts.map(w => ({
-                programId: advGymProgram.id,
-                dayNumber: w.day,
-                title: w.title,
-                description: 'Зальная тренировка с отягощением',
-                videoUrl: '',
-            }))
-        );
-        console.log(`✅ Program "${advGymProgram.title}" seeded with 12 workouts.`);
-
-        console.log('\n🎉 Seeding complete! Database is ready.');
+        console.log('\n🎉 Remote Seeding complete! Database is ready.');
         process.exit(0);
     } catch (err) {
         console.error('❌ Seeding failed:', err);

@@ -59,7 +59,7 @@ export default function ProgramsPage() {
                                         <div>
                                             <h3 className="text-xl font-medium text-stone-900">{program.title}</h3>
                                             <div className="mt-2 inline-flex items-center rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-600">
-                                                {program.durationDays} Дней • {program.price === 0 ? 'Бесплатно' : `$${(program.price / 100).toFixed(2)}`}
+                                                {program.durationDays} Дней • {program.price === 0 ? 'Бесплатно' : `${program.price.toLocaleString('ru-RU')} сум`}
                                             </div>
                                         </div>
                                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-50 text-stone-400 transition-all group-hover:bg-rose-500 group-hover:text-white group-hover:scale-110 group-hover:shadow-md group-hover:shadow-rose-500/30">
@@ -81,7 +81,7 @@ export default function ProgramsPage() {
                                         <Link href={`/payment?plan=${encodeURIComponent(program.title)}`}>
                                             <button className="w-full rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 transition-all hover:bg-rose-500 hover:text-white hover:border-transparent hover:shadow-md hover:shadow-rose-500/20 active:scale-95 flex items-center justify-center gap-2">
                                                 <ShoppingBag className="h-4 w-4" />
-                                                Приобрести за ${(program.price / 100).toFixed(0)}
+                                                Приобрести за {program.price.toLocaleString('ru-RU')} сум
                                             </button>
                                         </Link>
                                     )}
