@@ -1,37 +1,38 @@
-import { pgTable, text, integer, timestamp, boolean, serial } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
-export const users = pgTable("users", {
-    id: serial("id").primaryKey(),
+export const users = sqliteTable("users", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     telegramId: text("telegram_id").notNull().unique(),
     name: text("name"),
     username: text("username"),
-    role: text("role").notNull().default("user"), // "admin" or "user"
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    role: text("role").notNull().default("user"),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });
 
-export const userProfiles = pgTable("user_profiles", {
-    id: serial("id").primaryKey(),
+export const userProfiles = sqliteTable("user_profiles", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     userId: integer("user_id").references(() => users.id).notNull().unique(),
-    goal: text("goal"),          // "lose_weight" | "gain_muscle" | "tone" | "health"
-    level: text("level"),        // "beginner" | "intermediate" | "advanced"
+    goal: text("goal"),
+    level: text("level"),
     age: integer("age"),
-    weight: integer("weight"),   // optional, in kg
-    phone: text("phone"),        // optional
-    notifications: boolean("notifications").default(true),
-    onboardingCompleted: boolean("onboarding_completed").default(false),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    weight: integer("weight"),
+    phone: text("phone"),
+    notifications: integer("notifications", { mode: "boolean" }).default(true),
+    onboardingCompleted: integer("onboarding_completed", { mode: "boolean" }).default(false),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });
 
-export const programs = pgTable("programs", {
-    id: serial("id").primaryKey(),
+export const programs = sqliteTable("programs", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     description: text("description"),
     durationDays: integer("duration_days").notNull(),
     price: integer("price").default(0),
 });
 
-export const workouts = pgTable("workouts", {
-    id: serial("id").primaryKey(),
+export const workouts = sqliteTable("workouts", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     programId: integer("program_id").references(() => programs.id).notNull(),
     dayNumber: integer("day_number").notNull(),
     title: text("title").notNull(),
@@ -39,18 +40,18 @@ export const workouts = pgTable("workouts", {
     description: text("description"),
 });
 
-export const userProgress = pgTable("user_progress", {
-    id: serial("id").primaryKey(),
+export const userProgress = sqliteTable("user_progress", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     userId: integer("user_id").references(() => users.id).notNull(),
     workoutId: integer("workout_id").references(() => workouts.id).notNull(),
-    completed: boolean("completed").default(false).notNull(),
-    completedAt: timestamp("completed_at"),
+    completed: integer("completed", { mode: "boolean" }).notNull().default(false),
+    completedAt: integer("completed_at", { mode: "timestamp" }),
 });
 
-export const subscriptions = pgTable("subscriptions", {
-    id: serial("id").primaryKey(),
+export const subscriptions = sqliteTable("subscriptions", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     userId: integer("user_id").references(() => users.id).notNull(),
     status: text("status").notNull(),
     plan: text("plan").notNull(),
-    expiresAt: timestamp("expires_at"),
+    expiresAt: integer("expires_at", { mode: "timestamp" }),
 });

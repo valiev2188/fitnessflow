@@ -1,90 +1,146 @@
-import { db } from '../src/db/index';
-import { programs, workouts } from '../src/db/schema';
+import { createClient } from '@libsql/client';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ override: true });
+dotenv.config({ path: '.env.local', override: true });
+
+const client = createClient({
+    url: process.env.TURSO_DB_URL || '',
+    authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 async function seed() {
-    console.log('🌱 Connecting to database...');
+    console.log('🌱 Connecting to Turso database...');
     try {
-        // Clear existing programs
-        console.log('Sweep: 🧹 Clearing old workouts and programs...');
-        await db.delete(workouts);
-        await db.delete(programs);
+        // Create all tables
+        await client.executeMultiple(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                telegram_id TEXT NOT NULL UNIQUE,
+                name TEXT,
+                username TEXT,
+                role TEXT NOT NULL DEFAULT 'user',
+                created_at INTEGER DEFAULT (unixepoch())
+            );
+            CREATE TABLE IF NOT EXISTS user_profiles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+                goal TEXT,
+                level TEXT,
+                age INTEGER,
+                weight INTEGER,
+                phone TEXT,
+                notifications INTEGER DEFAULT 1,
+                onboarding_completed INTEGER DEFAULT 0,
+                updated_at INTEGER DEFAULT (unixepoch())
+            );
+            CREATE TABLE IF NOT EXISTS programs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT,
+                duration_days INTEGER NOT NULL,
+                price INTEGER DEFAULT 0
+            );
+            CREATE TABLE IF NOT EXISTS workouts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                program_id INTEGER NOT NULL REFERENCES programs(id),
+                day_number INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                video_url TEXT,
+                description TEXT
+            );
+            CREATE TABLE IF NOT EXISTS user_progress (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                workout_id INTEGER NOT NULL REFERENCES workouts(id),
+                completed INTEGER NOT NULL DEFAULT 0,
+                completed_at INTEGER
+            );
+            CREATE TABLE IF NOT EXISTS subscriptions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                status TEXT NOT NULL,
+                plan TEXT NOT NULL,
+                expires_at INTEGER
+            );
+        `);
+        console.log('✅ Tables created/verified.');
 
-        // -------------------------------------------------------
-        // PROGRAM 1: Старт
-        // -------------------------------------------------------
-        const [startProgram] = await db.insert(programs).values({
-            title: 'Старт',
-            description: '12 занятий для тех, кто только начинает. Освой азы, правильную технику и полюби движение без стресса. Все тренировки проводятся дома — никакого инвентаря.',
-            durationDays: 12,
-            price: 150000, // in sum
-        }).returning();
+        // Clear existing data
+        await client.executeMultiple(`
+            DELETE FROM user_progress;
+            DELETE FROM workouts;
+            DELETE FROM programs;
+        `);
+        console.log('🧹 Cleared old data.');
 
-        const startWorkouts = [
-            { day: 1, title: 'Вводное занятие. Дыхание и осанка', desc: 'Учимся правильно дышать и держать спину. Продолжительность: 25 мин.' },
-            { day: 2, title: 'Активация глубоких мышц кора', desc: 'Базовые упражнения на кор без скручиваний. Продолжительность: 30 мин.' },
-            { day: 3, title: 'Подвижность суставов всего тела', desc: 'Снимаем зажимы и улучшаем амплитуду движений. Продолжительность: 30 мин.' },
-            { day: 4, title: 'Мягкий кор — без скуки', desc: 'Продолжаем укреплять центр. Продолжительность: 25 мин.' },
-            { day: 5, title: 'Нижняя часть тела: ягодицы и ноги', desc: 'Лёгкие приседания и выпады без веса. Продолжительность: 35 мин.' },
-            { day: 6, title: 'Верх тела: руки, спина, плечи', desc: 'Активируем спину и улучшаем осанку. Продолжительность: 30 мин.' },
-            { day: 7, title: 'Восстановление и стретчинг', desc: 'Мягкая растяжка для снятия напряжения. Продолжительность: 20 мин.' },
-            { day: 8, title: 'Кардио-активация (мягкая)', desc: 'Разгоняем пульс для жиросжигания без прыжков. Продолжительность: 30 мин.' },
-            { day: 9, title: 'Фуллбоди: всё тело в одной тренировке', desc: 'Комплексная проработка всех мышечных групп. Продолжительность: 35 мин.' },
-            { day: 10, title: 'Лёгкие ноги (антиотёк)', desc: 'Специальная МФР-практика для легкости в ногах. Продолжительность: 25 мин.' },
-            { day: 11, title: 'Пресс и бока: без скручиваний', desc: 'Создаем талию безопасными упражнениями. Продолжительность: 30 мин.' },
-            { day: 12, title: 'Финальная тренировка + растяжка', desc: 'Закрепляем результат и подводим итоги курса. Продолжительность: 40 мин.' },
-        ];
-
-        await db.insert(workouts).values(
-            startWorkouts.map(w => ({
-                programId: startProgram.id,
-                dayNumber: w.day,
-                title: w.title,
-                description: w.desc,
-                videoUrl: '',
-            }))
+        // ------ PROGRAM 1: Старт ------
+        const startRes = await client.execute(
+            `INSERT INTO programs (title, description, duration_days, price) VALUES (?, ?, ?, ?) RETURNING id`,
+            ['Старт', '12 занятий для тех, кто только начинает. Освой азы, правильную технику и полюби движение без стресса.', 12, 150000]
         );
-        console.log(`✅ Program "${startProgram.title}" seeded with 12 workouts.`);
+        const startId = startRes.rows[0].id as number;
 
-        // -------------------------------------------------------
-        // PROGRAM 2: Продвинутый
-        // -------------------------------------------------------
-        const [advProgram] = await db.insert(programs).values({
-            title: 'Продвинутый',
-            description: 'Продвинутый модуль курса для тех, кто уже в теме и хочет настоящих результатов. 21 домашняя тренировка + дополнительный блок для зала.',
-            durationDays: 21,
-            price: 450000, 
-        }).returning();
-
-        const advWorkouts = [
-            { day: 1, title: 'Фуллбоди активация', desc: 'Разогрев и проработка всего тела. 35 мин.' },
-            { day: 2, title: 'Ягодицы: сила + памп', desc: 'Акцент на форму и силу ягодичных мышц. 40 мин.' },
-            { day: 3, title: 'Нижняя часть: ноги полностью', desc: 'Комплексная проработка ног. 40 мин.' },
-            { day: 4, title: 'Верх тела и спина', desc: 'Укрепление мышц спины и рук. 35 мин.' },
-            { day: 5, title: 'Кор и пресс: продвинутый уровень', desc: 'Интенсивная работа над прессом. 30 мин.' },
-            { day: 6, title: 'HIIT — сжигаем калории', desc: 'Высокоинтенсивный интервальный тренинг. 25 мин.' },
-            { day: 7, title: 'Мобильность и гибкость', desc: 'Растяжка и улучшение подвижности. 25 мин.' },
-            { day: 8, title: 'Ягодицы дома. Часть 2', desc: 'Второй уровень проработки ягодиц. 40 мин.' },
+        const startWorkouts: [number, string, string][] = [
+            [1, 'Вводное занятие. Дыхание и осанка', 'Учимся правильно дышать и держать спину. 25 мин.'],
+            [2, 'Активация глубоких мышц кора', 'Базовые упражнения на кор без скручиваний. 30 мин.'],
+            [3, 'Подвижность суставов всего тела', 'Снимаем зажимы и улучшаем амплитуду движений. 30 мин.'],
+            [4, 'Мягкий кор — без скуки', 'Продолжаем укреплять центр. 25 мин.'],
+            [5, 'Нижняя часть тела: ягодицы и ноги', 'Лёгкие приседания и выпады без веса. 35 мин.'],
+            [6, 'Верх тела: руки, спина, плечи', 'Активируем спину и улучшаем осанку. 30 мин.'],
+            [7, 'Восстановление и стретчинг', 'Мягкая растяжка для снятия напряжения. 20 мин.'],
+            [8, 'Кардио-активация (мягкая)', 'Разгоняем пульс для жиросжигания без прыжков. 30 мин.'],
+            [9, 'Фуллбоди: всё тело в одной тренировке', 'Комплексная проработка всех мышечных групп. 40 мин.'],
+            [10, 'Лёгкие ноги (антиотёк)', 'Специальная МФР-практика для лёгкости в ногах. 25 мин.'],
+            [11, 'Пресс и бока: без скручиваний', 'Создаём талию безопасными упражнениями. 30 мин.'],
+            [12, 'Финальная тренировка + растяжка', 'Закрепляем результат и подводим итоги курса. 40 мин.'],
         ];
-        
-        for (let i = 9; i <= 21; i++) {
-            advWorkouts.push({ day: i, title: `Тренировка ${i}: Интенсив ${i-8}`, desc: 'Продвинутая домашняя тренировка. 35-45 мин.' });
+        for (const [day, title, desc] of startWorkouts) {
+            await client.execute(
+                `INSERT INTO workouts (program_id, day_number, title, description) VALUES (?, ?, ?, ?)`,
+                [startId, day, title, desc]
+            );
         }
+        console.log('✅ "Старт" seeded with 12 workouts.');
 
-        await db.insert(workouts).values(
-            advWorkouts.map(w => ({
-                programId: advProgram.id,
-                dayNumber: w.day,
-                title: w.title,
-                description: w.desc || 'Домашняя продвинутая тренировка',
-                videoUrl: '',
-            }))
+        // ------ PROGRAM 2: Продвинутый ------
+        const advRes = await client.execute(
+            `INSERT INTO programs (title, description, duration_days, price) VALUES (?, ?, ?, ?) RETURNING id`,
+            ['Продвинутый', '21 домашняя тренировка + дополнительный блок для зала.', 21, 450000]
         );
-        console.log(`✅ Program "${advProgram.title}" seeded with 21 workouts.`);
+        const advId = advRes.rows[0].id as number;
 
-        console.log('\n🎉 Seeding complete! Database is ready.');
+        const advWorkouts: [number, string, string][] = [
+            [1, 'Фуллбоди активация', 'Разогрев и проработка всего тела. 35 мин.'],
+            [2, 'Ягодицы: сила + памп', 'Акцент на форму и силу ягодичных мышц. 40 мин.'],
+            [3, 'Нижняя часть: ноги полностью', 'Комплексная проработка ног. 40 мин.'],
+            [4, 'Верх тела и спина', 'Укрепление мышц спины и рук. 35 мин.'],
+            [5, 'Кор и пресс: продвинутый уровень', 'Интенсивная работа над прессом. 30 мин.'],
+            [6, 'HIIT — сжигаем калории', 'Высокоинтенсивный интервальный тренинг. 35 мин.'],
+            [7, 'Мобильность и гибкость', 'Растяжка и улучшение подвижности. 25 мин.'],
+            [8, 'Ягодицы и бицепс бедра', 'Глубокая проработка задней цепи. 40 мин.'],
+            [9, 'Плечи и руки', 'Красивые плечи и подтянутые руки. 35 мин.'],
+            [10, 'Интервальное кардио', 'Жиросжигание и выносливость. 30 мин.'],
+            [11, 'Пресс без скручиваний', 'Продвинутые техники для плоского живота. 30 мин.'],
+            [12, 'Фуллбоди силовая', 'Все группы мышц с нагрузкой. 45 мин.'],
+            [13, 'Ягодицы: финальный памп', 'Максимальная нагрузка на ягодицы. 40 мин.'],
+            [14, 'Спина и осанка', 'Идеальная осанка и сильная спина. 35 мин.'],
+            [15, 'Ноги: квадрицепсы и приводящие', 'Форма ног изнутри. 40 мин.'],
+            [16, 'HIIT финал', 'Финальный жиросжигающий блок. 35 мин.'],
+            [17, 'Йога и восстановление', 'Глубокое восстановление и баланс. 30 мин.'],
+            [18, 'Кор 360°', 'Проработка кора со всех сторон. 35 мин.'],
+            [19, 'Суперсет: ноги + ягодицы', 'Комбинированная нагрузка для нижней части. 45 мин.'],
+            [20, 'Верх + кор', 'Руки, спина и пресс в одной тренировке. 40 мин.'],
+            [21, 'Финальная тренировка', 'Всё тело, подводим итог программы. 50 мин.'],
+        ];
+        for (const [day, title, desc] of advWorkouts) {
+            await client.execute(
+                `INSERT INTO workouts (program_id, day_number, title, description) VALUES (?, ?, ?, ?)`,
+                [advId, day, title, desc]
+            );
+        }
+        console.log('✅ "Продвинутый" seeded with 21 workouts.');
+
+        console.log('\n🎉 Seeding complete! Turso database is ready.');
         process.exit(0);
     } catch (err) {
         console.error('❌ Seeding failed:', err);
