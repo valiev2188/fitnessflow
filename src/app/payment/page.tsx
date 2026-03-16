@@ -19,20 +19,15 @@ function PaymentContent() {
     let planName = "Неизвестный тариф";
 
     switch (plan) {
-        case 'Легкий старт':
-            price = "40$";
-            oldPrice = "60$";
-            planName = "Легкий старт (21 день)";
+        case 'Старт':
+            price = "150 000 сум";
+            oldPrice = "200 000 сум";
+            planName = "Старт (12 занятий)";
             break;
         case 'Продвинутый':
-            price = "80$";
-            oldPrice = "120$";
-            planName = "Продвинутый (с чатом)";
-            break;
-        case 'Индивидуальный':
-            price = "200$";
-            oldPrice = "300$";
-            planName = "Личное Ведение (офлайн)";
+            price = "450 000 сум";
+            oldPrice = "600 000 сум";
+            planName = "Продвинутый (21 тренировка)";
             break;
         default:
             planName = plan || "Неизвестный тариф";
@@ -153,7 +148,7 @@ function PaymentContent() {
                                 {[1, 2, 3, 4, 5].map(i => <span key={i} className="text-yellow-400 text-lg">★</span>)}
                             </div>
                             <p className="text-stone-600 font-light italic mb-4">
-                                «Лола, это лучшее решение! За 21 день минус 4 кг, я наконец-то влезла в свои любимые джинсы. Тренировки огонь, всем советую!»
+                                «Лола, это лучшее решение! С курсом Старт я наконец-то начала двигаться без боли в спине. Тренировки очень бережные, всем советую!»
                             </p>
                             <p className="text-sm font-medium text-stone-900">— Малика Т.</p>
                         </div>
@@ -162,7 +157,7 @@ function PaymentContent() {
                                 {[1, 2, 3, 4, 5].map(i => <span key={i} className="text-yellow-400 text-lg">★</span>)}
                             </div>
                             <p className="text-stone-600 font-light italic mb-4">
-                                «Я никогда не любила спорт, но тут прям втянулась. Всё очень понятно, Лола объясняет каждую мелочь. Чувствую себя потрясающе!»
+                                «Я никогда не любила спорт, но на Продвинутом прям втянулась. Всё очень понятно, Лола объясняет каждую мелочь. Чувствую себя потрясающе!»
                             </p>
                             <p className="text-sm font-medium text-stone-900">— Диана А.</p>
                         </div>
