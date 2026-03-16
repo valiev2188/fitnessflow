@@ -283,7 +283,7 @@ export default function Home() {
                   </div>
                   <div className="flex gap-3">
                     <a
-                      href="https://l.rhmt.uz/Zn2lCs"
+                      href="https://t.me/vvveins?text=Хочу%20купить%20курс%20Старт"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 text-center rounded-2xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-rose-600 shadow-md shadow-rose-500/25 active:scale-95"
