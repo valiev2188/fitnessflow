@@ -153,10 +153,10 @@ export default function AdminDashboard() {
                                         <td className="px-6 py-4">
                                             <div className="flex flex-wrap gap-2">
                                                 <button
-                                                    onClick={() => handleUpdateSubscription(user.id, 'Легкий старт', 'active')}
+                                                    onClick={() => handleUpdateSubscription(user.id, 'Старт', 'active')}
                                                     className="px-3 py-1.5 rounded-lg border border-stone-200 text-xs font-medium text-stone-700 hover:bg-stone-100 transition-colors"
                                                 >
-                                                    Легкий старт
+                                                    Старт
                                                 </button>
                                                 <button
                                                     onClick={() => handleUpdateSubscription(user.id, 'Продвинутый', 'active')}
