@@ -5,6 +5,8 @@ import { eq, desc } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
+export const dynamic = 'force-dynamic';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
 
 // Helper to authenticate admin

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { programs, workouts } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
+export const dynamic = 'force-dynamic';
 export async function GET(req: Request, props: { params: Promise<{ programId: string }> }) {
     try {
         const params = await props.params;
