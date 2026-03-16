@@ -8,6 +8,8 @@ export function useTelegramAuth() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const [startParam, setStartParam] = useState<string | null>(null);
+
     useEffect(() => {
         async function authenticate() {
             try {
@@ -26,6 +28,10 @@ export function useTelegramAuth() {
                         if (tg.initData && tg.initData.length > 0) {
                             initData = tg.initData;
                             console.log('✅ Got real Telegram initData');
+                        }
+                        // Read start_param for deep linking (e.g. startapp=programs)
+                        if (tg.initDataUnsafe?.start_param) {
+                            setStartParam(tg.initDataUnsafe.start_param);
                         }
                     }
                 }
@@ -66,6 +72,6 @@ export function useTelegramAuth() {
         authenticate();
     }, []);
 
-    return { user, token, error, loading };
+    return { user, token, error, loading, startParam };
 }
 

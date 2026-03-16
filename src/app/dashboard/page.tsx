@@ -65,10 +65,17 @@ function ActivityCalendar({ completedDates }: { completedDates: Set<string> }) {
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { user, token, loading: authLoading } = useTelegramAuth();
+    const { user, token, loading: authLoading, startParam } = useTelegramAuth();
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<any>(null);
     const [progress, setProgress] = useState<any[]>([]);
+
+    // Deep-link: if bot opened with startapp=programs, go straight to programs
+    useEffect(() => {
+        if (startParam === 'programs') {
+            router.replace('/dashboard/programs');
+        }
+    }, [startParam]);
 
     useEffect(() => {
         if (authLoading || !token) return;

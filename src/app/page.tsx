@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { ProgramsSection } from '@/components/ProgramsSection';
 
 export default function Home() {
   return (
@@ -36,26 +37,30 @@ export default function Home() {
                 <h1 className="text-5xl font-serif tracking-tight sm:text-6xl lg:text-7xl text-stone-900 leading-[1.1]">
                   Эстетика и <br />
                   <span className="text-rose-400 italic">женственность</span> <br />
-                  от Лолы
+                  в каждом движении
                 </h1>
 
                 <p className="mt-8 max-w-xl text-lg text-stone-600 leading-relaxed font-light">
-                  Фитнес как проявление искренней любви к себе и создание внутренней опоры. Премиальный подход, забота о вашем здоровье и индивидуальные тренировки прямо в вашем смартфоне.
+                  Персональная фитнес-платформа, которая делает красивое тело реальностью — прямо в Telegram, без лишних приложений.
                 </p>
 
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row items-center">
-                  <Link
-                    href="#pricing"
+                  <a
+                    href="https://t.me/LolaFitnessBot"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-full sm:w-auto text-center rounded-full bg-stone-900 px-8 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5"
                   >
-                    Начать Трансформацию
-                  </Link>
-                  <Link
-                    href="/dashboard"
+                    Получить приложение
+                  </a>
+                  <a
+                    href="https://t.me/vvveins?text=Хочу%20получить%20инструкцию"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-full sm:w-auto text-center rounded-full border border-stone-300 bg-transparent px-8 py-4 text-sm font-medium text-stone-700 transition-all hover:border-rose-400 hover:text-rose-500"
                   >
-                    Демо Кабинета
-                  </Link>
+                    Связаться с Лолой
+                  </a>
                 </div>
               </div>
 
@@ -159,155 +164,86 @@ export default function Home() {
         </section>
 
         {/* Program Preview Section */}
-        <section id="program" className="py-24 bg-[#FAF8F5] border-t border-stone-100 overflow-hidden">
-          <div className="container mx-auto max-w-6xl px-6">
-            <div className="mb-16">
-              <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
-                Программа курса включает <span className="relative whitespace-nowrap"><span className="relative z-10 text-stone-900">21 тренировку</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-rose-400" preserveAspectRatio="none" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"><path d="M 0 50 Q 50 100 100 50" /></svg></span>:
-              </h2>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-16 items-start relative">
-              <div className="flex flex-wrap gap-3">
-                {/* Simulated pill list of workouts based on the provided screenshot */}
-                {[
-                  "1. Фуллбоди пробуждение",
-                  "2. Гибкая спина и красивая осанка",
-                  "3. Ягодицы мечты + МФР",
-                  "4. Пилатес кор: плоский живот",
-                  "5. Мобильность суставов всего тела",
-                  "6. Верх тела: руки, грудь, спина",
-                  "7. Восстанавливающая растяжка",
-                  "8. Лёгкие ноги (антиотёк)",
-                  "9. Пилатес заряд энергии",
-                  "10. Пресс с акцентом",
-                  "11. Ягодицы со своим весом",
-                  "12. Здоровая шея на каждый день"
-                ].map((title, i) => (
-                  <div key={i} className="inline-flex items-center px-5 py-2.5 rounded-full border border-stone-900 bg-transparent text-stone-900 font-medium text-sm hover:bg-stone-900 hover:text-white transition-colors cursor-default shadow-sm">
-                    {title}
-                  </div>
-                ))}
-                <div className="inline-flex items-center px-5 py-2.5 rounded-full border border-dashed border-stone-300 text-stone-500 font-light text-sm italic bg-stone-50/50">
-                  и еще 9 авторских тренировок...
-                </div>
-              </div>
-
-              <div className="relative mt-8 lg:mt-0 lg:ml-8">
-                {/* Decorative abstract elements behind tablet */}
-                <div className="absolute -top-12 -right-12 w-64 h-64 bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-                <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
-
-                {/* Simulated App / Tablet Frame */}
-                <div className="rounded-[2.5rem] bg-stone-900 p-3 pb-0 shadow-2xl relative overflow-hidden ring-1 ring-stone-900/5 rotate-2 hover:rotate-0 transition-transform duration-500 max-w-lg mx-auto">
-                  <div className="bg-[#FDFBF7] rounded-t-[2rem] h-[480px] overflow-hidden flex flex-col relative">
-                    {/* App Header */}
-                    <div className="bg-white px-6 py-4 border-b border-stone-100 flex items-center justify-between z-10">
-                      <span className="font-serif text-lg font-medium">Мой Курс</span>
-                      <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-xs">Л</div>
-                    </div>
-
-                    <div className="p-6 overflow-y-auto flex-1 pb-12 relative">
-                      <h3 className="font-serif text-xl text-stone-900 mb-4 font-bold flex items-center gap-2">
-                        <span className="text-sm font-sans font-normal text-stone-500">Неделя 1 •</span>
-                        Фуллбоди Старт
-                      </h3>
-
-                      {/* Simulated Week Progress */}
-                      <div className="flex gap-2 mb-8">
-                        {[1, 2, 3, 4, 5, 6, 7].map(d => (
-                          <div key={d} className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium border transition-colors cursor-pointer ${d === 1 ? 'bg-rose-400 text-white border-rose-400 shadow-md shadow-rose-400/30' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}>
-                            {d}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Simulated Active Workout Card */}
-                      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 group cursor-pointer hover:shadow-md transition-shadow">
-                        <div className="h-32 bg-stone-200 relative overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1000&auto=format&fit=crop" alt="Workout cover" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-stone-900/20 group-hover:bg-stone-900/40 transition-colors" />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-12 h-12 rounded-full bg-white/90 text-rose-500 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                              <svg className="w-5 h-5 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                            </div>
-                          </div>
-                          <div className="absolute top-3 right-3 bg-rose-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">
-                            20 МИН
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <h4 className="font-medium text-stone-900 text-[15px] mb-1 leading-tight group-hover:text-rose-600 transition-colors">Фуллбоди пробуждение</h4>
-                          <p className="text-xs text-stone-500 font-light mb-3">Мягкая активация мышц всего тела</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded uppercase tracking-wider font-medium">Без инвентаря</span>
-                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded uppercase tracking-wider font-medium">Начинающий</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Next workout faded */}
-                      <div className="mt-4 flex items-center justify-between p-4 rounded-2xl border border-stone-100 bg-white/60 opacity-60">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 font-medium text-sm">2</div>
-                          <div>
-                            <h4 className="font-medium text-stone-800 text-sm">Гибкая спина</h4>
-                            <p className="text-xs text-stone-500">Завтра</p>
-                          </div>
-                        </div>
-                        <div className="w-8 h-8 rounded-full border-2 border-stone-200" />
-                      </div>
-                    </div>
-
-                    {/* Faded gradient at bottom of screen to show scroll */}
-                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FDFBF7] to-transparent pointer-events-none" />
-                  </div>
-
-                  {/* Tablet Home Indicator */}
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ProgramsSection />
 
         {/* Features Section */}
-        <section id="features" className="py-24 bg-white border-t border-stone-100">
+        <section id="features" className="py-24 bg-[#1C1C1A] text-white border-t border-stone-800">
           <div className="container mx-auto max-w-6xl px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl">
-                Грация и <span className="text-rose-400 italic">Результат</span>
-              </h2>
-              <p className="mt-4 text-stone-500 font-light max-w-2xl mx-auto">
-                Комплексный подход для достижения формы вашей мечты с заботой о женском здоровье.
-              </p>
-            </div>
+            <div className="flex flex-col lg:flex-row gap-16 items-center">
+              
+              <div className="flex-1">
+                <p className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-4">Наше решение</p>
+                <h2 className="text-4xl font-serif sm:text-5xl mb-6">
+                  Персональный тренер<br />
+                  <span className="text-rose-400 italic">в кармане</span>
+                </h2>
+                <p className="text-stone-300 font-light mb-12 max-w-lg leading-relaxed">
+                  LolaFitness — это Telegram WebApp с авторской программой от сертифицированного тренера. Никаких скачиваний, никаких барьеров. Открыл — тренируйся.
+                </p>
 
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
-                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 group-hover:scale-110 transition-transform">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div className="space-y-8">
+                  <div className="flex gap-4">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-sm font-bold border border-rose-500/30">✦</div>
+                    <div>
+                      <h4 className="font-medium text-white mb-1">Telegram WebApp — нулевая фрикция</h4>
+                      <p className="text-sm text-stone-400 font-light">Авторизация через Telegram. Никаких дополнительных аккаунтов и приложений.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-sm font-bold border border-rose-500/30">✦</div>
+                    <div>
+                      <h4 className="font-medium text-white mb-1">Умный онбординг</h4>
+                      <p className="text-sm text-stone-400 font-light">Цель, уровень, возраст — система адаптирует программу под конкретного пользователя.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-sm font-bold border border-rose-500/30">✦</div>
+                    <div>
+                      <h4 className="font-medium text-white mb-1">Дневник прогресса</h4>
+                      <p className="text-sm text-stone-400 font-light">Визуализация достижений, трекер тренировок и напоминания от бота каждый день.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-sm font-bold border border-rose-500/30">✦</div>
+                    <div>
+                      <h4 className="font-medium text-white mb-1">Личная связь с Лолой</h4>
+                      <p className="text-sm text-stone-400 font-light">В премиальных тарифах — прямой чат и даже офлайн-встречи с тренером.</p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-medium text-stone-900 mb-3">Детальные видео</h3>
-                <p className="text-stone-500 font-light leading-relaxed">Правильная техника выполнения каждого упражнения с учетом биомеханики.</p>
               </div>
 
-              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
-                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 group-hover:scale-110 transition-transform">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+              <div className="flex-1 w-full max-w-sm lg:max-w-md relative flex justify-center">
+                {/* Mockup Frame */}
+                <div className="relative rounded-[3rem] border-[8px] border-stone-800 bg-[#FDFBF7] shadow-2xl p-4 w-full aspect-[1/2] overflow-hidden flex flex-col">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-stone-800 rounded-b-xl z-20"></div>
+                  
+                  {/* Decorative Video Placeholder */}
+                  <div className="flex-1 mt-6 rounded-2xl overflow-hidden bg-stone-100 relative group cursor-pointer border border-stone-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=600&auto=format&fit=crop" className="object-cover w-full h-full opacity-80 group-hover:scale-105 transition-transform duration-700" alt="Инструкция" />
+                    <div className="absolute inset-0 bg-stone-900/30 flex items-center justify-center transition-colors group-hover:bg-stone-900/40">
+                      <div className="w-16 h-16 rounded-full bg-white/90 text-rose-500 flex items-center justify-center shadow-xl transform transition-transform group-hover:scale-110">
+                        <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4 text-center">
+                      <div className="inline-block bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                        Смотреть инструкцию
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-medium text-stone-900 mb-3">Дневник прогресса</h3>
-                <p className="text-stone-500 font-light leading-relaxed">Визуализируйте свои достижения с помощью встроенного умного трекера.</p>
+
+                {/* Decorative glows */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-rose-500/20 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-stone-500/20 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
               </div>
 
-              <div className="rounded-3xl bg-[#FDFBF7] p-8 border border-stone-100 transition-all hover:shadow-xl hover:shadow-rose-900/5 group">
-                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 group-hover:scale-110 transition-transform">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                </div>
-                <h3 className="text-xl font-medium text-stone-900 mb-3">Прямо в Telegram</h3>
-                <p className="text-stone-500 font-light leading-relaxed">Удобный доступ к курсу без лишних приложений. Тренируйтесь там, где вам комфортно.</p>
-              </div>
             </div>
           </div>
         </section>

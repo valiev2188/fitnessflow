@@ -20,15 +20,23 @@ const LEVELS = [
 
 export default function OnboardingPage() {
     const router = useRouter();
-    const { token, loading: authLoading } = useTelegramAuth();
+    const { user, token, loading: authLoading } = useTelegramAuth();
     const [step, setStep] = useState(1);
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState({
+        name: '',
+        phone: '',
         goal: '',
         level: '',
         age: '',
         notifications: true,
     });
+
+    useEffect(() => {
+        if (user && !form.name) {
+            setForm(f => ({ ...f, name: user.name || '' }));
+        }
+    }, [user]);
 
     // Check if already onboarded
     useEffect(() => {
@@ -67,16 +75,59 @@ export default function OnboardingPage() {
             <div className="w-full max-w-md">
                 {/* Progress bar */}
                 <div className="flex gap-2 mb-8">
-                    {[1, 2, 3].map(i => (
+                    {[1, 2, 3, 4].map(i => (
                         <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-rose-400' : 'bg-stone-200'}`} />
                     ))}
                 </div>
 
-                {/* Step 1: Goal */}
+                {/* Step 1: Name and Phone */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <div className="mb-8">
-                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 1 из 3</p>
+                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 1 из 4</p>
+                            <h1 className="text-3xl font-serif text-stone-900 tracking-tight">Давайте познакомимся ✨</h1>
+                            <p className="text-stone-500 font-light mt-2">Как к вам обращаться и куда присылать доступы?</p>
+                        </div>
+
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-stone-700 mb-2">Ваше имя</label>
+                                <input
+                                    type="text"
+                                    placeholder="Имя"
+                                    value={form.name}
+                                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                                    className="w-full rounded-2xl border-2 border-stone-200 bg-white px-5 py-4 text-stone-900 placeholder-stone-400 focus:border-rose-400 focus:outline-none transition-all"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-stone-700 mb-2">Номер телефона</label>
+                                <input
+                                    type="tel"
+                                    placeholder="+998 90 123 45 67"
+                                    value={form.phone}
+                                    onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                                    className="w-full rounded-2xl border-2 border-stone-200 bg-white px-5 py-4 text-stone-900 placeholder-stone-400 focus:border-rose-400 focus:outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setStep(2)}
+                            disabled={!form.name || !form.phone}
+                            className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-4 text-base font-semibold text-white shadow-md shadow-rose-500/30 transition-all hover:bg-rose-600 active:scale-95 disabled:opacity-40"
+                        >
+                            Далее <ChevronRight className="h-5 w-5" />
+                        </button>
+                    </div>
+                )}
+
+                {/* Step 2: Goal */}
+                {step === 2 && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <div className="mb-8">
+                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 2 из 4</p>
                             <h1 className="text-3xl font-serif text-stone-900 tracking-tight">Какова ваша цель? 🎯</h1>
                             <p className="text-stone-500 font-light mt-2">Это поможет составить идеальную программу</p>
                         </div>
@@ -99,21 +150,26 @@ export default function OnboardingPage() {
                                 </button>
                             ))}
                         </div>
-                        <button
-                            onClick={() => setStep(2)}
-                            disabled={!form.goal}
-                            className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-4 text-base font-semibold text-white shadow-md shadow-rose-500/30 transition-all hover:bg-rose-600 active:scale-95 disabled:opacity-40"
-                        >
-                            Далее <ChevronRight className="h-5 w-5" />
-                        </button>
+                        <div className="flex gap-3 mt-6">
+                            <button onClick={() => setStep(1)} className="flex-1 rounded-2xl border-2 border-stone-200 px-6 py-4 font-semibold text-stone-700 hover:border-stone-300 transition-all">
+                                Назад
+                            </button>
+                            <button
+                                onClick={() => setStep(3)}
+                                disabled={!form.goal}
+                                className="flex-[2] flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-4 text-base font-semibold text-white shadow-md shadow-rose-500/30 transition-all hover:bg-rose-600 active:scale-95 disabled:opacity-40"
+                            >
+                                Далее <ChevronRight className="h-5 w-5" />
+                            </button>
+                        </div>
                     </div>
                 )}
 
-                {/* Step 2: Level */}
-                {step === 2 && (
+                {/* Step 3: Level */}
+                {step === 3 && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <div className="mb-8">
-                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 2 из 3</p>
+                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 3 из 4</p>
                             <h1 className="text-3xl font-serif text-stone-900 tracking-tight">Ваш уровень 💪</h1>
                             <p className="text-stone-500 font-light mt-2">Честно — это поможет подобрать нагрузку</p>
                         </div>
@@ -137,11 +193,11 @@ export default function OnboardingPage() {
                             ))}
                         </div>
                         <div className="flex gap-3 mt-6">
-                            <button onClick={() => setStep(1)} className="flex-1 rounded-2xl border-2 border-stone-200 px-6 py-4 font-semibold text-stone-700 hover:border-stone-300 transition-all">
+                            <button onClick={() => setStep(2)} className="flex-1 rounded-2xl border-2 border-stone-200 px-6 py-4 font-semibold text-stone-700 hover:border-stone-300 transition-all">
                                 Назад
                             </button>
                             <button
-                                onClick={() => setStep(3)}
+                                onClick={() => setStep(4)}
                                 disabled={!form.level}
                                 className="flex-[2] flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-4 text-base font-semibold text-white shadow-md shadow-rose-500/30 transition-all hover:bg-rose-600 active:scale-95 disabled:opacity-40"
                             >
@@ -151,11 +207,11 @@ export default function OnboardingPage() {
                     </div>
                 )}
 
-                {/* Step 3: Age + Notifications */}
-                {step === 3 && (
+                {/* Step 4: Age + Notifications */}
+                {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <div className="mb-8">
-                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 3 из 3</p>
+                            <p className="text-sm font-medium text-rose-500 uppercase tracking-widest mb-2">Шаг 4 из 4</p>
                             <h1 className="text-3xl font-serif text-stone-900 tracking-tight">Почти готово! 🌟</h1>
                             <p className="text-stone-500 font-light mt-2">Последние детали</p>
                         </div>
@@ -189,7 +245,7 @@ export default function OnboardingPage() {
                         </div>
 
                         <div className="flex gap-3 mt-6">
-                            <button onClick={() => setStep(2)} className="flex-1 rounded-2xl border-2 border-stone-200 px-6 py-4 font-semibold text-stone-700 hover:border-stone-300 transition-all">
+                            <button onClick={() => setStep(3)} className="flex-1 rounded-2xl border-2 border-stone-200 px-6 py-4 font-semibold text-stone-700 hover:border-stone-300 transition-all">
                                 Назад
                             </button>
                             <button
