@@ -61,7 +61,8 @@ export default function ProgramPage() {
     }
 
     const completedWorkoutIds = new Set(progress.filter(p => p.completed).map(p => p.workoutId));
-    const completionPercentage = workouts.length > 0 ? Math.round((completedWorkoutIds.size / workouts.length) * 100) : 0;
+    const programCompletedCount = workouts.filter(w => completedWorkoutIds.has(w.id)).length;
+    const completionPercentage = workouts.length > 0 ? Math.round((programCompletedCount / workouts.length) * 100) : 0;
     const sortedWorkouts = workouts.sort((a, b) => a.dayNumber - b.dayNumber);
 
     return (
@@ -116,7 +117,7 @@ export default function ProgramPage() {
                                 />
                             </div>
                             <div className="text-right mt-1">
-                                <span className="text-[10px] text-white/40">{completedWorkoutIds.size} из {workouts.length}</span>
+                                <span className="text-[10px] text-white/40">{programCompletedCount} из {workouts.length}</span>
                             </div>
                         </div>
                     </div>

@@ -34,16 +34,17 @@ async function handleStart(chatId: number, firstName: string, telegramId: string
         `👋 Привет, <b>${firstName}</b>! Я бот Лолы — дипломированного тренера с опытом ` +
         `работы в лучших студиях.\n\n` +
         `✨ <b>Что я умею:</b>\n` +
-        `🎁 Дать доступ к <b>бесплатному</b> 3-дневному курсу\n` +
-        `🌟 Помочь купить <b>21-дневный курс Трансформации</b>\n` +
+        `🌱 Дать доступ к бережному курсу <b>«Старт»</b>\n` +
+        `🔥 Помочь начать интенсив <b>«Продвинутый»</b>\n` +
         `📊 Показать ваш статус подписки\n\n` +
         `Открой мини-приложение ниже чтобы начать тренировки! 💪`;
 
     await sendMessage(chatId, text, {
         reply_markup: {
             inline_keyboard: [
-                [{ text: '🏋️ Открыть курсы', web_app: { url: `${WEBAPP_URL}/dashboard/programs` } }],
-                [{ text: '🌟 Купить 21 день ($40)', callback_data: 'buy_course' }],
+                [{ text: '🏋️ Открыть курс', web_app: { url: `${WEBAPP_URL}/dashboard` } }],
+                [{ text: '👀 Смотреть программы', web_app: { url: `${WEBAPP_URL}/dashboard/programs` } }],
+                [{ text: '💳 Как оплатить?', callback_data: 'buy_course' }],
                 [{ text: '💬 Написать тренеру', url: 'https://t.me/vvveins' }],
             ],
         },
@@ -60,9 +61,8 @@ async function handlePay(chatId: number) {
     const text =
         `💳 <b>Оплата курса</b>\n\n` +
         `<b>Выберите тариф:</b>\n` +
-        `├ 🌱 <b>Лёгкий старт</b> (21 день) — <b>$40</b>\n` +
-        `├ 🔥 <b>Продвинутый</b> (групповой чат) — <b>$80</b>\n` +
-        `└ 👑 <b>Индивидуальный</b> (2 офлайн встречи) — <b>$200</b>\n\n` +
+        `├ 🌱 <b>Старт</b> (12 занятий) — <b>150 000 сум</b>\n` +
+        `└ 🔥 <b>Продвинутый</b> (21 тренировка) — <b>450 000 сум</b>\n\n` +
         `<b>Реквизиты Humo:</b>\n` +
         `<code>${HUMO_CARD}</code>\n` +
         `Получатель: ${RECEIVER_NAME}\n\n` +
@@ -99,7 +99,7 @@ async function handleStatus(chatId: number, telegramId: string) {
         const expiry = new Date(sub.expiresAt!).toLocaleDateString('ru-RU');
         statusText = `✅ <b>Подписка активна</b>\nТариф: ${sub.plan || 'Стандарт'}\nДо: ${expiry}`;
     } else {
-        statusText = `⏳ <b>Нет активной подписки</b>\n\nБесплатный демо-курс (3 дня) доступен всем!`;
+        statusText = `⏳ <b>Нет активной подписки</b>\n\nОткройте мини-приложение для выбора курса!`;
     }
 
     await sendMessage(chatId,
@@ -107,8 +107,8 @@ async function handleStatus(chatId: number, telegramId: string) {
         {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '🏋️ Открыть тренировки', web_app: { url: `${WEBAPP_URL}/dashboard/programs` } }],
-                    sub ? [] : [{ text: '💳 Купить курс', callback_data: 'buy_course' }],
+                    [{ text: '🏋️ Открыть курс', web_app: { url: `${WEBAPP_URL}/dashboard` } }],
+                    sub ? [] : [{ text: '💳 Как оплатить?', callback_data: 'buy_course' }],
                 ].filter(row => row.length > 0),
             },
         }

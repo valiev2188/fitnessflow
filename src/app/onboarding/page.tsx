@@ -202,7 +202,7 @@ export default function OnboardingPage() {
 
                         <button
                             onClick={() => setStep(2)}
-                            disabled={!form.firstName || !form.phone}
+                            disabled={!form.firstName?.trim() || !form.phone?.replace(/[^0-9]/g, '') || form.phone.replace(/[^0-9]/g, '').length < 9}
                             className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-4 text-base font-semibold text-white shadow-md shadow-rose-500/30 transition-all hover:bg-rose-600 active:scale-95 disabled:opacity-40"
                         >
                             Далее <ChevronRight className="h-5 w-5" />
