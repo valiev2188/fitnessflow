@@ -34,11 +34,15 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { userId, plan, status } = body;
+        const { userId, plan, status, days = 30 } = body;
 
         if (!userId || !plan || !status) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
+
+        // Calculate expiration date
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + parseInt(days));
 
         // Check if subscription exists
         const existingSub = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1).then(res => res[0]);
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
         if (existingSub) {
             // Update
             await db.update(subscriptions)
-                .set({ plan, status, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }) // 30 days logic placeholder
+                .set({ plan, status, expiresAt })
                 .where(eq(subscriptions.id, existingSub.id));
         } else {
             // Create
@@ -54,7 +58,7 @@ export async function POST(req: Request) {
                 userId,
                 plan,
                 status,
-                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                expiresAt
             });
         }
 

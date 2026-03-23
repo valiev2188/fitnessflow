@@ -64,22 +64,19 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 relative w-full max-w-md lg:max-w-none">
-                <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-stone-200 shadow-2xl shadow-rose-900/10 relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1000&auto=format&fit=crop"
-                    alt="Тренер Лола"
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 to-transparent" />
-                  <div className="absolute bottom-8 left-8 text-white">
-                    <p className="font-serif text-2xl font-medium">Лола</p>
-                    <p className="text-sm opacity-80 font-light tracking-wide">Дипломированный тренер</p>
-                  </div>
-                </div>
-                <div className="absolute -bottom-6 -right-6 h-32 w-32 rounded-full border border-rose-300 opacity-50" />
-                <div className="absolute -top-6 -left-6 h-24 w-24 rounded-full border border-stone-300 opacity-50" />
+              <div className="flex-1 relative w-full max-w-md mx-auto lg:max-w-lg mt-12 lg:mt-0 flex justify-center items-center">
+                {/* Concentric Circles Background */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] sm:w-[120%] aspect-square rounded-full bg-rose-50/60 -z-30 transition-transform duration-1000"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] sm:w-[90%] aspect-square rounded-full bg-rose-100/60 -z-20 transition-transform duration-1000"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] sm:w-[60%] aspect-square rounded-full bg-rose-200/70 -z-10 transition-transform duration-1000"></div>
+
+                {/* Hero Image */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/hero-portrait.webp"
+                  alt="Тренер Лола"
+                  className="relative z-10 object-contain w-full h-auto drop-shadow-2xl max-h-[600px] lg:max-h-[700px]"
+                />
               </div>
 
             </div>
