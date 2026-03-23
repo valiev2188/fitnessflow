@@ -1,382 +1,596 @@
-import Image from "next/image";
-import Link from 'next/link';
-import { ProgramsSection } from '@/components/ProgramsSection';
-import LaunchTimer from '@/components/LaunchTimer';
+"use client";
+
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    // ─── EXACT SCRIPT COPY ───
+
+    // Navbar scroll
+    const navbar = document.getElementById("navbar");
+    const handleScroll = () => {
+      if (navbar) {
+        navbar.classList.toggle("scrolled", window.scrollY > 20);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    // IntersectionObserver for fade-up and pain items
+    let io: IntersectionObserver | null = null;
+    if (typeof window !== "undefined" && "IntersectionObserver" in window) {
+      io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+
+      document.querySelectorAll(".fade-up, .pain-item").forEach((el) => {
+        io?.observe(el);
+      });
+    }
+
+    // FAQ
+    const faqBtns = document.querySelectorAll(".faq-q");
+    const handleFaqClick = function (this: HTMLElement) {
+      const item = this.parentElement;
+      if (!item) return;
+      const isOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
+      if (!isOpen) item.classList.add("open");
+    };
+    faqBtns.forEach((btn) => {
+      btn.addEventListener("click", handleFaqClick as EventListener);
+    });
+
+    // Spots countdown (cosmetic)
+    let spots = 12;
+    let timeoutId: NodeJS.Timeout;
+    function decreaseSpots() {
+      if (spots > 7 && Math.random() > 0.7) {
+        spots--;
+        const numEl = document.getElementById("spots-num");
+        const inlineEl = document.getElementById("spots-inline");
+        if (numEl) numEl.textContent = spots.toString();
+        if (inlineEl) inlineEl.textContent = spots.toString();
+      }
+      timeoutId = setTimeout(decreaseSpots, 30000 + Math.random() * 60000);
+    }
+    timeoutId = setTimeout(decreaseSpots, 15000);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (io) io.disconnect();
+      faqBtns.forEach((btn) => {
+        btn.removeEventListener("click", handleFaqClick as EventListener);
+      });
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 selection:bg-rose-200">
-      <header className="fixed top-0 z-50 w-full border-b border-stone-200/50 bg-[#FDFBF7]/80 backdrop-blur-md">
-        <div className="container mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-          <div className="text-2xl font-serif tracking-tight font-medium">
-            <span className="text-stone-900">Lola</span>
-            <span className="text-rose-400 italic">Fitness</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <Link href="#about" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Об Авторе</Link>
-            <Link href="#features" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Подход</Link>
-            <Link href="#courses" className="text-stone-500 transition-colors hover:text-rose-500 uppercase tracking-widest text-xs">Курсы</Link>
-          </nav>
-        </div>
-      </header>
+    <>
+      {/* NAV */}
+      <nav id="navbar">
+        <a href="#" className="nav-logo">
+          Lola<span>Fitness</span>
+        </a>
+        <a href="#pricing" className="nav-cta">
+          Записаться →
+        </a>
+      </nav>
 
-      <main>
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32">
-          <div className="absolute top-0 right-0 -mr-48 -mt-48 h-[600px] w-[600px] rounded-full bg-rose-200/40 blur-3xl opacity-50 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -ml-48 -mb-48 h-[600px] w-[600px] rounded-full bg-stone-200/50 blur-3xl opacity-50 pointer-events-none" />
+      {/* SCARCITY BANNER */}
+      <div className="scarcity-banner">
+        <span>
+          ⚡ Предзапуск — <strong>осталось мест:</strong>
+        </span>
+        <span className="spots-count">
+          <span id="spots-num">12</span> из 30
+        </span>
+        <span style={{ opacity: 0.6 }}>· Старт потока 1 апреля</span>
+      </div>
 
-          <div className="container relative mx-auto max-w-6xl px-6">
-            <div className="flex flex-col lg:flex-row items-center gap-16">
-
-              <div className="flex-1 text-left">
-                <div className="mb-6 inline-flex rounded-full border border-rose-200 bg-rose-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-rose-500">
-                  ✨ Здоровое и красивое тело
-                </div>
-
-                <h1 className="text-5xl font-serif tracking-tight sm:text-6xl lg:text-7xl text-stone-900 leading-[1.1]">
-                  Эстетика и <br />
-                  <span className="text-rose-400 italic">женственность</span> <br />
-                  в каждом движении
-                </h1>
-
-                <p className="mt-8 max-w-xl text-lg text-stone-600 leading-relaxed font-light">
-                  Персональная фитнес-платформа, которая делает красивое тело реальностью — прямо в Telegram, без лишних приложений.
-                </p>
-
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row items-center">
-                  <a
-                    href="https://t.me/testfref_bot"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto text-center rounded-full bg-stone-900 px-8 py-4 text-sm font-medium text-white transition-all hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5"
-                  >
-                    Получить приложение
-                  </a>
-                  <a
-                    href="https://t.me/vvveins?text=Хочу%20получить%20инструкцию"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto text-center rounded-full border border-stone-300 bg-transparent px-8 py-4 text-sm font-medium text-stone-700 transition-all hover:border-rose-400 hover:text-rose-500"
-                  >
-                    Связаться с Лолой
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex-1 relative w-full max-w-md mx-auto lg:max-w-lg mt-12 lg:mt-0 flex justify-center items-center">
-                {/* Concentric Circles Background */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] sm:w-[120%] aspect-square rounded-full bg-rose-50/60 -z-30 transition-transform duration-1000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] sm:w-[90%] aspect-square rounded-full bg-rose-100/60 -z-20 transition-transform duration-1000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] sm:w-[60%] aspect-square rounded-full bg-rose-200/70 -z-10 transition-transform duration-1000"></div>
-
-                {/* Hero Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/hero-portrait.webp"
-                  alt="Тренер Лола"
-                  className="relative z-10 object-contain w-full h-auto drop-shadow-2xl max-h-[600px] lg:max-h-[700px]"
-                />
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* Launch Countdown Timer Section */}
-        <LaunchTimer />
-
-        {/* Features / Наше решение — moved right after Hero */}
-        <section id="features" className="py-24 bg-[#1C1C1A] text-white border-t border-stone-800">
-          <div className="container mx-auto max-w-6xl px-6">
-            <div className="flex flex-col lg:flex-row gap-16 items-center">
-              
-              <div className="flex-1">
-                <p className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-4">Наше решение</p>
-                <h2 className="text-4xl font-serif sm:text-5xl mb-6">
-                  Персональный тренер<br />
-                  <span className="text-rose-400 italic">в кармане</span>
-                </h2>
-                <p className="text-stone-300 font-light mb-12 max-w-lg leading-relaxed">
-                  LolaFitness — это Telegram WebApp с авторской программой от сертифицированного тренера. Никаких скачиваний, никаких барьеров. Открыл — тренируйся.
-                </p>
-
-                <div className="space-y-8">
-                  {[
-                    { title: 'Telegram WebApp — нулевая фрикция', desc: 'Авторизация через Telegram. Никаких дополнительных аккаунтов и приложений.' },
-                    { title: 'Умный онбординг', desc: 'Цель, уровень, возраст — система адаптирует программу под конкретного пользователя.' },
-                    { title: 'Дневник прогресса', desc: 'Визуализация достижений, трекер тренировок и напоминания от бота каждый день.' },
-                    { title: 'Личная связь с Лолой', desc: 'Прямой чат и поддержка тренера на каждом этапе вашего пути.' },
-                  ].map((item, i) => (
-                    <div key={i} className="flex gap-4">
-                      <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-sm font-bold border border-rose-500/30">✦</div>
-                      <div>
-                        <h4 className="font-medium text-white mb-1">{item.title}</h4>
-                        <p className="text-sm text-stone-400 font-light">{item.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex-1 w-full max-w-sm lg:max-w-md relative flex justify-center">
-                <div className="relative rounded-[3rem] border-[8px] border-stone-800 bg-[#FDFBF7] shadow-2xl p-4 w-full aspect-[1/2] overflow-hidden flex flex-col">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-stone-800 rounded-b-xl z-20"></div>
-                  <div className="flex-1 mt-6 rounded-2xl overflow-hidden bg-stone-100 relative group cursor-pointer border border-stone-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=600&auto=format&fit=crop" className="object-cover w-full h-full opacity-80 group-hover:scale-105 transition-transform duration-700" alt="Инструкция" />
-                    <div className="absolute inset-0 bg-stone-900/30 flex items-center justify-center transition-colors group-hover:bg-stone-900/40">
-                      <div className="w-16 h-16 rounded-full bg-white/90 text-rose-500 flex items-center justify-center shadow-xl transform transition-transform group-hover:scale-110">
-                        <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                      </div>
-                    </div>
-                    <div className="absolute bottom-4 left-4 right-4 text-center">
-                      <div className="inline-block bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                        Смотреть инструкцию
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-rose-500/20 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-stone-500/20 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* About Me Section */}
-        <section id="about" className="py-24 bg-white border-t border-stone-100">
-          <div className="container mx-auto max-w-6xl px-6">
-            <div className="flex flex-col lg:flex-row gap-16 items-center">
-              <div className="flex-1 relative w-full h-[600px] overflow-hidden rounded-[2rem] bg-stone-200 shadow-2xl shadow-rose-900/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=1000&auto=format&fit=crop"
-                  alt="Тренер Лола на тренировке"
-                  className="object-cover w-full h-full"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-stone-900/60 to-transparent p-8">
-                  <p className="font-serif text-3xl text-white font-medium mb-1">Лола</p>
-                  <p className="text-white/80 font-light text-sm tracking-widest uppercase">22 года • Тренер-универсал</p>
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <h2 className="text-3xl font-serif text-stone-900 sm:text-4xl mb-6">
-                  Мой путь: фитнес как <br /><span className="text-rose-400 italic">любовь к себе</span> ❤️
-                </h2>
-                <div className="space-y-4 text-stone-600 font-light leading-relaxed">
-                  <p>
-                    Моя история началась не с поддержки, а с мечты, которую пришлось защищать. В детстве спорт был под запретом. Пока я шла по «правильному» пути к IT-диплому, я втайне сбегала в зал, оплачивая тренировки деньгами с обедов.
-                  </p>
-                  <p>
-                    Система готовила меня стать программистом. Но внутреннее стремление быть в движении оказалось сильнее. Я инвестировала всё в знания: конвенции, мастер-классы, новые методики.
-                  </p>
-                  <p className="font-medium text-stone-800">
-                    Для меня фитнес — это новое качество жизни, внутренняя опора и раскрытие вашей безупречной женственности.
-                  </p>
-                </div>
-
-                <div className="mt-8">
-                  <div className="bg-[#FDFBF7] p-6 rounded-3xl border border-stone-100">
-                    <h4 className="font-medium text-stone-900 mb-4 uppercase tracking-widest text-xs">Моя Экспертиза</h4>
-                    <ul className="space-y-3 text-sm text-stone-600 font-light">
-                      <li className="flex items-start gap-3">
-                        <span className="text-rose-400 mt-0.5">•</span>
-                        <span><b className="font-medium text-stone-800">Силовой и функциональный тренинг:</b> Lab, Make Body, Functional, Pump, HIIT, Bootcamp, Step.</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="text-rose-400 mt-0.5">•</span>
-                        <span><b className="font-medium text-stone-800">Mind &amp; Body:</b> Пилатес (Mat, Reformer, Cadillac, Chair, Ladder Barrel, Spine Corrector), Core и стретчинг.</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="text-rose-400 mt-0.5">•</span>
-                        <span><b className="font-medium text-stone-800">Нутрициология:</b> Консультирую по питанию, помогая достигать целей комплексно и без голодовок.</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Experience / Logos Section */}
-        <section className="py-20 bg-[#FDFBF7] border-t border-stone-100">
-          <div className="container mx-auto max-w-6xl px-6 text-center">
-            <h2 className="text-2xl font-serif text-stone-900 mb-3">
-              Опыт в лучших <span className="text-rose-400 italic">студиях</span>
-            </h2>
-            <p className="text-stone-500 font-light max-w-2xl mx-auto mb-12 text-sm">
-              За последние 3 года я прошла путь через ведущие фитнес-клубы, чтобы дать вам сервис высшего уровня.
+      {/* HERO */}
+      <section style={{ padding: 0 }}>
+        <div className="hero container">
+          <div className="hero-left">
+            <div className="hero-badge">✦ 21 день · Дома · Без инвентаря</div>
+            <h1 className="hero-title">
+              Твоё тело,<br />
+              <em>твои правила</em>,<br />
+              21 день
+            </h1>
+            <p className="hero-subtitle">
+              Авторская программа домашних тренировок от Лолы — без зала, без
+              оборудования, <strong>прямо в Telegram</strong>. Результат без
+              откатов, болей и срывов.
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-              <div className="text-2xl font-serif font-bold text-stone-800 tracking-wider">Savage</div>
-              <div className="text-2xl font-sans font-medium text-stone-800 tracking-widest">Befit <span className="text-emerald-600 font-light">Eco</span></div>
-              <div className="text-2xl font-serif font-bold text-stone-800 tracking-wider">WORLD CLASS</div>
-              <div className="text-xl font-sans font-light text-stone-800 tracking-widest">X-FIT <span className="text-rose-500 font-medium tracking-normal text-sm">PREMIUM</span></div>
+            <div className="hero-cta-group">
+              <a href="https://t.me/testfref_bot" className="btn-primary">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.44.7-.9.44l-2.48-1.83-1.2 1.15c-.13.13-.24.24-.5.24l.18-2.5 4.56-4.12c.2-.18-.04-.28-.3-.1L8.9 14.3l-2.42-.76c-.53-.16-.54-.53.11-.78l9.46-3.65c.44-.16.82.1.59.69z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Открыть в Telegram
+              </a>
+              <a href="#pricing" className="btn-outline">
+                Оставить заявку →
+              </a>
+            </div>
+            <div className="hero-stats">
+              <div className="stat-item">
+                <span className="stat-num">21</span>
+                <span className="stat-label">День программы</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-num">30–40</span>
+                <span className="stat-label">Минут в день</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-num">0</span>
+                <span className="stat-label">Инвентаря</span>
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Courses Section — card format like screenshot */}
-        <section id="courses" className="py-24 bg-white border-t border-stone-100">
-          <div className="container mx-auto max-w-6xl px-6">
-            <div className="mb-12">
-              <h2 className="text-4xl font-serif text-stone-900 font-bold">Выбери свой курс</h2>
-              <p className="text-stone-500 font-light mt-3 max-w-xl">
-                Два авторских модуля на любой уровень. Доступ открывается сразу после оплаты — прямо в Telegram.
-              </p>
-            </div>
-
-            {/* Filter pills (decorative) */}
-            <div className="flex flex-wrap gap-3 mb-10">
-              {['Все', 'Дома', 'В зале'].map((f, i) => (
-                <div key={f} className={`px-5 py-2 rounded-full border text-sm font-medium cursor-pointer transition-all ${i === 0 ? 'border-rose-400 text-rose-500 bg-rose-50' : 'border-stone-200 text-stone-500 hover:border-rose-300 hover:text-rose-400'}`}>
-                  {f}
+          <div className="hero-right">
+            <div className="hero-card">
+              <img
+                className="hero-card-img"
+                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=800&auto=format&fit=crop"
+                alt="Лола — тренер LolaFitness"
+              />
+              <div className="hero-card-overlay"></div>
+              <div className="hero-card-info">
+                <div className="hero-card-name">Лола</div>
+                <div className="hero-card-desc">
+                  Сертифицированный тренер · Пилатес · Функциональный тренинг
                 </div>
-              ))}
+              </div>
             </div>
+            <div className="float-badge">📱 Всё в Telegram</div>
+            <div className="float-badge-2">🔥 -43% при предзаписи</div>
+          </div>
+        </div>
+      </section>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 max-w-3xl">
-
-              {/* Module 1: Старт */}
-              <div className="rounded-3xl bg-[#FAF8F5] border border-stone-100 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-rose-900/5 transition-all group">
-                {/* Course thumbnail */}
-                <div className="relative h-56 overflow-hidden bg-gradient-to-br from-rose-100 to-pink-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=600&auto=format&fit=crop"
-                    alt="Старт курс"
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/30 to-transparent" />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">Новинка</span>
-                  </div>
-                  <div className="absolute top-4 right-4 flex gap-1">
-                    {[1,2].map(s => <span key={s} className="text-yellow-400 text-base">★</span>)}
-                    <span className="text-stone-300 text-base">★</span>
-                    <span className="ml-1 text-white text-xs font-medium">Уровень 1</span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <p className="font-serif text-xl font-semibold leading-tight drop-shadow">Старт —<br/>для новичков</p>
+      {/* PAIN */}
+      <section className="pain-section">
+        <div className="container">
+          <div className="pain-grid">
+            <div>
+              <span className="section-label">Узнаёшь себя?</span>
+              <h2 className="section-title">
+                Это мешает<br />
+                <em>тебе начать</em>
+              </h2>
+              <div className="pain-list">
+                <div className="pain-item">
+                  <div className="pain-icon">😩</div>
+                  <div className="pain-text">
+                    <strong>Нет времени на зал</strong>
+                    Работа, дом, дела — когда ещё бежать куда-то тренироваться?
                   </div>
                 </div>
-
-                <div className="p-6">
-                  <p className="text-stone-500 text-sm font-light mb-4 leading-relaxed">
-                    12 занятий для тех, кто только начинает. Освой азы, правильную технику и полюби движение без стресса.
-                  </p>
-                  <ul className="space-y-2 text-sm text-stone-600 mb-6">
-                    {['12 видео-тренировок', 'Без инвентаря', 'Дома или в зале', 'Поддержка тренера'].map(f => (
-                      <li key={f} className="flex items-center gap-2">
-                        <svg className="h-4 w-4 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex items-center justify-between mb-5">
-                    <div>
-                      <span className="text-3xl font-bold text-rose-500">150 000</span>
-                      <span className="text-stone-500 font-light ml-1">сум</span>
-                    </div>
-                    <span className="text-xs text-stone-400 bg-stone-100 px-3 py-1 rounded-full">Rahmat · Payme · Click</span>
+                <div className="pain-item">
+                  <div className="pain-icon">😨</div>
+                  <div className="pain-text">
+                    <strong>Страшно начинать</strong>
+                    Непонятно с чего начать, боишься навредить или выглядеть глупо.
                   </div>
-                  <div className="flex gap-3">
-                    <a
-                      href="https://t.me/vvveins?text=Хочу%20купить%20курс%20Старт"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center rounded-2xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-rose-600 shadow-md shadow-rose-500/25 active:scale-95"
-                    >
-                      Купить
-                    </a>
-                    <Link
-                      href="/courses/start"
-                      className="flex-1 text-center rounded-2xl border-2 border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700 transition-all hover:border-rose-300 hover:text-rose-500"
-                    >
-                      Подробнее
-                    </Link>
+                </div>
+                <div className="pain-item">
+                  <div className="pain-icon">💸</div>
+                  <div className="pain-text">
+                    <strong>Пробовала марафоны — не зашло</strong>
+                    Срывы, боли, откаты. Деньги потрачены, результата нет.
+                  </div>
+                </div>
+                <div className="pain-item">
+                  <div className="pain-icon">📱</div>
+                  <div className="pain-text">
+                    <strong>Хочется красивый результат, но без страданий</strong>
+                    Видишь эстетичные тела в сторис и думаешь: «мне такое не светит».
                   </div>
                 </div>
               </div>
-
-              {/* Module 2: Продвинутый */}
-              <div className="rounded-3xl bg-[#FAF8F5] border border-stone-100 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-rose-900/5 transition-all group">
-                <div className="relative h-56 overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=600&auto=format&fit=crop"
-                    alt="Продвинутый курс"
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/30 to-transparent" />
-                  <div className="absolute top-4 right-4 flex gap-1">
-                    {[1,2,3].map(s => <span key={s} className="text-yellow-400 text-base">★</span>)}
-                    <span className="ml-1 text-white text-xs font-medium">Уровень 2</span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <p className="font-serif text-xl font-semibold leading-tight drop-shadow">Продвинутый —<br/>дома и в зале</p>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-stone-500 text-sm font-light mb-4 leading-relaxed">
-                    21 домашняя тренировка + 12 тренировок для зала. Выбери свой формат и иди к результату на полной мощности.
-                  </p>
-                  <ul className="space-y-2 text-sm text-stone-600 mb-6">
-                    {['21 дом. тренировка', '12 зал. тренировок', 'Разделение дом/зал', 'VIP чат + поддержка'].map(f => (
-                      <li key={f} className="flex items-center gap-2">
-                        <svg className="h-4 w-4 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex items-center justify-between mb-5">
-                    <div>
-                      <span className="text-3xl font-bold text-rose-500">450 000</span>
-                      <span className="text-stone-500 font-light ml-1">сум</span>
-                    </div>
-                    <span className="text-xs text-stone-400 bg-stone-100 px-3 py-1 rounded-full">Rahmat · Payme · Click</span>
-                  </div>
-                  <div className="flex gap-3">
-                    <a
-                      href="https://t.me/vvveins?text=Хочу%20купить%20Продвинутый%20курс"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center rounded-2xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-rose-600 shadow-md shadow-rose-500/25 active:scale-95"
-                    >
-                      Купить
-                    </a>
-                    <Link
-                      href="/courses/advanced"
-                      className="flex-1 text-center rounded-2xl border-2 border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700 transition-all hover:border-rose-300 hover:text-rose-500"
-                    >
-                      Подробнее
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
             </div>
-
-            {/* Payment note */}
-            <div className="mt-10 p-5 rounded-2xl bg-stone-50 border border-stone-100 max-w-3xl">
-              <p className="text-sm text-stone-600 font-light leading-relaxed">
-                💳 <b className="font-medium text-stone-800">Оплата:</b> Принимаем через <span className="font-medium">Rahmat</span>, <span className="font-medium">Payme</span> и <span className="font-medium">Click</span>. После оплаты вы получаете доступ в Telegram-бот мгновенно. По вопросам оплаты — напишите{' '}
-                <a href="https://t.me/vvveins" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline font-medium">@vvveins</a>.
+            <div className="pain-right">
+              <div className="solution-title">Я сделала программу специально для тебя</div>
+              <p className="solution-text">
+                21 день — это не марафон на выживание. Это осознанный путь к телу, которое
+                тебе нравится. Каждая тренировка — как разговор со мной лично.
               </p>
+              <div className="solution-features">
+                <div className="solution-feature">Дома, без оборудования — только коврик</div>
+                <div className="solution-feature">30–40 минут в удобное время</div>
+                <div className="solution-feature">Авторизация в один клик через Telegram</div>
+                <div className="solution-feature">Трекер прогресса каждый день</div>
+                <div className="solution-feature">Поддержка Лолы на каждом этапе</div>
+                <div className="solution-feature">Без голодовок, без боли, без срывов</div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-      </main>
+      {/* ABOUT */}
+      <section>
+        <div className="container">
+          <div className="about-grid">
+            <div className="about-img-wrap fade-up">
+              <img
+                className="about-img"
+                src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=600&auto=format&fit=crop"
+                alt="Лола — тренер"
+              />
+              <div className="about-exp-badge">
+                <span className="exp-num">3+</span>
+                <span className="exp-label">Года опыта</span>
+              </div>
+            </div>
+            <div className="fade-up" style={{ transitionDelay: "0.15s" }}>
+              <span className="section-label">О тренере</span>
+              <h2 className="section-title">
+                Привет, я <em>Лола</em>
+              </h2>
+              <p className="about-text">
+                Моя история началась с мечты, которую пришлось защищать. В детстве спорт был под
+                запретом — пока все ждали от меня IT-диплома, я втайне сбегала в зал.
+              </p>
+              <p className="about-text">
+                Сегодня я сертифицированный тренер с опытом работы в ведущих студиях Ташкента.
+                Для меня фитнес — это не наказание, а <strong>любовь к себе</strong> и инструмент
+                раскрытия твоей женственности.
+              </p>
+              <div className="certs">
+                <div className="cert-item">
+                  <span className="cert-dot"></span>Пилатес: Mat, Reformer, Cadillac
+                </div>
+                <div className="cert-item">
+                  <span className="cert-dot"></span>Силовой и функциональный тренинг, HIIT, Pump
+                </div>
+                <div className="cert-item">
+                  <span className="cert-dot"></span>Нутрициология — результат комплексно
+                </div>
+                <div className="cert-item">
+                  <span className="cert-dot"></span>Сertified trainer, 22 года
+                </div>
+              </div>
+              <div className="about-studios">
+                <span className="studio-tag">Savage</span>
+                <span className="studio-tag">Befit Eco</span>
+                <span className="studio-tag">World Class</span>
+                <span className="studio-tag">X-FIT Premium</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <footer className="py-12 bg-white text-center text-xs font-light text-stone-400 border-t border-stone-100">
-        <p>© 2026 Lola Fitness. Все права защищены.</p>
+      {/* PROGRAM */}
+      <section className="program-section">
+        <div className="container">
+          <div className="program-header">
+            <div>
+              <span className="section-label">Программа</span>
+              <h2 className="section-title">
+                21 день —<br />
+                <em>три недели</em> к результату
+              </h2>
+            </div>
+            <p className="section-text">
+              Каждая неделя — новый уровень нагрузки и новое понимание своего тела.
+            </p>
+          </div>
+          <div className="weeks-grid">
+            <div className="week-card fade-up">
+              <div className="week-num">01</div>
+              <div className="week-title">Пробуждение</div>
+              <p className="week-desc">
+                Мягкий старт. Учимся чувствовать тело, правильно дышать и выстраивать технику.
+                Никакого стресса — только удовольствие от движения.
+              </p>
+              <div className="week-days">
+                <span className="day-chip">День 1–7</span>
+                <span className="day-chip">30 мин/день</span>
+                <span className="day-chip">Базовый уровень</span>
+              </div>
+            </div>
+            <div className="week-card fade-up" style={{ transitionDelay: "0.1s" }}>
+              <div className="week-num">02</div>
+              <div className="week-title">Разгон</div>
+              <p className="week-desc">
+                Тело уже привыкло, добавляем интенсивность. Прорабатываем проблемные зоны, видим первые
+                изменения в зеркале и в самочувствии.
+              </p>
+              <div className="week-days">
+                <span className="day-chip">День 8–14</span>
+                <span className="day-chip">35 мин/день</span>
+                <span className="day-chip">Средний уровень</span>
+              </div>
+            </div>
+            <div className="week-card fade-up" style={{ transitionDelay: "0.2s" }}>
+              <div className="week-num">03</div>
+              <div className="week-title">Трансформация</div>
+              <p className="week-desc">
+                Финальный недельный рывок. Чувствуешь силу, видишь результат. Тело становится
+                таким, каким ты его хотела — без откатов.
+              </p>
+              <div className="week-days">
+                <span className="day-chip">День 15–21</span>
+                <span className="day-chip">40 мин/день</span>
+                <span className="day-chip">Продвинутый уровень</span>
+              </div>
+            </div>
+          </div>
+          <div className="program-includes">
+            <div className="include-item">
+              <span className="include-icon">🎥</span>
+              <div className="include-title">21 видео-тренировка</div>
+              <div className="include-desc">HD видео с подробным объяснением техники</div>
+            </div>
+            <div className="include-item">
+              <span className="include-icon">📊</span>
+              <div className="include-title">Трекер прогресса</div>
+              <div className="include-desc">Отмечай выполненные тренировки каждый день</div>
+            </div>
+            <div className="include-item">
+              <span className="include-icon">🤖</span>
+              <div className="include-title">Бот-напоминания</div>
+              <div className="include-desc">Ежедневные мотивационные напоминания</div>
+            </div>
+            <div className="include-item">
+              <span className="include-icon">💬</span>
+              <div className="include-title">Поддержка Лолы</div>
+              <div className="include-desc">Прямой чат и ответы на вопросы</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* REVIEWS */}
+      <section>
+        <div className="container">
+          <span className="section-label">Отзывы</span>
+          <h2 className="section-title">
+            Они уже <em>начали</em>
+          </h2>
+          <div className="reviews-grid">
+            <div className="review-card fade-up">
+              <div className="review-stars">★★★★★</div>
+              <p className="review-text">
+                «После первой же недели поняла, что это не очередной марафон-мучение. Лола
+                объясняет каждое движение так, что начинаешь чувствовать своё тело. -4 кг за
+                21 день и без голодовок!»
+              </p>
+              <div className="review-author">
+                <div className="review-avatar">👩</div>
+                <div>
+                  <div className="review-name">Нилуфар, 27 лет</div>
+                  <div className="review-meta">Ташкент · прошла 21-дневный курс</div>
+                </div>
+              </div>
+            </div>
+            <div className="review-card fade-up" style={{ transitionDelay: "0.1s" }}>
+              <div className="review-stars">★★★★★</div>
+              <p className="review-text">
+                «Наконец-то нашла тренера, к которой хочется возвращаться. Всё через Telegram —
+                открыла, потренировалась, отметила галочку. Просто и без лишних приложений.»
+              </p>
+              <div className="review-author">
+                <div className="review-avatar">🌸</div>
+                <div>
+                  <div className="review-name">Малика, 23 года</div>
+                  <div className="review-meta">Ташкент · занимается 2-й месяц</div>
+                </div>
+              </div>
+            </div>
+            <div className="review-card fade-up" style={{ transitionDelay: "0.2s" }}>
+              <div className="review-stars">★★★★★</div>
+              <p className="review-text">
+                «Боялась, что без зала результата не будет. Ошибалась. К 21-му дню спина перестала
+                болеть, осанка выровнялась, а в зеркале — совсем другая я. Спасибо, Лола!»
+              </p>
+              <div className="review-author">
+                <div className="review-avatar">💪</div>
+                <div>
+                  <div className="review-name">Зулайхо, 31 год</div>
+                  <div className="review-meta">Ташкент · результат после 1 курса</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" style={{ background: "var(--cream-dark)" }}>
+        <div className="container">
+          <div className="pricing-wrap">
+            <span className="section-label" style={{ display: "block", textAlign: "center" }}>
+              Стоимость
+            </span>
+            <h2 className="section-title" style={{ textAlign: "center" }}>
+              21 день к <em>лучшей себе</em>
+            </h2>
+            <p className="section-text" style={{ textAlign: "center", margin: "0 auto" }}>
+              Сейчас — специальная цена предзапуска. После старта потока цена вернётся к полной.
+            </p>
+
+            <div className="pricing-card">
+              <div className="price-old">298 990 сум</div>
+              <div className="price-new">
+                <span className="price-currency">сум </span>169 990
+              </div>
+              <div className="price-note">Единоразовый платёж · Payme, Click, Rahmat</div>
+
+              <div className="pricing-features">
+                <div className="pricing-feature">21 видео-тренировка (30–40 мин каждая)</div>
+                <div className="pricing-feature">Трекер прогресса в Telegram WebApp</div>
+                <div className="pricing-feature">Ежедневные напоминания от бота</div>
+                <div className="pricing-feature">Персональный онбординг под твои цели</div>
+                <div className="pricing-feature">Прямая связь с тренером Лолой</div>
+                <div className="pricing-feature">Пожизненный доступ к программе</div>
+              </div>
+
+              <a href="https://t.me/testfref_bot" className="btn-cta-big">
+                🚀 Начать в Telegram
+              </a>
+              <a
+                href="https://t.me/vvveins?text=Хочу%20оставить%20заявку%20на%2021%20день"
+                className="btn-cta-outline"
+              >
+                📋 Оставить предзапись
+              </a>
+
+              <div className="spots-warning">
+                ⚠️ Осталось <strong id="spots-inline">12</strong> мест из 30 — поток стартует 1 апреля
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* OFFLINE TEASER */}
+      <section className="offline-section">
+        <div className="container">
+          <div className="offline-card fade-up">
+            <span className="offline-emoji">🏋️‍♀️</span>
+            <h2 className="offline-title">
+              Скоро — <em>офлайн группы</em><br />
+              в Ташкенте
+            </h2>
+            <p className="offline-text">
+              Онлайн — это старт. Но мы строим настоящее сообщество. В ближайшее время открываем
+              живые групповые тренировки — ограниченное число мест для самых активных участниц курса.
+            </p>
+            <div className="offline-tags">
+              <span className="offline-tag">📍 Ташкент</span>
+              <span className="offline-tag">👥 Малые группы</span>
+              <span className="offline-tag">🎯 Живые тренировки</span>
+              <span className="offline-tag">✨ Только для своих</span>
+            </div>
+            <a
+              href="https://t.me/vvveins?text=Хочу%20в%20офлайн%20группу"
+              className="btn-outline"
+              style={{ display: "inline-flex" }}
+            >
+              Хочу в список офлайн →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: 0 }}>
+            <span className="section-label">Вопросы</span>
+            <h2 className="section-title">
+              Часто <em>спрашивают</em>
+            </h2>
+          </div>
+          <div className="faq-list">
+            <div className="faq-item">
+              <button className="faq-q">
+                Нужно ли специальное оборудование? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Нет. Тебе понадобится только коврик и немного свободного места. Всё остальное —
+                твоё тело и желание двигаться.
+              </div>
+            </div>
+            <div className="faq-item">
+              <button className="faq-q">
+                Подходит ли программа для новичков? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Да, первая неделя специально разработана для тех, кто только начинает. Лола объясняет
+                каждое упражнение так, что разберётся любой. Нагрузка нарастает постепенно.
+              </div>
+            </div>
+            <div className="faq-item">
+              <button className="faq-q">
+                Как проходит оплата? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Через Payme, Click или Rahmat. После оплаты Лола вручную активирует твой доступ — это занимает несколько часов в рабочее время. По вопросам — @vvveins в Telegram.
+              </div>
+            </div>
+            <div className="faq-item">
+              <button className="faq-q">
+                Что значит «предзапись»? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Предзапись — это бронь места в первом потоке по специальной цене. Поток стартует 1 апреля. Ты оплачиваешь сейчас, получаешь доступ в день старта.
+              </div>
+            </div>
+            <div className="faq-item">
+              <button className="faq-q">
+                Почему всё в Telegram? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Потому что ты и так там. Никаких новых приложений — открыла бота, нажала кнопку и начала тренировку. Авторизация автоматическая, прогресс сохраняется.
+              </div>
+            </div>
+            <div className="faq-item">
+              <button className="faq-q">
+                Будут ли офлайн группы? <span className="faq-icon">+</span>
+              </button>
+              <div className="faq-a">
+                Да! Мы планируем живые групповые тренировки в Ташкенте для самых активных участниц онлайн-курса. Оставь заявку выше, чтобы попасть в список первой.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="final-cta">
+        <div className="container">
+          <span className="section-label" style={{ color: "var(--peach-light)" }}>
+            Последний шаг
+          </span>
+          <h2 className="section-title">
+            Начни сегодня —<br />
+            <em>не «с понедельника»</em>
+          </h2>
+          <p className="section-text">
+            Осталось 12 мест по цене предзапуска. Поток стартует 1 апреля. Твоё тело уже ждёт.
+          </p>
+          <div className="final-cta-btns">
+            <a href="https://t.me/testfref_bot" className="btn-peach">
+              🚀 Начать в Telegram
+            </a>
+            <a href="https://t.me/vvveins?text=Хочу%20оставить%20предзапись" className="btn-ghost">
+              📋 Предзапись
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer>
+        <a href="#" className="nav-logo">
+          Lola<span>Fitness</span>
+        </a>
+        <div className="footer-links">
+          <a href="https://t.me/vvveins">Telegram</a>
+          <a href="https://t.me/testfref_bot">Бот</a>
+        </div>
+        <span className="footer-copy">© 2026 LolaFitness · Ташкент</span>
       </footer>
-    </div>
+    </>
   );
 }
