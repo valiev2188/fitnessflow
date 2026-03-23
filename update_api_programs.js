@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+const fs = require('fs');
+const content = `import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { programs, subscriptions } from '@/db/schema';
 import { eq, and, gt } from 'drizzle-orm';
@@ -49,3 +50,5 @@ export async function GET(req: Request) {
         }, { status: 500 });
     }
 }
+`;
+fs.writeFileSync('src/app/api/programs/route.ts', content);

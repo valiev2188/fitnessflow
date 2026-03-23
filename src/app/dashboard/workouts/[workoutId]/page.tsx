@@ -12,7 +12,7 @@ function getEmbedUrl(url: string) {
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
         const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         if (match && match[1]) {
-            embedUrl = `https://www.youtube.com/embed/${match[1]}?autoplay=0&rel=0`;
+            embedUrl = `https://www.youtube.com/embed/${match[1]}?autoplay=0&rel=0&fs=1&playsinline=1&modestbranding=1`;
         }
     } else if (url.includes('vimeo.com')) {
         const match = url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
@@ -180,8 +180,12 @@ export default function WorkoutPage() {
                                     <iframe
                                         src={embedUrl}
                                         className="w-full h-full border-0 absolute top-0 left-0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                                         allowFullScreen
+                                        {...{ 
+                                            webkitallowfullscreen: "true", 
+                                            mozallowfullscreen: "true" 
+                                        }}
                                     />
                                 );
                             }
