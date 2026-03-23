@@ -16,11 +16,11 @@
     --font-body: 'DM Sans', system-ui, sans-serif;
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
 
   html { scroll-behavior: smooth; }
 
-  body {
+  .landing-page-wrapper { min-height: 100vh;
     background: var(--cream);
     color: var(--ink);
     font-family: var(--font-body);
@@ -30,7 +30,7 @@
   }
 
   /* ─── NAV ─── */
-  nav {
+  .landing-nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 20px 40px;
@@ -39,7 +39,7 @@
     border-bottom: 1px solid transparent;
     transition: border-color 0.3s;
   }
-  nav.scrolled { border-color: var(--border); }
+  .landing-nav.scrolled { border-color: var(--border); }
   .nav-logo {
     font-family: var(--font-display);
     font-size: 22px;
@@ -259,7 +259,7 @@
   }
 
   /* ─── SECTION COMMONS ─── */
-  section { padding: 100px 40px; }
+  .landing-section { padding: 100px 40px; }
   .container { max-width: 1200px; margin: 0 auto; }
 
   .section-label {
@@ -282,7 +282,7 @@
   .section-text { font-size: 16px; color: var(--muted); line-height: 1.75; max-width: 560px; }
 
   /* ─── PAIN SECTION ─── */
-  .pain-section { background: var(--cream-dark); }
+  .pain-.landing-section { background: var(--cream-dark); }
   .pain-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -414,7 +414,7 @@
   .cert-dot { width: 6px; height: 6px; background: var(--peach); border-radius: 50%; flex-shrink: 0; }
 
   /* ─── PROGRAM ─── */
-  .program-section { background: var(--ink); color: var(--cream); }
+  .program-.landing-section { background: var(--ink); color: var(--cream); }
   .program-section .section-label { color: var(--peach-light); }
   .program-section .section-title { color: var(--cream); }
   .program-section .section-text { color: rgba(253,251,247,0.65); }
@@ -587,7 +587,7 @@
   }
 
   /* ─── OFFLINE TEASER ─── */
-  .offline-section { background: var(--peach-pale); }
+  .offline-.landing-section { background: var(--peach-pale); }
   .offline-card {
     max-width: 800px;
     margin: 0 auto;
@@ -723,7 +723,7 @@
   .btn-ghost:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
 
   /* ─── FOOTER ─── */
-  footer {
+  .landing-footer {
     background: var(--ink);
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 40px;
@@ -733,8 +733,8 @@
     flex-wrap: wrap;
     gap: 16px;
   }
-  footer .nav-logo { color: var(--cream); }
-  footer .nav-logo span { color: var(--peach); }
+  .landing-footer .nav-logo { color: var(--cream); }
+  .landing-footer .nav-logo span { color: var(--peach); }
   .footer-links { display: flex; gap: 24px; }
   .footer-links a { color: rgba(253,251,247,0.5); font-size: 13px; text-decoration: none; transition: color 0.2s; }
   .footer-links a:hover { color: var(--cream); }
@@ -750,8 +750,8 @@
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 900px) {
-    nav { padding: 16px 24px; }
-    section { padding: 70px 24px; }
+    .landing-.landing-nav { padding: 16px 24px; }
+    .landing-section { padding: 70px 24px; }
     .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 40px; }
     .hero-right { order: -1; }
     .hero-card { max-width: 100%; aspect-ratio: 4/3; }
@@ -767,6 +767,6 @@
     .pricing-card { padding: 40px 24px; }
     .offline-card { padding: 40px 24px; }
     .scarcity-banner { padding: 12px 24px; font-size: 12px; flex-wrap: wrap; text-align: center; justify-content: center; }
-    footer { flex-direction: column; text-align: center; }
+    .landing-footer { flex-direction: column; text-align: center; }
     .footer-links { justify-content: center; }
   }

@@ -73,9 +73,9 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className="landing-page-wrapper">
       {/* NAV */}
-      <nav id="navbar">
+      <nav id="navbar" className="landing-nav">
         <a href="#" className="nav-logo">
           Lola<span>Fitness</span>
         </a>
@@ -96,7 +96,7 @@ export default function Home() {
       </div>
 
       {/* HERO */}
-      <section style={{ padding: 0 }}>
+      <section className="landing-section" style={{ padding: 0 }}>
         <div className="hero container">
           <div className="hero-left">
             <div className="hero-badge">✦ 21 день · Дома · Без инвентаря</div>
@@ -165,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* PAIN */}
-      <section className="pain-section">
+      <section className="landing-section pain-section">
         <div className="container">
           <div className="pain-grid">
             <div>
@@ -225,7 +225,7 @@ export default function Home() {
       </section>
 
       {/* ABOUT */}
-      <section>
+      <section className="landing-section">
         <div className="container">
           <div className="about-grid">
             <div className="about-img-wrap fade-up">
@@ -279,7 +279,7 @@ export default function Home() {
       </section>
 
       {/* PROGRAM */}
-      <section className="program-section">
+      <section className="landing-section program-section">
         <div className="container">
           <div className="program-header">
             <div>
@@ -360,7 +360,7 @@ export default function Home() {
       </section>
 
       {/* REVIEWS */}
-      <section>
+      <section className="landing-section">
         <div className="container">
           <span className="section-label">Отзывы</span>
           <h2 className="section-title">
@@ -415,7 +415,7 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" style={{ background: "var(--cream-dark)" }}>
+      <section className="landing-section" id="pricing" style={{ background: "var(--cream-dark)" }}>
         <div className="container">
           <div className="pricing-wrap">
             <span className="section-label" style={{ display: "block", textAlign: "center" }}>
@@ -463,7 +463,7 @@ export default function Home() {
       </section>
 
       {/* OFFLINE TEASER */}
-      <section className="offline-section">
+      <section className="landing-section offline-section">
         <div className="container">
           <div className="offline-card fade-up">
             <span className="offline-emoji">🏋️‍♀️</span>
@@ -493,7 +493,7 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section>
+      <section className="landing-section">
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 0 }}>
             <span className="section-label">Вопросы</span>
@@ -557,7 +557,7 @@ export default function Home() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="final-cta">
+      <section className="landing-section final-cta">
         <div className="container">
           <span className="section-label" style={{ color: "var(--peach-light)" }}>
             Последний шаг
@@ -581,7 +581,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer>
+      <footer className="landing-footer">
         <a href="#" className="nav-logo">
           Lola<span>Fitness</span>
         </a>
@@ -591,6 +591,6 @@ export default function Home() {
         </div>
         <span className="footer-copy">© 2026 LolaFitness · Ташкент</span>
       </footer>
-    </>
+    </div>
   );
 }
