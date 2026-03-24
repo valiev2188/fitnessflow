@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, subscriptions } from '@/db/schema';
+import { users, subscriptions, loginSessions } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -29,8 +29,32 @@ const mainKeyboard = {
 };
 
 // Handle /start command
-async function handleStart(chatId: number, firstName: string, telegramId: string) {
-    const text =
+async function handleStart(chatId: number, firstName: string, telegramId: string, text: string = '') {
+    // Check if it's a deep link for web authentication
+    if (text.startsWith('/start login_')) {
+        const sessionId = text.replace('/start login_', '');
+        
+        // Make sure session exists
+        const session = await db.select().from(loginSessions).where(eq(loginSessions.id, sessionId)).limit(1).then(r => r[0]);
+        if (!session || session.status !== 'pending') {
+            await sendMessage(chatId, `❌ Сессия авторизации устарела или уже использована. Попробуйте войти на сайте заново.`);
+            return;
+        }
+
+        await sendMessage(chatId, 
+            `🔑 <b>Вход в аккаунт</b>\n\nВы пытаетесь войти на сайт <b>LolaFitness</b> (через браузер).\nДля завершения авторизации нажмите кнопку ниже:`, 
+            {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: '✅ Авторизоваться', callback_data: `auth_approve:${sessionId}` }],
+                        [{ text: '❌ Отмена', callback_data: `auth_reject:${sessionId}` }]
+                    ]
+                }
+            });
+        return;
+    }
+
+    const welcomeText =
         `👋 Привет, <b>${firstName}</b>! Я бот Лолы — дипломированного тренера с опытом ` +
         `работы в лучших студиях.\n\n` +
         `✨ <b>Что я умею:</b>\n` +
@@ -39,7 +63,7 @@ async function handleStart(chatId: number, firstName: string, telegramId: string
         `📊 Показать ваш статус подписки\n\n` +
         `Открой мини-приложение ниже чтобы начать тренировки! 💪`;
 
-    await sendMessage(chatId, text, {
+    await sendMessage(chatId, welcomeText, {
         reply_markup: {
             inline_keyboard: [
                 [{ text: '🏋️ Открыть курс', web_app: { url: `${WEBAPP_URL}/dashboard` } }],
@@ -171,13 +195,44 @@ export async function POST(req: Request) {
                 await handlePay(chatId);
             } else if (callbackQuery.data === 'copy_card') {
                 await sendMessage(chatId, `<code>${HUMO_CARD}</code>\n\nНажмите на номер чтобы скопировать! 👆`);
+            } else if (callbackQuery.data.startsWith('auth_approve:')) {
+                const sessionId = callbackQuery.data.split(':')[1];
+                const tgId = callbackQuery.from.id.toString();
+                
+                // Ensure user exists before approving
+                let user = await db.select().from(users).where(eq(users.telegramId, tgId)).limit(1).then(r => r[0]);
+                if (!user) {
+                     user = await db.insert(users).values({
+                         telegramId: tgId,
+                         username: callbackQuery.from.username || null,
+                         name: [callbackQuery.from.first_name, callbackQuery.from.last_name].filter(Boolean).join(' ').trim() || 'User',
+                         role: tgId === process.env.ADMIN_TELEGRAM_ID ? 'admin' : 'user'
+                     }).returning().then(r => r[0]);
+                }
+
+                await db.update(loginSessions)
+                   .set({ status: 'approved', telegramId: tgId })
+                   .where(eq(loginSessions.id, sessionId));
+                
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, message_id: msg.message_id, text: '✅ <b>Успешно авторизовано!</b>\n\nВы можете вернуться на сайт, вход выполнен автоматически.', parse_mode: 'HTML' })
+                });
+            } else if (callbackQuery.data.startsWith('auth_reject:')) {
+                const sessionId = callbackQuery.data.split(':')[1];
+                await db.update(loginSessions).set({ status: 'rejected' }).where(eq(loginSessions.id, sessionId));
+                
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, message_id: msg.message_id, text: '❌ <b>Вход отменен.</b>', parse_mode: 'HTML' })
+                });
             }
             return NextResponse.json({ ok: true });
         }
 
         // Handle text commands and keyboard buttons
         if (text === '/start' || text.startsWith('/start ')) {
-            await handleStart(chatId, firstName, telegramId || '');
+            await handleStart(chatId, firstName, telegramId || '', text);
         } else if (text === '/pay' || text === '💳 Как оплатить?') {
             await handlePay(chatId);
         } else if (text === '/status' || text === '📊 Мой статус') {

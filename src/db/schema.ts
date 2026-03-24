@@ -55,3 +55,10 @@ export const subscriptions = sqliteTable("subscriptions", {
     plan: text("plan").notNull(),
     expiresAt: integer("expires_at", { mode: "timestamp" }),
 });
+
+export const loginSessions = sqliteTable("login_sessions", {
+    id: text("id").primaryKey(),
+    telegramId: text("telegram_id"),
+    status: text("status").notNull().default("pending"),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+});
