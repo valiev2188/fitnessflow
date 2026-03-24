@@ -76,12 +76,17 @@ export default function Home() {
     <div className="landing-page-wrapper">
       {/* NAV */}
       <nav id="navbar" className="landing-nav">
-        <a href="#" className="nav-logo">
+        <a href="/" className="nav-logo">
           Lola<span>Fitness</span>
         </a>
-        <a href="#pricing" className="nav-cta">
-          Записаться →
-        </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <a href="/login" style={{ color: 'var(--ink)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+            Войти
+          </a>
+          <a href="#pricing" className="nav-cta">
+            Записаться →
+          </a>
+        </div>
       </nav>
 
       {/* SCARCITY BANNER */}

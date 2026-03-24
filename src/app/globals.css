@@ -16,6 +16,21 @@
     --font-body: 'DM Sans', system-ui, sans-serif;
   }
 
+  @theme {
+    --color-rose-50: var(--peach-pale);
+    --color-rose-100: var(--peach-light);
+    --color-rose-200: #ddb89f;
+    --color-rose-300: #d0a386;
+    --color-rose-400: #ca9b7f;
+    --color-rose-500: var(--peach);
+    --color-rose-600: #b17e63;
+    --color-rose-700: #9c674e;
+    --color-stone-900: var(--ink);
+    --font-sans: var(--font-body);
+    --font-serif: var(--font-display);
+  }
+
+
   
 
   html { scroll-behavior: smooth; }
@@ -414,7 +429,7 @@
   .cert-dot { width: 6px; height: 6px; background: var(--peach); border-radius: 50%; flex-shrink: 0; }
 
   /* ─── PROGRAM ─── */
-  .program-.landing-section { background: var(--ink); color: var(--cream); }
+  .program-section { background: var(--ink); color: var(--cream); }
   .program-section .section-label { color: var(--peach-light); }
   .program-section .section-title { color: var(--cream); }
   .program-section .section-text { color: rgba(253,251,247,0.65); }

@@ -1,9 +1,9 @@
 'use client';
 
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
-import { Home, PlaySquare, TrendingUp, Settings } from 'lucide-react';
+import { Home, PlaySquare, TrendingUp, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -14,6 +14,13 @@ export function cn(...inputs: ClassValue[]) {
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, loading, error } = useTelegramAuth();
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.removeItem('fitness_token');
+        router.push('/');
+    };
 
     if (error) {
         return (
@@ -74,7 +81,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-stone-100 p-6 bg-stone-50/50">
+                <div className="mt-auto border-t border-stone-100 p-6 bg-stone-50/50 flex flex-col gap-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600 text-sm font-medium border border-rose-200">
                             {user?.name?.[0]?.toUpperCase() || 'L'}
@@ -84,6 +91,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                             <span className="text-xs text-stone-500">Базовый доступ</span>
                         </div>
                     </div>
+                    <button 
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium mt-2"
+                    >
+                        <LogOut className="h-4 w-4" /> Выйти
+                    </button>
                 </div>
             </aside>
 
