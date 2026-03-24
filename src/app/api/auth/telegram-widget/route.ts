@@ -8,7 +8,7 @@ import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8272000512:AAGAE_OEKRMR8SiIwtGRrdJfZb7mJ3BEuRg';
 const ADMIN_ID = process.env.ADMIN_TELEGRAM_ID || '';
 
 /**
