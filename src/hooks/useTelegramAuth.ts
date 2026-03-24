@@ -7,61 +7,64 @@ export function useTelegramAuth() {
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-
     const [startParam, setStartParam] = useState<string | null>(null);
 
     useEffect(() => {
         async function authenticate() {
             try {
-                let initData: string | null = null;
-
-                // Try to get real Telegram initData
-                // Wait a moment for the SDK to finish loading
+                // ────────────────────────────────────────────────
+                // PATH 1: Telegram Mini App (in Telegram client)
+                // ────────────────────────────────────────────────
                 if (typeof window !== 'undefined') {
-                    // Small delay to ensure telegram-web-app.js has initialized
                     await new Promise(resolve => setTimeout(resolve, 100));
 
                     const tg = (window as any).Telegram?.WebApp;
-                    if (tg) {
+                    if (tg?.initData && tg.initData.length > 0) {
                         tg.ready();
-                        tg.expand(); // Expand to full height
-                        if (tg.initData && tg.initData.length > 0) {
-                            initData = tg.initData;
-                            console.log('✅ Got real Telegram initData');
-                        }
-                        // Read start_param for deep linking (e.g. startapp=programs)
+                        tg.expand();
+
                         if (tg.initDataUnsafe?.start_param) {
                             setStartParam(tg.initDataUnsafe.start_param);
+                        }
+
+                        const response = await fetch('/api/auth', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ initData: tg.initData }),
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            setToken(data.token);
+                            setUser(data.user);
+                            localStorage.setItem('fitness_token', data.token);
+                            return;
                         }
                     }
                 }
 
-                // Fallback for web browser access (outside Telegram)
-                if (!initData) {
-                    console.warn("No Telegram initData - using web guest fallback");
-                    initData = "user=" + encodeURIComponent(JSON.stringify({
-                        id: 99999999,
-                        first_name: "Гость",
-                        last_name: "",
-                        username: "web_guest"
-                    })) + "&hash=mocked_hash";
-                }
+                // ────────────────────────────────────────────────
+                // PATH 2: Web Browser — check existing session cookie or localStorage
+                // ────────────────────────────────────────────────
+                const storedToken = localStorage.getItem('fitness_token');
 
-                const response = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData }),
+                const res = await fetch('/api/auth/me', {
+                    // Send cookie automatically, plus Authorization header if we have token
+                    credentials: 'include',
+                    headers: storedToken ? { Authorization: `Bearer ${storedToken}` } : {},
                 });
 
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || 'Failed to authenticate with backend');
+                if (res.ok) {
+                    const data = await res.json();
+                    setToken(data.token || storedToken);
+                    setUser(data.user);
+                    if (data.token) localStorage.setItem('fitness_token', data.token);
+                    return;
                 }
 
-                const data = await response.json();
-                setToken(data.token);
-                setUser(data.user);
-                localStorage.setItem('fitness_token', data.token);
+                // No valid session found → unauthenticated (not guest fallback)
+                setError('unauthenticated');
+
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -74,4 +77,3 @@ export function useTelegramAuth() {
 
     return { user, token, error, loading, startParam };
 }
-
