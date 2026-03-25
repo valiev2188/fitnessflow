@@ -467,36 +467,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* OFFLINE TEASER */}
-      <section className="landing-section offline-section">
-        <div className="container">
-          <div className="offline-card fade-up">
-            <span className="offline-emoji">🏋️‍♀️</span>
-            <h2 className="offline-title">
-              Скоро — <em>офлайн группы</em><br />
-              в Ташкенте
-            </h2>
-            <p className="offline-text">
-              Онлайн — это старт. Но мы строим настоящее сообщество. В ближайшее время открываем
-              живые групповые тренировки — ограниченное число мест для самых активных участниц курса.
-            </p>
-            <div className="offline-tags">
-              <span className="offline-tag">📍 Ташкент</span>
-              <span className="offline-tag">👥 Малые группы</span>
-              <span className="offline-tag">🎯 Живые тренировки</span>
-              <span className="offline-tag">✨ Только для своих</span>
-            </div>
-            <a
-              href="https://t.me/vvveins?text=Хочу%20в%20офлайн%20группу"
-              className="btn-outline"
-              style={{ display: "inline-flex" }}
-            >
-              Хочу в список офлайн →
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="landing-section">
         <div className="container">
