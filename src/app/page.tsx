@@ -97,7 +97,7 @@ export default function Home() {
         <span className="spots-count">
           <span id="spots-num">12</span> из 30
         </span>
-        <span style={{ opacity: 0.6 }}>· Старт потока 1 апреля</span>
+        <span style={{ opacity: 0.6 }}>· Старт потока 6 апреля</span>
       </div>
 
       {/* HERO */}
@@ -460,7 +460,7 @@ export default function Home() {
               </a>
 
               <div className="spots-warning">
-                ⚠️ Осталось <strong id="spots-inline">12</strong> мест из 30 — поток стартует 1 апреля
+                ⚠️ Осталось <strong id="spots-inline">12</strong> мест из 30 — поток стартует 6 апреля
               </div>
             </div>
           </div>
@@ -538,7 +538,7 @@ export default function Home() {
                 Что значит «предзапись»? <span className="faq-icon">+</span>
               </button>
               <div className="faq-a">
-                Предзапись — это бронь места в первом потоке по специальной цене. Поток стартует 1 апреля. Ты оплачиваешь сейчас, получаешь доступ в день старта.
+                Предзапись — это бронь места в первом потоке по специальной цене. Поток стартует 6 апреля. Ты оплачиваешь сейчас, получаешь доступ в день старта.
               </div>
             </div>
             <div className="faq-item">
@@ -572,7 +572,7 @@ export default function Home() {
             <em>не «с понедельника»</em>
           </h2>
           <p className="section-text">
-            Осталось 12 мест по цене предзапуска. Поток стартует 1 апреля. Твоё тело уже ждёт.
+            Осталось 12 мест по цене предзапуска. Поток стартует 6 апреля. Твоё тело уже ждёт.
           </p>
           <div className="final-cta-btns">
             <a href="https://t.me/testfref_bot" className="btn-peach">
