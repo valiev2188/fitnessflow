@@ -47,28 +47,12 @@ export default function Home() {
       btn.addEventListener("click", handleFaqClick as EventListener);
     });
 
-    // Spots countdown (cosmetic)
-    let spots = 12;
-    let timeoutId: NodeJS.Timeout;
-    function decreaseSpots() {
-      if (spots > 7 && Math.random() > 0.7) {
-        spots--;
-        const numEl = document.getElementById("spots-num");
-        const inlineEl = document.getElementById("spots-inline");
-        if (numEl) numEl.textContent = spots.toString();
-        if (inlineEl) inlineEl.textContent = spots.toString();
-      }
-      timeoutId = setTimeout(decreaseSpots, 30000 + Math.random() * 60000);
-    }
-    timeoutId = setTimeout(decreaseSpots, 15000);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (io) io.disconnect();
       faqBtns.forEach((btn) => {
         btn.removeEventListener("click", handleFaqClick as EventListener);
       });
-      clearTimeout(timeoutId);
     };
   }, []);
 
