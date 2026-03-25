@@ -141,28 +141,32 @@ export default function ProgramPage() {
                 <div className="flex flex-col space-y-3">
                     {sortedWorkouts.map((workout, index) => {
                         const isCompleted = completedWorkoutIds.has(workout.id);
-                        return (
-                            <Link
-                                key={workout.id}
-                                href={`/dashboard/workouts/${workout.id}`}
-                                className={cn(
-                                    "group flex items-center justify-between p-4 md:p-5 rounded-[2rem] border transition-all shadow-sm",
-                                    isCompleted
-                                        ? "border-rose-100 bg-rose-50/50 hover:bg-rose-50"
-                                        : "border-stone-100 bg-white hover:border-rose-200 hover:shadow-md hover:shadow-rose-900/5"
-                                )}
-                            >
+                        const isLocked = workout.dayNumber > maxUnlockedDay;
+
+                        const cardClass = cn(
+                            "group flex items-center justify-between p-4 md:p-5 rounded-[2rem] border transition-all shadow-sm",
+                            isLocked
+                                ? "border-stone-100 bg-stone-50/50 opacity-60 cursor-not-allowed"
+                                : isCompleted
+                                    ? "border-rose-100 bg-rose-50/50 hover:bg-rose-50"
+                                    : "border-stone-100 bg-white hover:border-rose-200 hover:shadow-md hover:shadow-rose-900/5"
+                        );
+
+                        const inner = (
+                            <>
                                 <div className="flex items-center gap-4 md:gap-6">
                                     <div className={cn(
                                         "flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-2xl font-serif text-lg md:text-xl transition-colors border",
-                                        isCompleted
-                                            ? "bg-rose-100 border-rose-200 text-rose-600"
-                                            : "bg-stone-50 border-stone-100 text-stone-500 group-hover:bg-rose-50 group-hover:text-rose-400 group-hover:border-rose-100"
+                                        isLocked
+                                            ? "bg-stone-100 border-stone-200 text-stone-400"
+                                            : isCompleted
+                                                ? "bg-rose-100 border-rose-200 text-rose-600"
+                                                : "bg-stone-50 border-stone-100 text-stone-500 group-hover:bg-rose-50 group-hover:text-rose-400 group-hover:border-rose-100"
                                     )}>
                                         {index + 1}
                                     </div>
                                     <div>
-                                        <h3 className={cn("text-base md:text-lg font-medium transition-colors line-clamp-1", isCompleted ? "text-rose-900" : "text-stone-900 group-hover:text-rose-600")}>
+                                        <h3 className={cn("text-base md:text-lg font-medium transition-colors line-clamp-1", isLocked ? "text-stone-400" : isCompleted ? "text-rose-900" : "text-stone-900 group-hover:text-rose-600")}>
                                             {workout.title}
                                         </h3>
                                         <p className="text-xs md:text-sm text-stone-500 font-light line-clamp-1 max-w-[200px] md:max-w-md mt-0.5">
@@ -172,7 +176,9 @@ export default function ProgramPage() {
                                 </div>
 
                                 <div className="flex items-center gap-4 pl-4 shrink-0 transition-transform group-hover:translate-x-1">
-                                    {isCompleted ? (
+                                    {isLocked ? (
+                                        <Lock className="h-5 w-5 text-stone-300" />
+                                    ) : isCompleted ? (
                                         <CheckCircle2 className="h-6 w-6 text-rose-400" />
                                     ) : (
                                         <div className="flex items-center gap-2 text-stone-300 group-hover:text-rose-400 transition-colors">
@@ -181,6 +187,14 @@ export default function ProgramPage() {
                                         </div>
                                     )}
                                 </div>
+                            </>
+                        );
+
+                        return isLocked ? (
+                            <div key={workout.id} className={cardClass}>{inner}</div>
+                        ) : (
+                            <Link key={workout.id} href={`/dashboard/workouts/${workout.id}`} className={cardClass}>
+                                {inner}
                             </Link>
                         );
                     })}
