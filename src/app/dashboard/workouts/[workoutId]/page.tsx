@@ -94,15 +94,27 @@ export default function WorkoutPage() {
             });
 
             if (res.ok) {
-                if (!completed) {
+                const nowCompleted = !completed;
+                if (nowCompleted) {
                     confetti({
                         particleCount: 150,
                         spread: 80,
                         origin: { y: 0.6 },
-                        colors: ['#f43f5e', '#fb7185', '#fda4af', '#fff1f2'] // Rose theme colors
+                        colors: ['#f43f5e', '#fb7185', '#fda4af', '#fff1f2']
                     });
+                    // Update local progress so daily count is accurate if user marks another workout
+                    setAllProgress(prev => {
+                        const workoutIdNum = workout.id;
+                        const exists = prev.some(p => p.workoutId === workoutIdNum);
+                        if (exists) {
+                            return prev.map(p => p.workoutId === workoutIdNum ? { ...p, completed: true, completedAt: new Date().toISOString() } : p);
+                        }
+                        return [...prev, { workoutId: workoutIdNum, completed: true, completedAt: new Date().toISOString() }];
+                    });
+                } else {
+                    setAllProgress(prev => prev.map(p => p.workoutId === workout.id ? { ...p, completed: false } : p));
                 }
-                setCompleted(!completed);
+                setCompleted(nowCompleted);
             }
         } catch (e) {
             console.error('Failed to mark complete', e);
