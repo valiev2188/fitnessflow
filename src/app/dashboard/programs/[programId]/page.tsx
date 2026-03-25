@@ -65,6 +65,13 @@ export default function ProgramPage() {
     const completionPercentage = workouts.length > 0 ? Math.round((programCompletedCount / workouts.length) * 100) : 0;
     const sortedWorkouts = workouts.sort((a, b) => a.dayNumber - b.dayNumber);
 
+    // Sequential unlock: only the next uncompleted workout is accessible
+    const completedDayNumbers = sortedWorkouts
+        .filter(w => completedWorkoutIds.has(w.id))
+        .map(w => w.dayNumber);
+    const maxCompletedDay = completedDayNumbers.length > 0 ? Math.max(...completedDayNumbers) : 0;
+    const maxUnlockedDay = Math.max(1, maxCompletedDay + 1);
+
     return (
         <DashboardLayout>
             <div className="flex flex-col space-y-8 max-w-4xl mx-auto">
