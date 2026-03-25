@@ -460,7 +460,7 @@ export default function Home() {
               </a>
 
               <div className="spots-warning">
-                ⚠️ Осталось <strong id="spots-inline">12</strong> мест из 30 — поток стартует 6 апреля
+                ⚡ Количество мест ограничено — поток стартует <strong>6 апреля</strong>
               </div>
             </div>
           </div>
