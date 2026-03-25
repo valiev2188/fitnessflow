@@ -4,8 +4,8 @@ config({ path: resolve(process.cwd(), '.env.local') });
 
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { programs, workouts } from './schema';
-import { eq } from 'drizzle-orm';
+import { programs, workouts, userProgress } from './schema';
+import { eq, inArray } from 'drizzle-orm';
 
 const client = createClient({
     url: process.env.TURSO_DB_URL!,
