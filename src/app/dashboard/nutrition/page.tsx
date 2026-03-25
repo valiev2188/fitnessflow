@@ -132,11 +132,11 @@ const HomeTab = () => (
     <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-12">
         <div className="flex items-center gap-6">
             <div className="relative w-[100px] h-[100px] rounded-full border-[6px] border-white shadow-xl overflow-hidden bg-rose-100 shrink-0">
-                <img src="/lola-portrait.jpg" alt="Лола" onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200&h=200"; }} className="w-full h-full object-cover" />
+                <img src="/lola-portrait.jpg" alt="Лола Валиева" onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200&h=200"; }} className="w-full h-full object-cover" />
                 <div className="absolute top-[8px] right-[8px] w-4 h-4 rounded-full bg-green-500 border-2 border-white z-10 shadow-sm"></div>
             </div>
             <div>
-                <h2 className="text-2xl font-bold text-stone-900 mb-1">Антонина</h2>
+                <h2 className="text-2xl font-bold text-stone-900 mb-1">Лола Валиева</h2>
                 <p className="text-[15px] font-light text-stone-500">Твой фитнес-тренер</p>
             </div>
         </div>
@@ -147,64 +147,121 @@ const HomeTab = () => (
                 Добро пожаловать! 🖐️
             </h1>
             <p className="text-stone-700 leading-relaxed font-light text-[15px] md:text-[16px] relative z-10">
-                Приветствую вас в моей программе питания! Перед вами полное руководство по питанию от А до Я, со всеми тонкостями и нюансами. Если вы научитесь управлять своим рационом, вам под силу будут любые цели: похудеть, поддержать вес или набрать мышечную массу. С помощью этого руководства вы сможете углубить свои знания в питании и научиться самостоятельно планировать свой рацион. А также будете знать, как действовать в нестандартных ситуациях: что заказать в ресторане, как не растолстеть во время праздников, что делать после «обжора».
+                Приветствую вас в моей авторской программе питания! Меня зовут Лола Валиева, и я ваш фитнес-тренер. Перед вами полное руководство по питанию от А до Я, со всеми тонкостями и нюансами, основанное на моем опыте.
                 <br/><br/>
-                В программе мы разберем, почему не работают диеты и голодание, как это влияет на организм и научимся питаться вкусно, сытно, разнообразно и сбалансированно. Будет много всего интересного!
+                Если вы научитесь управлять своим рационом, вам под силу будут любые цели: похудеть, поддержать вес или набрать мышечную массу. С помощью этого руководства вы сможете углубить свои знания в питании и научиться самостоятельно планировать свой рацион. А также будете знать, как действовать в нестандартных ситуациях: что заказать в ресторане, как не растолстеть во время праздников, что делать после «обжора».
+                <br/><br/>
+                В программе мы разберем, почему не работают диеты и голодание, как это влияет на организм и научимся питаться вкусно, сытно, разнообразно и сбалансированно. Будет много всего интересного! Давайте начнем этот путь вместе!
             </p>
         </div>
     </motion.div>
 );
 
 const AboutTab = () => (
-    <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#D9857B] mb-8 mt-4 text-center md:text-left font-serif">
-            Основы правильного питания
-        </h1>
-        
-        <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 mb-8">
-            <p className="text-[15px] md:text-[16px] font-light text-stone-700 leading-relaxed">
-                Питание — это главный инструмент достижения результата. Любые, даже самые тяжелые тренировки не помогут его увидеть, пока в вашей тарелке беспорядок. У пищи есть несколько целей. Главная — это обеспечить организм энергией и всеми необходимыми питательными веществами для его нормальной жизнедеятельности. Но это не все. Еда должна вызывать аппетит, приносить наслаждение как визуальное, так и вкусовое. Прием пищи должен утолять голод и давать чувство сытости на долго. Еда должна быть качественной и безвредной. Необходимо учитывать пищевые ограничения: непереносимости, аллергии, вкусовые предпочтения и лечебные диеты для больных людей. Теперь разберем подробнее каждую цель.
-            </p>
+    <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-12">
+        {/* Intro Section with mock image styling */}
+        <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 flex flex-col md:flex-row gap-8 items-center mt-4">
+            <div className="flex-1">
+                <h1 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4 font-serif">Вступление</h1>
+                <p className="text-[15px] font-light text-stone-600">Смотри лекцию!</p>
+            </div>
+            <div className="w-full md:w-1/2 aspect-video bg-rose-50 rounded-[24px] relative overflow-hidden flex items-center justify-center border border-rose-100/50 group cursor-pointer">
+                {/* Play button overlay mock */}
+                <div className="w-16 h-16 bg-rose-400/90 rounded-full flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110 z-10">
+                    <Zap className="w-8 h-8 fill-current ml-1" />
+                </div>
+            </div>
         </div>
 
-        <div className="space-y-6">
-            {/* Battery */}
-            <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 flex flex-col md:flex-row gap-8 items-center justify-between">
-                <div className="flex-1 order-2 md:order-1">
-                    <h2 className="text-2xl font-bold text-stone-900 mb-4">Цель 1</h2>
-                    <p className="text-[15px] font-light text-stone-600 leading-relaxed">
-                        — обеспечение энергией и всеми необходимыми питательными веществами. Калории из пищи должны давать вам энергию на все ваши дела и вообще на поддержание вашей жизни. Это самая главная цель пищи. Кроме калорий нас интересуют полезные вещества, которые содержатся в еде. В разных продуктах содержится разный набор веществ. Чтобы получать их все, нужно питаться разнообразно. При таком питании потребность в приеме БАДов существенно снижается.
+        <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#D9857B] mb-8 font-serif">
+                Обмен веществ
+            </h1>
+            <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 mb-8 space-y-4">
+                <p className="text-[15px] font-light text-stone-700 leading-relaxed">
+                    Обмен веществ или метаболизм — это совокупность всех химических реакций, протекающих в организме. В живом организме непрерывно разрушаются старые молекулы и клетки и образуются новые. Именно этот цикл «разрушение + создание» обеспечивает жизнедеятельность организма, его отклик на тренировки и питание, восстановление после травм и болезней.
+                </p>
+                <p className="text-[15px] font-light text-stone-700 leading-relaxed">
+                    В процессе обмена веществ:<br/>
+                    — расщепляются сложные органические соединения из пищи до более простых, всасываются в желудочно-кишечный тракт<br/>
+                    — синтезируются необходимые организму вещества: БЖУ, гормоны, нейромедиаторы и так далее<br/>
+                    — извлекается энергия для поддержания жизни<br/>
+                    — выводятся конечные продукты обмена веществ
+                </p>
+            </div>
+            {/* Worm graphic mock */}
+            <div className="flex justify-center my-10 relative">
+                <div className="w-64 h-24 bg-rose-300 rounded-[40px] shadow-sm transform-gpu -rotate-3 flex items-center justify-center opacity-80 mix-blend-multiply relative">
+                    <div className="w-16 h-16 bg-rose-400 rounded-full absolute -top-8 left-8 shadow-sm"></div>
+                    <div className="w-20 h-20 bg-rose-400 rounded-full absolute -bottom-6 right-12 shadow-sm"></div>
+                </div>
+            </div>
+            <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 space-y-4 relative overflow-hidden">
+                <div className="absolute top-6 left-6 text-rose-300 opacity-50"><ShieldCheck className="w-8 h-8" /></div>
+                <p className="text-[15px] font-light text-stone-700 leading-relaxed pl-10 pr-4">
+                    Метаболизм состоит из двух процессов, которые неразрывно связаны и постоянно сменяют друг друга. Это <b className="font-medium text-stone-900">катаболизм</b> — разрушение и <b className="font-medium text-stone-900">анаболизм</b> — создание. В процессе катаболизма сложные вещества разрушаются до более простых. В процессе анаболизма создаются сложные вещества из более простых. Например, во время тренировки преобладает катаболизм. Организму нужна энергия на работу мышц, поэтому он расщепляет свои запасы и пускает их в ход. А когда тело восстанавливается после тренировки, преобладает анаболизм, то есть процесс создания (в данном случае мышц и новых запасов энергии).
+                </p>
+            </div>
+        </div>
+
+        <div className="pt-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#D9857B] mb-8 font-serif">
+                Что такое КБЖУ<br/>и с чем его едят?
+            </h1>
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+                <div className="w-full md:w-1/3 aspect-[3/4] rounded-[32px] bg-emerald-50 relative flex items-center justify-center p-6 border border-emerald-100">
+                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400&h=500" className="object-cover rounded-2xl w-full h-full shadow-sm opacity-80 mix-blend-multiply" alt="Products" />
+                </div>
+                <div className="flex-1 bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 leading-relaxed font-light text-[15px] text-stone-700">
+                    <p>КБЖУ — это калории, белки, жиры и углеводы. Именно они в первую очередь интересуют нас при составлении рациона. Важно учесть потребности каждого конкретного человека и подобрать соотношение КБЖУ именно для него. Не нужно брать рандомные цифры из интернета, например, 1200 калорий и думать, что это универсальный рецепт для всех.</p>
+                </div>
+            </div>
+        </div>
+
+        <div className="bg-white rounded-[32px] py-10 text-center shadow-sm border border-stone-100">
+            <p className="text-[14px] text-stone-500 font-light max-w-2xl mx-auto px-6 mb-6 leading-relaxed">
+                Правильно говорить «килокалория», а не «калория». 1 калория — это ничтожно маленькая величина, поэтому то, что мы обычно называем калорией на самом деле является килокалорией. Вы можете увидеть обозначение «ккал» на упаковках пищевых продуктов. Но для удобства в разговоре и литературе мы говорим «калория», подразумевая килокалории.
+            </p>
+            <div className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter">
+                1 ккал = 1000 кал
+            </div>
+        </div>
+
+        <div className="pt-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#D9857B] mb-8 font-serif flex items-center justify-center md:justify-start gap-4">
+                Запомни ⭐
+            </h2>
+            <div className="space-y-4">
+                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100 flex items-start gap-6">
+                    <span className="text-[#D9857B] text-4xl font-bold font-serif opacity-80">1</span>
+                    <p className="text-[15px] text-stone-700 font-light leading-relaxed pt-2">
+                        Общая калорийность рациона складывается из БЖУ. Белки и углеводы имеют калорийность — 4 ккал на 1 грамм, жиры — 9 ккал на 1 грамм.
                     </p>
                 </div>
-                <div className="w-40 h-40 shrink-0 order-1 md:order-2">
-                    <Zap className="w-full h-full text-[#34C759] p-6 bg-[#34C759]/10 rounded-[40px] border-[8px] border-white shadow-md relative z-10" strokeWidth={1} fill="currentColor" />
+                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100 flex items-start gap-6">
+                    <span className="text-[#D9857B] text-4xl font-bold font-serif opacity-80">2</span>
+                    <p className="text-[15px] text-stone-700 font-light leading-relaxed pt-2">
+                        Общая калорийность рациона влияет на снижение/увеличение/поддержание веса, а баланс БЖУ на качество тела.
+                    </p>
                 </div>
+            </div>
+        </div>
+
+        <div className="pt-8">
+            <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-stone-100 relative overflow-hidden">
+                <h2 className="text-3xl font-bold text-stone-900 mb-6 font-serif break-words">Базовый обмен веществ</h2>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none text-[80px] font-black leading-none text-[#D9857B] select-none rotate-12">
+                    ЭТО<br/>БАЗА
+                </div>
+                <p className="text-[15px] text-stone-700 font-light leading-relaxed relative z-10 w-full md:w-2/3">
+                    Базовый обмен веществ или базовый метаболизм — это то количество калорий, которое необходимо человеку каждый день для его жизнедеятельности без учета какой-либо активности. Эти калории идут на обеспечение базовых (жизненно важных!) нужд организма в энергии: работу мозга, дыхание, сердцебиение, обновление клеток, заживление ран, поддержание иммунитета, температуры тела, работу органов пищеварения и так далее. На все те процессы, которые идут скрыто внутри нас, и мы их даже не замечаем. Даже если вы будете целый день лежать на диване, вы все равно будете сжигать калории. Поэтому все калории базового обмена веществ мы должны, просто обязаны есть. Даже если не хочется. Иначе начнутся проблемы со здоровьем, самочувствием, обменом веществ.
+                </p>
             </div>
             
-            {/* Burger */}
-            <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 flex flex-col md:flex-row gap-8 items-center justify-between">
-                <div className="w-40 h-40 shrink-0 order-1">
-                    <Beef className="w-full h-full text-amber-600 p-6 bg-amber-50 rounded-[40px] border-[8px] border-white shadow-md relative z-10" strokeWidth={1} fill="currentColor" />
-                </div>
-                <div className="flex-1 order-2">
-                    <h2 className="text-2xl font-bold text-stone-900 mb-4">Цель 3</h2>
-                    <p className="text-[15px] font-light text-stone-600 leading-relaxed">
-                        — утоление голода и сытость на долго. Многие худеющие допускают ошибку, когда пытаются перебить аппетит. У нас нет цели просто забить живот низкокалорийными продуктами типа листьев салата или грейпфрута. Важно именно наесться, утолить свою ЕСТЕСТВЕННУЮ потребность организма. Голод — это сигнал, который нельзя игнорировать. Если вы будете чувствовать голод, то существенно повысится риск съесть гораздо больше еды плохого качества (сладости, фастфуд). Потому что голодный человек теряет человеческий облик :)
-                    </p>
-                </div>
-            </div>
-
-            {/* Fish */}
-            <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-stone-100 flex flex-col md:flex-row gap-8 items-center justify-between">
-                <div className="flex-1 order-2 md:order-1">
-                    <h2 className="text-2xl font-bold text-stone-900 mb-4">Цель 4</h2>
-                    <p className="text-[15px] font-light text-stone-600 leading-relaxed">
-                        — доброкачественность. Важно быть на 100% уверенным, что в вашей тарелке лежит качественный продукт, который не приведет к отравлению. Обращайте внимание на запах и внешний вид еды. Не должно быть неприятного запаха, плесени, брожения, грязи. Убедитесь, что сроки и правила хранения продукта не были нарушены. Очевидно, не стоит употреблять пищу, которая вызывает у вас аллергическую реакцию или индивидуальную непереносимость. Даже если очень хочется :) Учитесь выбрасывать ненужные или непригодные продукты.
-                    </p>
-                </div>
-                <div className="w-40 h-40 shrink-0 order-1 md:order-2">
-                    <Fish className="w-full h-full text-slate-500 p-6 bg-slate-100 rounded-[40px] border-[8px] border-white shadow-md relative z-10" strokeWidth={1} fill="currentColor" />
-                </div>
+            <div className="bg-white mt-6 rounded-[32px] p-8 md:p-12 shadow-sm border border-stone-100 relative">
+                <p className="text-[15px] text-stone-700 font-light leading-relaxed">
+                    Любители жестких диет часто практикуют урезание калорий до минимума: 600−800 ккал в день. Это ничтожно мало для взрослого человека! Каждый раз, когда вы не доедаете базовые калории, вы берете у организма в долг. Рано или поздно долг придется отдавать либо увеличением калорийности, либо здоровьем. Никакая, даже самая красивая в мире фигура не стоит хоть капли здоровья. К тому же, на такой низкой калорийности можно забыть о росте мышц. А без мышц ваше тело даже с минимальным процентом жира все равно будет выглядеть дрябло и некрасиво. Дело не в низком проценте жира, а в пропорциях и формах тела. Округлые мышечные формы выглядят гораздо приятнее, чем обтянутые кожей кости с плоской обвислой попой. Если вы согласны со мной в этом моменте, значит, нам по пути :)
+                </p>
             </div>
         </div>
     </motion.div>
