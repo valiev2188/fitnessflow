@@ -6,7 +6,7 @@ const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me'
 );
 
-const PROTECTED_PATHS = ['/dashboard', '/admin', '/onboarding'];
+const PROTECTED_PATHS = ['/admin'];
 
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
