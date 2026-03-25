@@ -53,7 +53,9 @@ export default function WorkoutPage() {
                 const progRes = await fetch('/api/progress', { headers });
                 if (progRes.ok) {
                     const progData = await progRes.json();
-                    const isDone = progData.progress?.some((p: any) => p.workoutId === parseInt(params.workoutId as string, 10) && p.completed);
+                    const allProg = progData.progress || [];
+                    setAllProgress(allProg);
+                    const isDone = allProg.some((p: any) => p.workoutId === parseInt(params.workoutId as string, 10) && p.completed);
                     setCompleted(isDone);
                 }
 
