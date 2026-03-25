@@ -62,3 +62,30 @@ export const loginSessions = sqliteTable("login_sessions", {
     status: text("status").notNull().default("pending"),
     createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });
+
+export const nutritionWeeks = sqliteTable("nutrition_weeks", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    weekNumber: integer("week_number").notNull(),
+    title: text("title").notNull(),
+    groceryList: text("grocery_list"),
+});
+
+export const nutritionDays = sqliteTable("nutrition_days", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    weekId: integer("week_id").references(() => nutritionWeeks.id).notNull(),
+    dayNumber: integer("day_number").notNull(),
+});
+
+export const nutritionMeals = sqliteTable("nutrition_meals", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    dayId: integer("day_id").references(() => nutritionDays.id).notNull(),
+    mealType: text("meal_type").notNull(), // breakfast | lunch | dinner
+    calorieLevel: integer("calorie_level").notNull(), // 1200 | 1400 | 1600 | 1800
+    content: text("content").notNull(),
+});
+
+export const userNutritionSettings = sqliteTable("user_nutrition_settings", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id).notNull().unique(),
+    calorieLevel: integer("calorie_level").notNull().default(1400),
+});

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
-import { Home, PlaySquare, TrendingUp, Settings, LogOut } from 'lucide-react';
+import { Home, PlaySquare, TrendingUp, Settings, LogOut, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -41,6 +41,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     const navItems = [
         { name: 'Главная', href: '/dashboard', icon: Home },
         { name: 'Программы', href: '/dashboard/programs', icon: PlaySquare },
+        { name: 'Питание', href: '/dashboard/nutrition', icon: UtensilsCrossed },
         { name: 'Прогресс', href: '/dashboard/progress', icon: TrendingUp },
         { name: 'Настройки', href: '/dashboard/settings', icon: Settings },
     ];
