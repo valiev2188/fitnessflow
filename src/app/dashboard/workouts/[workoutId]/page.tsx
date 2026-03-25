@@ -32,6 +32,7 @@ export default function WorkoutPage() {
     const [loading, setLoading] = useState(true);
     const [completed, setCompleted] = useState(false);
     const [markingComplete, setMarkingComplete] = useState(false);
+    const [allProgress, setAllProgress] = useState<any[]>([]);
 
     useEffect(() => {
         async function fetchData() {
