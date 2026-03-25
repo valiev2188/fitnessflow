@@ -72,6 +72,18 @@ export default function WorkoutPage() {
     }, [params.workoutId, token, authLoading]);
 
     const handleToggleComplete = async () => {
+        // Daily limit check: warn if marking complete and already did 3+ today
+        if (!completed) {
+            const today = new Date().toDateString();
+            const todayCount = allProgress.filter(p =>
+                p.completed && p.completedAt && new Date(p.completedAt).toDateString() === today
+            ).length;
+            if (todayCount >= 3) {
+                const proceed = window.confirm('Вы точно хотите продолжить?\n\nОтдохните и возвращайтесь — ваше тело скажет спасибо. Рекомендуем сделать перерыв 24 часа.');
+                if (!proceed) return;
+            }
+        }
+
         setMarkingComplete(true);
         try {
             const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
