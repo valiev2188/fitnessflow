@@ -53,7 +53,15 @@ async function seed() {
     await db.update(programs).set({ durationDays: 21 }).where(eq(programs.id, startProgram.id));
     console.log('Updated duration_days → 21');
 
-    // Delete existing workouts for this program
+    // First delete user_progress that references these workouts (FK constraint)
+    const existingWorkouts = await db.select({ id: workouts.id }).from(workouts).where(eq(workouts.programId, startProgram.id));
+    if (existingWorkouts.length > 0) {
+        const workoutIds = existingWorkouts.map(w => w.id);
+        await db.delete(userProgress).where(inArray(userProgress.workoutId, workoutIds));
+        console.log(`Deleted user_progress for ${workoutIds.length} workouts`);
+    }
+
+    // Now safe to delete workouts
     await db.delete(workouts).where(eq(workouts.programId, startProgram.id));
     console.log('Deleted existing workouts');
 
