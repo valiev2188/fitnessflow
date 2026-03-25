@@ -92,12 +92,9 @@ export default function Home() {
       {/* SCARCITY BANNER */}
       <div className="scarcity-banner">
         <span>
-          ⚡ Предзапуск — <strong>осталось мест:</strong>
+          ⚡ Предзапуск — <strong>количество ограничено</strong>
         </span>
-        <span className="spots-count">
-          <span id="spots-num">12</span> из 30
-        </span>
-        <span style={{ opacity: 0.6 }}>· Старт потока 6 апреля</span>
+        <span style={{ opacity: 0.6 }}>· Старт 6 апреля</span>
       </div>
 
       {/* HERO */}
