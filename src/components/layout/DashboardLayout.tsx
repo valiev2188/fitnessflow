@@ -23,9 +23,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     };
 
     if (error) {
+        router.replace('/login');
         return (
-            <div className="flex h-screen items-center justify-center bg-[#FDFBF7] text-red-500 p-4 text-center font-sans">
-                Ошибка: {error}
+            <div className="flex h-screen items-center justify-center bg-[#FDFBF7]">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-rose-400" />
             </div>
         );
     }
