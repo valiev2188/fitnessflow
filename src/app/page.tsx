@@ -449,6 +449,25 @@ export default function Home() {
                 <div className="pricing-feature">Пожизненный доступ к программе</div>
               </div>
 
+              <div style={{
+                background: 'linear-gradient(135deg, #fff7f0 0%, #ffeee4 100%)',
+                border: '1.5px solid #f5c6a8',
+                borderRadius: 16,
+                padding: '16px 20px',
+                marginBottom: 20,
+                textAlign: 'left',
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#c47a4a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                  🎁 Бонус первым 30 покупателям
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#1A1A1A', marginBottom: 4 }}>
+                  + Программа питания от Лолы
+                </div>
+                <div style={{ fontSize: 13, color: '#7A7169', lineHeight: 1.5 }}>
+                  Персональный план питания на 21 день — без голодовок, под твои цели. Обычная цена 99 990 сум — первым 30 в подарок.
+                </div>
+              </div>
+
               <a href="https://t.me/testfref_bot" className="btn-cta-big">
                 🚀 Начать в Telegram
               </a>
