@@ -41,7 +41,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     const navItems = [
         { name: 'Главная', href: '/dashboard', icon: Home },
         { name: 'Программы', href: '/dashboard/programs', icon: PlaySquare },
-        { name: 'Питание', href: '/dashboard/nutrition', icon: UtensilsCrossed },
         { name: 'Прогресс', href: '/dashboard/progress', icon: TrendingUp },
         { name: 'Настройки', href: '/dashboard/settings', icon: Settings },
     ];

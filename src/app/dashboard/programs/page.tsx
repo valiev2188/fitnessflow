@@ -3,13 +3,14 @@
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useEffect, useState } from 'react';
-import { Play, ShoppingBag } from 'lucide-react';
+import { Play, ShoppingBag, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProgramsPage() {
     const { token, loading: authLoading } = useTelegramAuth();
     const [programs, setPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [category, setCategory] = useState('Все');
 
     useEffect(() => {
         async function fetchPrograms() {
@@ -31,12 +32,36 @@ export default function ProgramsPage() {
         }
     }, [token, authLoading]);
 
+    const filteredPrograms = programs.filter(p => {
+        if (category === 'Питание') return false; // Nutrition handles its own card
+        if (category === 'Все') return true;
+        if (category === 'Домашние') return true; // All our standard programs are home workouts right now
+        return true;
+    });
+
     return (
         <DashboardLayout>
             <div className="flex flex-col space-y-6">
                 <div>
                     <h1 className="text-3xl font-serif tracking-tight text-stone-900">Программы</h1>
                     <p className="text-stone-500 font-light mt-2">Авторские курсы тренировок, созданные специально для вас.</p>
+                </div>
+
+                {/* Categories */}
+                <div className="flex gap-2">
+                    {['Все', 'Домашние', 'Питание'].map(cat => (
+                        <button 
+                            key={cat}
+                            onClick={() => setCategory(cat)}
+                            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                                category === cat 
+                                ? 'bg-stone-900 text-white shadow-md' 
+                                : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                            }`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
 
                 {loading ? (
@@ -46,8 +71,38 @@ export default function ProgramsPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {programs.map((program) => {
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                        {/* Always show Nutrition card if "Все" or "Питание" */}
+                        {(category === 'Все' || category === 'Питание') && (
+                            <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-rose-100 bg-rose-50 p-6 transition-all hover:border-rose-300 hover:shadow-xl hover:shadow-rose-900/10">
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-100" />
+                                <div className="relative z-10">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <h3 className="text-xl font-medium text-stone-900">Программа питания</h3>
+                                            <div className="mt-2 inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-rose-600 backdrop-blur-sm border border-rose-100/50">
+                                                Полный гид • 2 недели
+                                            </div>
+                                        </div>
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-rose-500 transition-all group-hover:scale-110 group-hover:shadow-md group-hover:bg-rose-500 group-hover:text-white">
+                                            <UtensilsCrossed className="h-4 w-4 fill-current" />
+                                        </div>
+                                    </div>
+                                    <p className="mt-5 text-sm font-light text-stone-600 leading-relaxed line-clamp-3">
+                                        Полное руководство по сбалансированному питанию от А до Я. Включает 4 варианта калоража (1200-1800 ккал) с готовым меню на 14 дней.
+                                    </p>
+                                </div>
+                                <div className="relative z-10 mt-8 pt-6 border-t border-rose-200/50 flex flex-col gap-2">
+                                    <Link href="/dashboard/nutrition">
+                                        <button className="w-full rounded-2xl bg-rose-500 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-600 hover:shadow-md hover:shadow-rose-500/30 active:scale-95">
+                                            🥑 Открыть модуль
+                                        </button>
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+
+                        {filteredPrograms.map((program) => {
                             const isAdvanced = program.title.toLowerCase().includes('продвинут');
                             const hasAccess = program.hasAccess;
                             const priceText = program.price === 0 ? 'Бесплатно' : `${program.price.toLocaleString('ru-RU')} сум`;
@@ -114,3 +169,4 @@ export default function ProgramsPage() {
         </DashboardLayout>
     );
 }
+
