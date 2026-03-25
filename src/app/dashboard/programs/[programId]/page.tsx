@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
 import { DashboardLayout, cn } from '@/components/layout/DashboardLayout';
-import { ChevronLeft, PlayCircle, CheckCircle2, Clock, Dumbbell, Star } from 'lucide-react';
+import { ChevronLeft, PlayCircle, CheckCircle2, Clock, Dumbbell, Star, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProgramPage() {
