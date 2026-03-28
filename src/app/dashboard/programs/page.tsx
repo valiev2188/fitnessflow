@@ -11,6 +11,7 @@ export default function ProgramsPage() {
     const [programs, setPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState('Все');
+    const [hasNutritionAccess, setHasNutritionAccess] = useState(false);
 
     useEffect(() => {
         async function fetchPrograms() {
