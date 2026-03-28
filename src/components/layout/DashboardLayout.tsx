@@ -1,7 +1,7 @@
 'use client';
 
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
-import { Home, PlaySquare, TrendingUp, Settings, LogOut, UtensilsCrossed } from 'lucide-react';
+import { Home, PlaySquare, TrendingUp, Settings, LogOut, UtensilsCrossed, Salad } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
