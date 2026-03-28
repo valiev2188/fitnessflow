@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { name, goal, level, age, weight, phone, notifications } = body;
+    const { name, goal, level, age, height, weight, gender, phone, notifications } = body;
 
     if (name) {
         await db.update(users).set({ name }).where(eq(users.id, userId));
