@@ -238,7 +238,7 @@ export default function AdminDashboard() {
                                                         {user.subscription.plan}
                                                     </span>
                                                     <span className="text-[11px] text-stone-400 font-medium">
-                                                        До {new Date(user.subscription.expiresAt).toLocaleDateString('ru-RU')}
+                                                        {user.subscription.expiresAt ? `До ${new Date(user.subscription.expiresAt).toLocaleDateString('ru-RU')}` : 'Пожизненный'}
                                                     </span>
                                                 </div>
                                             ) : (
