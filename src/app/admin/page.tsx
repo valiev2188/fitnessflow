@@ -299,19 +299,27 @@ export default function AdminDashboard() {
                             <div className="space-y-3">
                                 <label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Выберите программу</label>
                                 <div className="grid grid-cols-2 gap-2">
-                                    {['Старт', 'Продвинутый', 'VIP'].map(plan => (
+                                    {[
+                                        { label: 'Старт', span: false },
+                                        { label: 'Продвинутый', span: false },
+                                        { label: 'VIP', span: false },
+                                        { label: 'Питание', span: true },
+                                    ].map(({ label, span }) => (
                                         <button
-                                            key={plan}
+                                            key={label}
                                             type="button"
-                                            onClick={() => setSelectedPlan(plan)}
+                                            onClick={() => {
+                                                setSelectedPlan(label);
+                                                if (label === 'Питание') setSelectedDays(0);
+                                            }}
                                             className={`p-3 rounded-2xl text-sm font-medium border text-left transition-all relative overflow-hidden ${
-                                                selectedPlan === plan 
-                                                    ? 'border-rose-500 bg-rose-50 text-rose-700' 
+                                                selectedPlan === label
+                                                    ? 'border-rose-500 bg-rose-50 text-rose-700'
                                                     : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
-                                            } ${plan === 'VIP' ? 'col-span-2' : ''}`}
+                                            } ${span ? 'col-span-2' : ''}`}
                                         >
-                                            {plan}
-                                            {selectedPlan === plan && <Check className="w-4 h-4 absolute top-3 right-3 text-rose-500" />}
+                                            {label}
+                                            {selectedPlan === label && <Check className="w-4 h-4 absolute top-3 right-3 text-rose-500" />}
                                         </button>
                                     ))}
                                 </div>
