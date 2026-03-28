@@ -40,9 +40,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Calculate expiration date
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + parseInt(days));
+        // Calculate expiration date (null = lifetime)
+        const daysInt = parseInt(days);
+        let expiresAt: Date | null = null;
+        if (daysInt > 0) {
+            expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + daysInt);
+        }
 
         // Check if subscription exists
         const existingSub = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1).then(res => res[0]);
