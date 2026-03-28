@@ -326,20 +326,25 @@ export default function AdminDashboard() {
                             </div>
                             
                             <div className="space-y-3">
-                                <label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Длительность (дней)</label>
-                                <div className="flex gap-2">
-                                    {[30, 60, 90].map(days => (
+                                <label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Длительность</label>
+                                <div className="flex gap-2 flex-wrap">
+                                    {[
+                                        { label: '30 дней', value: 30 },
+                                        { label: '60 дней', value: 60 },
+                                        { label: '90 дней', value: 90 },
+                                        { label: 'Пожизненный', value: 0 },
+                                    ].map(({ label, value }) => (
                                         <button
-                                            key={days}
+                                            key={value}
                                             type="button"
-                                            onClick={() => setSelectedDays(days)}
-                                            className={`flex-1 p-2 rounded-xl border text-sm transition-all ${
-                                                selectedDays === days
+                                            onClick={() => setSelectedDays(value)}
+                                            className={`flex-1 p-2 rounded-xl border text-sm transition-all whitespace-nowrap ${
+                                                selectedDays === value
                                                     ? 'bg-stone-900 border-stone-900 text-white font-medium'
                                                     : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
                                             }`}
                                         >
-                                            {days}
+                                            {label}
                                         </button>
                                     ))}
                                 </div>
