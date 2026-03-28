@@ -50,7 +50,9 @@ export async function POST(req: Request) {
         const updated = await db.update(userProfiles).set({
             goal, level,
             age: age ? parseInt(age) : null,
+            height: height ? parseInt(height) : null,
             weight: weight ? parseInt(weight) : null,
+            gender: gender || null,
             phone: phone || null,
             notifications: notifications ?? true,
             onboardingCompleted: true,
