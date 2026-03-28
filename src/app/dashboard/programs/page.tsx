@@ -28,8 +28,20 @@ export default function ProgramsPage() {
             }
         }
 
+        async function fetchNutritionAccess() {
+            if (!token) return;
+            try {
+                const res = await fetch('/api/profile', { headers: { Authorization: `Bearer ${token}` } });
+                if (res.ok) {
+                    const data = await res.json();
+                    setHasNutritionAccess(!!data.hasNutritionAccess);
+                }
+            } catch {}
+        }
+
         if (!authLoading) {
             fetchPrograms();
+            fetchNutritionAccess();
         }
     }, [token, authLoading]);
 
