@@ -23,7 +23,14 @@ export async function GET(req: Request) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const profile = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId)).limit(1).then(r => r[0]);
-    return NextResponse.json({ profile: profile || null });
+
+    // Check if user has active nutrition subscription
+    const nutritionSub = await db.select().from(subscriptions)
+        .where(and(eq(subscriptions.userId, userId), eq(subscriptions.plan, 'Питание'), eq(subscriptions.status, 'active')))
+        .limit(1).then(r => r[0]);
+    const hasNutritionAccess = !!(nutritionSub && (nutritionSub.expiresAt === null || nutritionSub.expiresAt > new Date()));
+
+    return NextResponse.json({ profile: profile || null, hasNutritionAccess });
 }
 
 export async function POST(req: Request) {
