@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, userProfiles } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { users, userProfiles, subscriptions } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
