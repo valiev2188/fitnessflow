@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, MoreVertical, X, Check, Search, ShieldAlert, Send } from 'lucide-react';
 
+type Subscription = {
+    id: number;
+    plan: string;
+    status: string;
+    expiresAt: string | null;
+};
+
 type User = {
     id: number;
     telegramId: string;
@@ -11,12 +18,7 @@ type User = {
     username: string;
     role: string;
     createdAt: string;
-    subscription: {
-        id: number;
-        plan: string;
-        status: string;
-        expiresAt: string;
-    } | null;
+    subscriptions: Subscription[];
     profile?: {
         phone: string | null;
         goal: string | null;
