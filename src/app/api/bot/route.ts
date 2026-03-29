@@ -30,6 +30,37 @@ const mainKeyboard = {
 
 // Handle /start command
 async function handleStart(chatId: number, firstName: string, telegramId: string, text: string = '') {
+    // Check if it's a referral deep link
+    if (text.startsWith('/start ref_')) {
+        const refCode = text.replace('/start ref_', '').trim();
+        const referrer = await db
+            .select()
+            .from(users)
+            .where(eq(users.referralCode, refCode))
+            .limit(1)
+            .then(r => r[0]);
+
+        if (referrer && referrer.id.toString() !== telegramId) {
+            // Check if this telegramId already has a referral entry
+            const existing = await db
+                .select()
+                .from(referrals)
+                .where(eq(referrals.referredTelegramId, telegramId))
+                .limit(1)
+                .then(r => r[0]);
+
+            if (!existing) {
+                await db.insert(referrals).values({
+                    referrerId: referrer.id,
+                    referredTelegramId: telegramId,
+                    referredUserId: null,
+                    status: 'pending',
+                });
+            }
+        }
+        // Fall through to show welcome message
+    }
+
     // Check if it's a deep link for web authentication
     if (text.startsWith('/start login_')) {
         const sessionId = text.replace('/start login_', '');
