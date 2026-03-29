@@ -151,7 +151,7 @@ export default function NutritionModulePage() {
                     <AnimatePresence mode="wait">
                         {activeTab === 'home' && <HomeTab key="home" />}
                         {activeTab === 'about' && <AboutTab key="about" />}
-                        {activeTab === 'calculator' && <CalculatorTab key="calculator" />}
+                        {activeTab === 'calculator' && <CalculatorTab key="calculator" profile={profile} token={token} />}
                         {activeTab === 'menu' && (
                             <MenuTab
                                 key="menu"
