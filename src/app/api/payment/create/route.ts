@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 import { db } from '@/db';
-import { payments, promoCodes, promoCodeUsages } from '@/db/schema';
+import { payments, promoCodes, promoCodeUsages, programs } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-
-const PLAN_PRICES: Record<string, number> = {
-    'Старт': 150000,
-    'Продвинутый': 450000,
-};
 
 export async function POST(req: Request) {
     const user = await verifyAuth(req);
@@ -17,10 +12,16 @@ export async function POST(req: Request) {
 
     const { plan, promoCode } = await req.json();
 
-    const basePrice = PLAN_PRICES[plan];
-    if (!basePrice) {
+    // Price from DB — single source of truth
+    const program = await db.select().from(programs)
+        .where(eq(programs.title, plan))
+        .limit(1).then(r => r[0]);
+
+    if (!program || !program.price) {
         return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
+
+    const basePrice = program.price;
 
     let finalAmount = basePrice;
     let resolvedPromoId: number | null = null;
