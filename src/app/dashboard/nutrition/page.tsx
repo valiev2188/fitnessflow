@@ -10,10 +10,27 @@ export default function NutritionModulePage() {
     const { token } = useTelegramAuth();
     const [loading, setLoading] = useState(true);
     const [weeks, setWeeks] = useState<any[]>([]);
+    const [profileLoading, setProfileLoading] = useState(true);
+    const [hasNutritionAccess, setHasNutritionAccess] = useState(false);
+    const [profile, setProfile] = useState<any>(null);
 
     const [calorieLevel, setCalorieLevel] = useState<number>(1400);
     const [activeWeek, setActiveWeek] = useState<number>(1);
     const [activeTab, setActiveTab] = useState<'home' | 'about' | 'calculator' | 'menu'>('home');
+
+    useEffect(() => {
+        async function fetchProfile() {
+            if (!token) return;
+            try {
+                const res = await fetch('/api/profile', { headers: { Authorization: `Bearer ${token}` } });
+                const data = await res.json();
+                setHasNutritionAccess(!!data.hasNutritionAccess);
+                setProfile(data.profile || null);
+            } catch (e) {}
+            finally { setProfileLoading(false); }
+        }
+        fetchProfile();
+    }, [token]);
 
     useEffect(() => {
         async function fetchSettings() {
