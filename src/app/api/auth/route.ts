@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { users, referrals } from '@/db/schema';
+import { eq, and, isNull } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { validateTelegramInitData } from '@/lib/telegram';
+import { ensureReferralCode } from '@/lib/referral';
+import { awardPoints } from '@/lib/points';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8272000512:AAGAE_OEKRMR8SiIwtGRrdJfZb7mJ3BEuRg';
@@ -73,6 +75,33 @@ export async function POST(req: Request) {
             // Upgrade existing user to admin if they match the ID
             const updated = await db.update(users).set({ role: 'admin' }).where(eq(users.id, user.id)).returning();
             user = updated[0];
+        }
+
+        // Ensure this user has a referral code
+        await ensureReferralCode(user.id, telegramId);
+
+        // Consume any pending referral for this telegramId
+        const pendingReferral = await db
+            .select()
+            .from(referrals)
+            .where(and(eq(referrals.referredTelegramId, telegramId), isNull(referrals.referredUserId)))
+            .limit(1)
+            .then(r => r[0]);
+
+        if (pendingReferral) {
+            await db
+                .update(referrals)
+                .set({ referredUserId: user.id, status: 'registered' })
+                .where(eq(referrals.id, pendingReferral.id));
+
+            // Award +50 to referrer
+            await awardPoints(
+                pendingReferral.referrerId,
+                50,
+                'referral_signup',
+                'Подруга зарегистрировалась по вашей ссылке',
+                pendingReferral.id
+            );
         }
 
         // Generate JWT

@@ -1,38 +1,55 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ChevronLeft, Copy, CheckCircle2, Send, CreditCard } from 'lucide-react';
+import { ChevronLeft, Copy, CheckCircle2, Send, CreditCard, Tag, X } from 'lucide-react';
+import { useTelegramAuth } from '@/hooks/useTelegramAuth';
+
+const PLAN_PRICES: Record<string, number> = {
+    'Старт': 150000,
+    'Продвинутый': 450000,
+};
+
+const PLAN_OLD_PRICES: Record<string, number> = {
+    'Старт': 200000,
+    'Продвинутый': 600000,
+};
+
+function fmt(n: number) {
+    return n.toLocaleString('ru-RU') + ' сум';
+}
 
 function PaymentContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const plan = searchParams.get('plan');
+    const plan = searchParams.get('plan') || '';
+    const { token } = useTelegramAuth();
+
     const [copied, setCopied] = useState(false);
+    const [promoInput, setPromoInput] = useState('');
+    const [promoApplying, setPromoApplying] = useState(false);
+    const [promoError, setPromoError] = useState('');
+    const [appliedPromo, setAppliedPromo] = useState<{
+        code: string;
+        discountedPrice: number;
+        originalPrice: number;
+        discountType: string;
+        discountValue: number;
+    } | null>(null);
 
     // Humo details
     const humoCard = "8600030457183980";
     const receiverName = "Лола Р.";
 
-    let price = "0";
-    let oldPrice = "";
-    let planName = "Неизвестный тариф";
+    const basePrice = PLAN_PRICES[plan];
+    const basePriceOld = PLAN_OLD_PRICES[plan];
 
-    switch (plan) {
-        case 'Старт':
-            price = "150 000 сум";
-            oldPrice = "200 000 сум";
-            planName = "Старт (12 занятий)";
-            break;
-        case 'Продвинутый':
-            price = "450 000 сум";
-            oldPrice = "600 000 сум";
-            planName = "Продвинутый (21 тренировка)";
-            break;
-        default:
-            planName = plan || "Неизвестный тариф";
-            price = "Уточните в боте";
-    }
+    const planName = plan === 'Старт' ? 'Старт (12 занятий)'
+        : plan === 'Продвинутый' ? 'Продвинутый (21 тренировка)'
+        : plan || 'Неизвестный тариф';
+
+    const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
+    const displayOldPrice = appliedPromo ? basePrice : basePriceOld;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(humoCard);
@@ -40,8 +57,56 @@ function PaymentContent() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleSendReceipt = () => {
-        const message = encodeURIComponent(`Здравствуйте! Я хочу оплатить тариф "${planName}" за ${price}. Прикрепляю чек об оплате:`);
+    const handleApplyPromo = async () => {
+        if (!promoInput.trim()) return;
+        setPromoApplying(true);
+        setPromoError('');
+        try {
+            const res = await fetch('/api/promo/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ code: promoInput.trim(), plan }),
+            });
+            const data = await res.json();
+            if (data.valid) {
+                setAppliedPromo({
+                    code: promoInput.trim().toUpperCase(),
+                    discountedPrice: data.discountedPrice,
+                    originalPrice: data.originalPrice,
+                    discountType: data.discountType,
+                    discountValue: data.discountValue,
+                });
+                setPromoInput('');
+            } else {
+                setPromoError(data.message || 'Промокод недействителен');
+            }
+        } catch {
+            setPromoError('Ошибка проверки промокода');
+        } finally {
+            setPromoApplying(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setAppliedPromo(null);
+        setPromoError('');
+    };
+
+    const handleSendReceipt = async () => {
+        // Record promo usage if applied
+        if (appliedPromo && token) {
+            await fetch('/api/promo/redeem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ code: appliedPromo.code, plan }),
+            }).catch(() => {});
+        }
+        const priceStr = displayPrice ? fmt(displayPrice) : 'Уточните в боте';
+        const promoNote = appliedPromo ? ` (промокод: ${appliedPromo.code})` : '';
+        const message = encodeURIComponent(`Здравствуйте! Я хочу оплатить тариф "${planName}" за ${priceStr}${promoNote}. Прикрепляю чек об оплате:`);
         window.open(`https://t.me/vvveins?text=${message}`, '_blank');
     };
 
@@ -81,13 +146,55 @@ function PaymentContent() {
                             <div className="text-left md:text-right">
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-400 mb-1">Сумма к оплате</h3>
                                 <div className="flex items-end md:justify-end gap-3">
-                                    {oldPrice && (
-                                        <div className="text-xl font-medium text-stone-300 line-through mb-1">{oldPrice}</div>
+                                    {displayOldPrice && (
+                                        <div className="text-xl font-medium text-stone-300 line-through mb-1">{fmt(displayOldPrice)}</div>
                                     )}
-                                    <div className="text-4xl font-semibold text-rose-500">{price}</div>
+                                    <div className="text-4xl font-semibold text-rose-500">
+                                        {displayPrice ? fmt(displayPrice) : 'Уточните в боте'}
+                                    </div>
                                 </div>
+                                {appliedPromo && (
+                                    <div className="flex items-center gap-1 mt-1 md:justify-end">
+                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
+                                            {appliedPromo.code} — скидка {appliedPromo.discountType === 'percent' ? `${appliedPromo.discountValue}%` : fmt(appliedPromo.discountValue)}
+                                        </span>
+                                        <button onClick={handleRemovePromo} className="text-stone-400 hover:text-stone-600">
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* Promo code field */}
+                        {basePrice && !appliedPromo && (
+                            <div className="mb-6">
+                                <label className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2 block">
+                                    <Tag className="w-3 h-3 inline mr-1" />
+                                    Промокод
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={promoInput}
+                                        onChange={e => { setPromoInput(e.target.value.toUpperCase()); setPromoError(''); }}
+                                        onKeyDown={e => e.key === 'Enter' && handleApplyPromo()}
+                                        placeholder="ВВЕДИТЕ ПРОМОКОД"
+                                        className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-wider text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-rose-300"
+                                    />
+                                    <button
+                                        onClick={handleApplyPromo}
+                                        disabled={!promoInput.trim() || promoApplying}
+                                        className="px-4 py-2.5 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-700 disabled:opacity-40 transition-colors"
+                                    >
+                                        {promoApplying ? '...' : 'Применить'}
+                                    </button>
+                                </div>
+                                {promoError && (
+                                    <p className="text-xs text-red-500 mt-1.5">{promoError}</p>
+                                )}
+                            </div>
+                        )}
 
                         <div className="space-y-6">
                             <h3 className="text-lg font-medium text-stone-900 flex items-center gap-2">

@@ -1,177 +1,267 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+    Coins, Flame, CheckCircle, Trophy, Users, Star, ArrowLeft, Copy, Check, Share2, Dumbbell
+} from 'lucide-react';
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Flame, Target, Trophy, CheckCircle2 } from 'lucide-react';
-import Link from 'next/link';
 
-const RANKS = [
-    { min: 0, max: 4, label: 'Начинающая', icon: '🌱', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', perk: 'Доступ к демо-курсу' },
-    { min: 5, max: 10, label: 'Активная', icon: '⚡', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', perk: 'Значок Активной' },
-    { min: 11, max: 20, label: 'Старательная', icon: '🔥', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', perk: 'Скидка 10% на следующий курс' },
-    { min: 21, max: 35, label: 'Чемпионка', icon: '🏆', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200', perk: 'Именной сертификат' },
-    { min: 36, max: 999, label: 'Элита', icon: '💎', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', perk: 'Личное сообщение от Лолы' },
-];
-
-function getRank(count: number) {
-    return RANKS.find(r => count >= r.min && count <= r.max) || RANKS[0];
+interface ProgressRecord {
+    id: number;
+    workoutId: number;
+    completed: boolean;
+    completedAt: string | null;
 }
 
-function getNextRank(count: number) {
-    const idx = RANKS.findIndex(r => count >= r.min && count <= r.max);
-    return idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
+interface PointTransaction {
+    id: number;
+    amount: number;
+    type: string;
+    description: string | null;
+    createdAt: string | null;
+}
+
+interface PointsData {
+    balance: number;
+    transactions: PointTransaction[];
+}
+
+interface ReferralData {
+    code: string;
+    referralLink: string;
+    registeredCount: number;
+    purchasedCount: number;
+}
+
+const TX_ICONS: Record<string, React.ReactNode> = {
+    workout_complete: <CheckCircle className="w-4 h-4 text-rose-400" />,
+    course_complete: <Trophy className="w-4 h-4 text-yellow-400" />,
+    referral_signup: <Users className="w-4 h-4 text-violet-400" />,
+    referral_purchase: <Users className="w-4 h-4 text-violet-500" />,
+    admin_grant: <Star className="w-4 h-4 text-stone-400" />,
+};
+
+function formatDate(ts: string | null) {
+    if (!ts) return '';
+    return new Date(Number(ts) * 1000 > 1e12 ? Number(ts) : new Date(ts).getTime()).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
 export default function ProgressPage() {
-    const { token, loading: authLoading } = useTelegramAuth();
-    const [progress, setProgress] = useState<any[]>([]);
+    const { token } = useTelegramAuth();
+
+    const [progress, setProgress] = useState<ProgressRecord[]>([]);
+    const [points, setPoints] = useState<PointsData>({ balance: 0, transactions: [] });
+    const [referral, setReferral] = useState<ReferralData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
+
+    const fetchData = useCallback(async () => {
+        if (!token) return;
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const [progressRes, pointsRes, referralRes] = await Promise.all([
+            fetch('/api/progress', { headers }),
+            fetch('/api/points', { headers }),
+            fetch('/api/referral', { headers }),
+        ]);
+
+        const [progressData, pointsData, referralData] = await Promise.all([
+            progressRes.json(),
+            pointsRes.json(),
+            referralRes.json(),
+        ]);
+
+        setProgress(progressData.progress || []);
+        setPoints(pointsData);
+        setReferral(referralData);
+        setLoading(false);
+    }, [token]);
 
     useEffect(() => {
-        async function fetchProgress() {
-            try {
-                const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-                const progRes = await fetch('/api/progress', { headers });
-                const progData = await progRes.json();
-                if (progData.progress) {
-                    setProgress(progData.progress.filter((p: any) => p.completed));
-                }
-            } catch (err) {
-                console.error('Failed to fetch progress', err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        if (!authLoading) fetchProgress();
-    }, [token, authLoading]);
+        if (token) fetchData();
+    }, [token, fetchData]);
 
-    const totalCompleted = progress.length;
+    const completed = progress.filter(p => p.completed);
 
-    const completedDates = new Set(progress.map(p => {
-        const d = new Date(p.completedAt);
-        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    }));
+    // Calculate streak
+    const dates = [...new Set(
+        completed
+            .filter(p => p.completedAt)
+            .map(p => new Date(p.completedAt!).toDateString())
+    )].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
     let streak = 0;
-    const today = new Date();
-    for (let i = 0; i < 365; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        if (completedDates.has(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`)) streak++;
-        else if (i > 0) break;
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (dates[0] === today || dates[0] === yesterday) {
+        for (let i = 0; i < dates.length; i++) {
+            const expected = new Date(Date.now() - i * 86400000).toDateString();
+            if (dates[i] === expected) { streak++; } else { break; }
+        }
     }
 
-    const currentRank = getRank(totalCompleted);
-    const nextRank = getNextRank(totalCompleted);
-    const progressToNext = nextRank ? ((totalCompleted - currentRank.min) / (nextRank.min - currentRank.min)) * 100 : 100;
+    const handleCopy = () => {
+        if (!referral) return;
+        navigator.clipboard.writeText(referral.referralLink).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
+    const handleShare = () => {
+        if (!referral) return;
+        const text = encodeURIComponent('Тренируйся дома вместе со мной! Бережные тренировки для женщин 🌸');
+        const url = encodeURIComponent(referral.referralLink);
+        window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+    };
+
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <div className="flex items-center justify-center py-20">
+                    <div className="w-8 h-8 border-2 border-rose-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout>
-            <div className="flex flex-col space-y-6 max-w-2xl mx-auto">
-                <div>
-                    <h1 className="text-3xl font-serif text-stone-900 tracking-tight mb-1">Ваши Достижения</h1>
-                    <p className="text-stone-500 font-light text-sm">Каждая тренировка — шаг к лучшей версии себя.</p>
+            <div className="max-w-md mx-auto px-4 pt-5 pb-8 space-y-4">
+
+                {/* Points Hero Card */}
+                <div className="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl p-6 text-white shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Coins className="w-5 h-5 opacity-80" />
+                        <span className="text-sm opacity-80">Ваши баллы</span>
+                    </div>
+                    <p className="text-5xl font-bold tracking-tight">
+                        {points.balance.toLocaleString('ru-RU')}
+                    </p>
+                    <p className="text-sm opacity-70 mt-1">баллов накоплено</p>
                 </div>
 
-                {loading ? (
-                    <div className="flex h-64 items-center justify-center">
-                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-rose-400" />
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                        <Dumbbell className="w-5 h-5 text-rose-400 mx-auto mb-1" />
+                        <p className="text-2xl font-bold text-gray-900">{completed.length}</p>
+                        <p className="text-xs text-gray-500">тренировок</p>
                     </div>
-                ) : (
-                    <>
-                        {/* Current Rank Card */}
-                        <div className={`rounded-3xl border-2 ${currentRank.border} ${currentRank.bg} p-6`}>
-                            <div className="flex items-center gap-4">
-                                <div className="text-5xl">{currentRank.icon}</div>
-                                <div className="flex-1">
-                                    <p className="text-xs font-medium text-stone-500 uppercase tracking-widest mb-1">Текущий ранг</p>
-                                    <h2 className={`text-2xl font-bold ${currentRank.color}`}>{currentRank.label}</h2>
-                                    <p className="text-sm text-stone-500 font-light mt-0.5">🎁 {currentRank.perk}</p>
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                        <Flame className="w-5 h-5 text-orange-400 mx-auto mb-1" />
+                        <p className="text-2xl font-bold text-gray-900">{streak}</p>
+                        <p className="text-xs text-gray-500">дней подряд</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+                        <Trophy className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
+                        <p className="text-2xl font-bold text-gray-900">{dates.length}</p>
+                        <p className="text-xs text-gray-500">активных дней</p>
+                    </div>
+                </div>
+
+                {/* How to earn */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-3">Как заработать баллы</h2>
+                    <div className="space-y-3">
+                        {[
+                            { icon: <CheckCircle className="w-4 h-4 text-rose-400" />, label: 'За каждую тренировку', pts: '+10' },
+                            { icon: <Trophy className="w-4 h-4 text-yellow-400" />, label: 'За завершение курса', pts: '+200' },
+                            { icon: <Users className="w-4 h-4 text-violet-400" />, label: 'Подруга зарегистрировалась', pts: '+50' },
+                            { icon: <Users className="w-4 h-4 text-violet-500" />, label: 'Подруга купила курс', pts: '+300' },
+                        ].map(({ icon, label, pts }) => (
+                            <div key={label} className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    {icon}
+                                    <span className="text-sm text-gray-700">{label}</span>
+                                </div>
+                                <span className="text-sm font-semibold text-rose-500">{pts}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Referral Section */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Users className="w-5 h-5 text-violet-500" />
+                        <h2 className="text-sm font-semibold text-gray-900">Пригласи подругу</h2>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-4">
+                        Зарабатывай баллы, когда подруга регистрируется и покупает курс
+                    </p>
+
+                    {referral && (
+                        <>
+                            <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between mb-3 border border-gray-100">
+                                <span className="text-xs text-gray-600 truncate flex-1 mr-2 font-mono">
+                                    {referral.referralLink}
+                                </span>
+                                <button
+                                    onClick={handleCopy}
+                                    className="flex items-center gap-1 text-xs font-medium text-rose-500 shrink-0"
+                                >
+                                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    {copied ? 'Скопировано' : 'Копировать'}
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={handleShare}
+                                className="w-full flex items-center justify-center gap-2 bg-violet-50 text-violet-700 rounded-xl py-3 text-sm font-medium mb-4"
+                            >
+                                <Share2 className="w-4 h-4" />
+                                Поделиться в Telegram
+                            </button>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-violet-50 rounded-xl p-3 text-center">
+                                    <p className="text-xl font-bold text-violet-600">{referral.registeredCount}</p>
+                                    <p className="text-xs text-violet-500 mt-0.5">зарегистрировалось</p>
+                                </div>
+                                <div className="bg-rose-50 rounded-xl p-3 text-center">
+                                    <p className="text-xl font-bold text-rose-600">{referral.purchasedCount}</p>
+                                    <p className="text-xs text-rose-500 mt-0.5">купили курс</p>
                                 </div>
                             </div>
-                            {nextRank && (
-                                <div className="mt-4">
-                                    <div className="flex justify-between text-xs text-stone-500 mb-1.5">
-                                        <span>До ранга «{nextRank.label} {nextRank.icon}»</span>
-                                        <span><b>{totalCompleted}</b> / {nextRank.min} тренировок</span>
-                                    </div>
-                                    <div className="h-2 rounded-full bg-white/60 overflow-hidden">
-                                        <div className="h-full rounded-full bg-rose-400 transition-all duration-700" style={{ width: `${Math.min(progressToNext, 100)}%` }} />
-                                    </div>
-                                </div>
-                            )}
-                            {!nextRank && <p className="mt-3 text-center text-sm font-semibold text-purple-600">💎 Вы достигли максимального ранга!</p>}
-                        </div>
+                        </>
+                    )}
+                </div>
 
-                        {/* All Ranks */}
-                        <div className="bg-white rounded-3xl border border-stone-100 p-6">
-                            <h2 className="text-base font-semibold text-stone-900 mb-4">Все Ранги</h2>
-                            <div className="space-y-3">
-                                {RANKS.map((rank) => {
-                                    const isUnlocked = totalCompleted >= rank.min;
-                                    const isCurrent = rank.label === currentRank.label;
-                                    return (
-                                        <div key={rank.label} className={`flex items-center gap-3 p-3 rounded-2xl transition-all ${isCurrent ? `${rank.bg} border ${rank.border}` : isUnlocked ? 'bg-stone-50' : 'opacity-40'}`}>
-                                            <span className="text-2xl">{rank.icon}</span>
-                                            <div className="flex-1">
-                                                <p className={`font-semibold text-sm ${isCurrent ? rank.color : 'text-stone-700'}`}>
-                                                    {rank.label}
-                                                    {isCurrent && <span className="ml-2 text-xs bg-rose-400 text-white px-2 py-0.5 rounded-full">Вы здесь</span>}
-                                                </p>
-                                                <p className="text-xs text-stone-400">{rank.min}–{rank.max === 999 ? '∞' : rank.max} трен. · {rank.perk}</p>
-                                            </div>
-                                            {isUnlocked && <CheckCircle2 className="h-5 w-5 text-green-400 shrink-0" />}
+                {/* Transaction History */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-3">История баллов</h2>
+
+                    {points.transactions.length === 0 ? (
+                        <p className="text-sm text-gray-400 text-center py-4">
+                            Пока нет начислений — завершите первую тренировку!
+                        </p>
+                    ) : (
+                        <div className="space-y-3">
+                            {points.transactions.slice(0, 15).map(tx => (
+                                <div key={tx.id} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center">
+                                            {TX_ICONS[tx.type] ?? <Star className="w-4 h-4 text-gray-400" />}
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Stats Row */}
-                        <div className="grid grid-cols-3 gap-3">
-                            <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center">
-                                <Target className="h-5 w-5 text-rose-400 mb-2" />
-                                <div className="text-2xl font-bold text-stone-900">{totalCompleted}</div>
-                                <div className="text-[10px] font-medium text-stone-400 uppercase">Сделано</div>
-                            </div>
-                            <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center">
-                                <Flame className="h-5 w-5 text-orange-400 mb-2" />
-                                <div className="text-2xl font-bold text-stone-900">{streak}</div>
-                                <div className="text-[10px] font-medium text-stone-400 uppercase">Серия</div>
-                            </div>
-                            <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center">
-                                <Trophy className="h-5 w-5 text-yellow-400 mb-2" />
-                                <div className="text-2xl font-bold text-stone-900">{completedDates.size}</div>
-                                <div className="text-[10px] font-medium text-stone-400 uppercase">Дней</div>
-                            </div>
-                        </div>
-
-                        {/* History */}
-                        <div className="bg-white rounded-3xl p-6 border border-stone-100">
-                            <h2 className="text-base font-semibold text-stone-900 mb-4">История Тренировок</h2>
-                            {progress.length === 0 ? (
-                                <div className="text-center p-8 border border-dashed border-stone-200 rounded-2xl text-stone-400 bg-stone-50">
-                                    <p className="mb-4 font-light">Пока нет завершённых тренировок.</p>
-                                    <Link href="/dashboard/programs" className="inline-flex rounded-full bg-stone-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-rose-500 transition-all">Выбрать Курс</Link>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    {progress.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()).slice(0, 8).map((p) => (
-                                        <div key={p.id} className="flex items-center gap-4 p-4 rounded-2xl border border-stone-100 hover:bg-stone-50 transition-all">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
-                                                <CheckCircle2 className="h-5 w-5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-stone-900 text-sm">Тренировка #{p.workoutId}</p>
-                                                <p className="text-xs text-stone-400 mt-0.5">{new Date(p.completedAt).toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-                                            </div>
+                                        <div>
+                                            <p className="text-sm text-gray-800 leading-tight">
+                                                {tx.description || tx.type}
+                                            </p>
+                                            <p className="text-xs text-gray-400">{formatDate(tx.createdAt)}</p>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <span className={`text-sm font-semibold ${tx.amount > 0 ? 'text-green-500' : 'text-red-400'}`}>
+                                        {tx.amount > 0 ? '+' : ''}{tx.amount}
+                                    </span>
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    </>
-                )}
+                    )}
+                </div>
+
             </div>
         </DashboardLayout>
     );

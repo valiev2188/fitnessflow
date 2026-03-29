@@ -7,6 +7,7 @@ export const users = sqliteTable("users", {
     name: text("name"),
     username: text("username"),
     role: text("role").notNull().default("user"),
+    referralCode: text("referral_code").unique(),
     createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });
 
@@ -90,4 +91,56 @@ export const userNutritionSettings = sqliteTable("user_nutrition_settings", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     userId: integer("user_id").references(() => users.id).notNull().unique(),
     calorieLevel: integer("calorie_level").notNull().default(1400),
+});
+
+// --- Points & Gamification ---
+
+export const userPoints = sqliteTable("user_points", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id).notNull().unique(),
+    balance: integer("balance").notNull().default(0),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+});
+
+export const pointTransactions = sqliteTable("point_transactions", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").references(() => users.id).notNull(),
+    amount: integer("amount").notNull(),
+    type: text("type").notNull(), // workout_complete | course_complete | referral_signup | referral_purchase | admin_grant
+    description: text("description"),
+    relatedId: integer("related_id"), // workoutId, programId, referralId, etc.
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+});
+
+// --- Referrals ---
+
+export const referrals = sqliteTable("referrals", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    referrerId: integer("referrer_id").references(() => users.id).notNull(),
+    referredUserId: integer("referred_user_id").references(() => users.id),
+    referredTelegramId: text("referred_telegram_id").unique(),
+    status: text("status").notNull().default("pending"), // pending | registered | purchased
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+});
+
+// --- Promo Codes ---
+
+export const promoCodes = sqliteTable("promo_codes", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    code: text("code").notNull().unique(),
+    discountType: text("discount_type").notNull(), // percent | flat
+    discountValue: integer("discount_value").notNull(),
+    maxUses: integer("max_uses"), // null = unlimited
+    usedCount: integer("used_count").notNull().default(0),
+    expiresAt: integer("expires_at", { mode: "timestamp" }),
+    applicablePlan: text("applicable_plan"), // null = any plan
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+});
+
+export const promoCodeUsages = sqliteTable("promo_code_usages", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    promoCodeId: integer("promo_code_id").references(() => promoCodes.id).notNull(),
+    userId: integer("user_id").references(() => users.id).notNull(),
+    usedAt: integer("used_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, subscriptions } from '@/db/schema';
+import { users, subscriptions, referrals } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { awardPoints } from '@/lib/points';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
 
@@ -61,6 +62,31 @@ export async function POST(req: Request) {
         } else {
             // Create new subscription record for this plan
             await db.insert(subscriptions).values({ userId, plan, status, expiresAt });
+        }
+
+        // If granting an active subscription, award purchase referral bonus
+        if (status === 'active') {
+            const referral = await db
+                .select()
+                .from(referrals)
+                .where(and(eq(referrals.referredUserId, userId), eq(referrals.status, 'registered')))
+                .limit(1)
+                .then(r => r[0]);
+
+            if (referral) {
+                await db
+                    .update(referrals)
+                    .set({ status: 'purchased' })
+                    .where(eq(referrals.id, referral.id));
+
+                await awardPoints(
+                    referral.referrerId,
+                    300,
+                    'referral_purchase',
+                    'Подруга, которую вы пригласили, купила курс!',
+                    referral.id
+                );
+            }
         }
 
         return NextResponse.json({ success: true });
