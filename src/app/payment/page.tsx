@@ -1,19 +1,9 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ChevronLeft, CreditCard, Tag, X } from 'lucide-react';
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
-
-const PLAN_PRICES: Record<string, number> = {
-    'Старт': 150000,
-    'Продвинутый': 450000,
-};
-
-const PLAN_OLD_PRICES: Record<string, number> = {
-    'Старт': 200000,
-    'Продвинутый': 600000,
-};
 
 function fmt(n: number) {
     return n.toLocaleString('ru-RU') + ' сум';
@@ -24,6 +14,10 @@ function PaymentContent() {
     const router = useRouter();
     const plan = searchParams.get('plan') || '';
     const { token } = useTelegramAuth();
+
+    const [basePrice, setBasePrice] = useState<number | null>(null);
+    const [planName, setPlanName] = useState(plan || 'Неизвестный тариф');
+    const [priceLoading, setPriceLoading] = useState(true);
 
     const [promoInput, setPromoInput] = useState('');
     const [promoApplying, setPromoApplying] = useState(false);
@@ -36,15 +30,24 @@ function PaymentContent() {
         discountValue: number;
     } | null>(null);
 
-    const basePrice = PLAN_PRICES[plan];
-    const basePriceOld = PLAN_OLD_PRICES[plan];
-
-    const planName = plan === 'Старт' ? 'Старт (12 занятий)'
-        : plan === 'Продвинутый' ? 'Продвинутый (21 тренировка)'
-        : plan || 'Неизвестный тариф';
+    // Fetch price from DB — single source of truth
+    useEffect(() => {
+        if (!plan) { setPriceLoading(false); return; }
+        fetch('/api/programs')
+            .then(r => r.json())
+            .then(data => {
+                const prog = (data.programs || []).find((p: any) => p.title === plan);
+                if (prog) {
+                    setBasePrice(prog.price);
+                    setPlanName(`${prog.title} (${prog.durationDays} дней)`);
+                }
+            })
+            .catch(() => {})
+            .finally(() => setPriceLoading(false));
+    }, [plan]);
 
     const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
-    const displayOldPrice = appliedPromo ? basePrice : basePriceOld;
+    const displayOldPrice = appliedPromo ? basePrice : null;
 
     const [creatingOrder, setCreatingOrder] = useState(false);
     const [orderError, setOrderError] = useState('');
