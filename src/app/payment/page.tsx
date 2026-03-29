@@ -176,7 +176,7 @@ function PaymentContent() {
                         </div>
 
                         {/* Promo code field */}
-                        {basePrice && !appliedPromo && (
+                        {!priceLoading && basePrice && !appliedPromo && (
                             <div className="mb-6">
                                 <label className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2 block">
                                     <Tag className="w-3 h-3 inline mr-1" />
