@@ -146,13 +146,55 @@ function PaymentContent() {
                             <div className="text-left md:text-right">
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-400 mb-1">Сумма к оплате</h3>
                                 <div className="flex items-end md:justify-end gap-3">
-                                    {oldPrice && (
-                                        <div className="text-xl font-medium text-stone-300 line-through mb-1">{oldPrice}</div>
+                                    {displayOldPrice && (
+                                        <div className="text-xl font-medium text-stone-300 line-through mb-1">{fmt(displayOldPrice)}</div>
                                     )}
-                                    <div className="text-4xl font-semibold text-rose-500">{price}</div>
+                                    <div className="text-4xl font-semibold text-rose-500">
+                                        {displayPrice ? fmt(displayPrice) : 'Уточните в боте'}
+                                    </div>
                                 </div>
+                                {appliedPromo && (
+                                    <div className="flex items-center gap-1 mt-1 md:justify-end">
+                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
+                                            {appliedPromo.code} — скидка {appliedPromo.discountType === 'percent' ? `${appliedPromo.discountValue}%` : fmt(appliedPromo.discountValue)}
+                                        </span>
+                                        <button onClick={handleRemovePromo} className="text-stone-400 hover:text-stone-600">
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* Promo code field */}
+                        {basePrice && !appliedPromo && (
+                            <div className="mb-6">
+                                <label className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2 block">
+                                    <Tag className="w-3 h-3 inline mr-1" />
+                                    Промокод
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={promoInput}
+                                        onChange={e => { setPromoInput(e.target.value.toUpperCase()); setPromoError(''); }}
+                                        onKeyDown={e => e.key === 'Enter' && handleApplyPromo()}
+                                        placeholder="ВВЕДИТЕ ПРОМОКОД"
+                                        className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-wider text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-rose-300"
+                                    />
+                                    <button
+                                        onClick={handleApplyPromo}
+                                        disabled={!promoInput.trim() || promoApplying}
+                                        className="px-4 py-2.5 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-700 disabled:opacity-40 transition-colors"
+                                    >
+                                        {promoApplying ? '...' : 'Применить'}
+                                    </button>
+                                </div>
+                                {promoError && (
+                                    <p className="text-xs text-red-500 mt-1.5">{promoError}</p>
+                                )}
+                            </div>
+                        )}
 
                         <div className="space-y-6">
                             <h3 className="text-lg font-medium text-stone-900 flex items-center gap-2">
