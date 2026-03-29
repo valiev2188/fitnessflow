@@ -62,13 +62,13 @@ export default function ProgramsPage() {
 
                 {/* Categories */}
                 <div className="flex gap-2">
-                    {['Все', 'Домашние', 'Питание'].map(cat => (
-                        <button 
+                    {['Все', 'Домашние'].map(cat => (
+                        <button
                             key={cat}
                             onClick={() => setCategory(cat)}
                             className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
-                                category === cat 
-                                ? 'bg-stone-900 text-white shadow-md' 
+                                category === cat
+                                ? 'bg-stone-900 text-white shadow-md'
                                 : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-900'
                             }`}
                         >
