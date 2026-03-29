@@ -40,11 +40,11 @@ export async function GET(req: Request) {
         const allProfiles = await db.select().from(userProfiles);
 
         const usersWithSubs = allUsers.map(user => {
-            const sub = allSubs.find(s => s.userId === user.id);
+            const subs = allSubs.filter(s => s.userId === user.id);
             const profile = allProfiles.find(p => p.userId === user.id);
             return {
                 ...user,
-                subscription: sub || null,
+                subscriptions: subs,
                 profile: profile || null
             };
         });
