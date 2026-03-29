@@ -84,16 +84,29 @@ export default function ProgramsPage() {
                     </div>
                 ) : (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
-                        {/* Always show Nutrition card if "Все" or "Питание" */}
-                        {(category === 'Все' || category === 'Питание') && (
+                        {/* Nutrition card — shown in "Все" */}
+                        {category === 'Все' && (
                             <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-rose-100 bg-rose-50 p-6 transition-all hover:border-rose-300 hover:shadow-xl hover:shadow-rose-900/10">
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-100" />
                                 <div className="relative z-10">
                                     <div className="flex items-start justify-between">
                                         <div>
                                             <h3 className="text-xl font-medium text-stone-900">Программа питания</h3>
-                                            <div className="mt-2 inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-rose-600 backdrop-blur-sm border border-rose-100/50">
-                                                Полный гид • 2 недели
+                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                {hasNutritionAccess ? (
+                                                    <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-600">
+                                                        ✓ Доступ активен
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        <span className="inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-rose-600 backdrop-blur-sm border border-rose-100/50">
+                                                            99 000 сум
+                                                        </span>
+                                                        <span className="inline-flex items-center rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-600">
+                                                            Пожизненный доступ
+                                                        </span>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-rose-500 transition-all group-hover:scale-110 group-hover:shadow-md group-hover:bg-rose-500 group-hover:text-white">
@@ -101,15 +114,23 @@ export default function ProgramsPage() {
                                         </div>
                                     </div>
                                     <p className="mt-5 text-sm font-light text-stone-600 leading-relaxed line-clamp-3">
-                                        Полное руководство по сбалансированному питанию от А до Я. Включает 4 варианта калоража (1200-1800 ккал) с готовым меню на 14 дней.
+                                        Халяль-рацион на 4 недели, калькулятор КБЖУ и ИМТ, гид по питанию. Адаптировано для аудитории Узбекистана.
                                     </p>
                                 </div>
                                 <div className="relative z-10 mt-8 pt-6 border-t border-rose-200/50 flex flex-col gap-2">
-                                    <Link href="/dashboard/nutrition">
-                                        <button className="w-full rounded-2xl bg-rose-500 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-600 hover:shadow-md hover:shadow-rose-500/30 active:scale-95">
-                                            🥑 Открыть модуль
-                                        </button>
-                                    </Link>
+                                    {hasNutritionAccess ? (
+                                        <Link href="/dashboard/nutrition">
+                                            <button className="w-full rounded-2xl bg-rose-500 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-600 hover:shadow-md hover:shadow-rose-500/30 active:scale-95">
+                                                🥑 Открыть программу
+                                            </button>
+                                        </Link>
+                                    ) : (
+                                        <a href="https://t.me/testfref_bot?start=nutrition_buy" target="_blank" rel="noopener noreferrer">
+                                            <button className="w-full rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-500 hover:shadow-md hover:shadow-rose-500/30 active:scale-95">
+                                                Купить доступ — 99 000 сум
+                                            </button>
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         )}
