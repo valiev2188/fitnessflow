@@ -116,21 +116,6 @@ function PaymentContent() {
         setPromoError('');
     };
 
-    const handleSendReceipt = async () => {
-        // Record promo usage if applied
-        if (appliedPromo && token) {
-            await fetch('/api/promo/redeem', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ code: appliedPromo.code, plan }),
-            }).catch(() => {});
-        }
-        const priceStr = displayPrice ? fmt(displayPrice) : 'Уточните в боте';
-        const promoNote = appliedPromo ? ` (промокод: ${appliedPromo.code})` : '';
-        const message = encodeURIComponent(`Здравствуйте! Я хочу оплатить тариф "${planName}" за ${priceStr}${promoNote}. Прикрепляю чек об оплате:`);
-        window.open(`https://t.me/vvveins?text=${message}`, '_blank');
-    };
-
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-stone-900 font-sans selection:bg-rose-200">
             <div className="max-w-2xl mx-auto px-6 py-12 md:py-20">
