@@ -64,6 +64,31 @@ export async function POST(req: Request) {
             await db.insert(subscriptions).values({ userId, plan, status, expiresAt });
         }
 
+        // If granting an active subscription, award purchase referral bonus
+        if (status === 'active') {
+            const referral = await db
+                .select()
+                .from(referrals)
+                .where(and(eq(referrals.referredUserId, userId), eq(referrals.status, 'registered')))
+                .limit(1)
+                .then(r => r[0]);
+
+            if (referral) {
+                await db
+                    .update(referrals)
+                    .set({ status: 'purchased' })
+                    .where(eq(referrals.id, referral.id));
+
+                await awardPoints(
+                    referral.referrerId,
+                    300,
+                    'referral_purchase',
+                    'Подруга, которую вы пригласили, купила курс!',
+                    referral.id
+                );
+            }
+        }
+
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Update Subscription Error:', error);
