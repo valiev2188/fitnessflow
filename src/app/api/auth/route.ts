@@ -77,6 +77,33 @@ export async function POST(req: Request) {
             user = updated[0];
         }
 
+        // Ensure this user has a referral code
+        await ensureReferralCode(user.id, telegramId);
+
+        // Consume any pending referral for this telegramId
+        const pendingReferral = await db
+            .select()
+            .from(referrals)
+            .where(and(eq(referrals.referredTelegramId, telegramId), isNull(referrals.referredUserId)))
+            .limit(1)
+            .then(r => r[0]);
+
+        if (pendingReferral) {
+            await db
+                .update(referrals)
+                .set({ referredUserId: user.id, status: 'registered' })
+                .where(eq(referrals.id, pendingReferral.id));
+
+            // Award +50 to referrer
+            await awardPoints(
+                pendingReferral.referrerId,
+                50,
+                'referral_signup',
+                'Подруга зарегистрировалась по вашей ссылке',
+                pendingReferral.id
+            );
+        }
+
         // Generate JWT
         const token = jwt.sign(
             { userId: user.id, telegramId: user.telegramId },
