@@ -74,6 +74,54 @@ export default function NutritionModulePage() {
 
     const currentWeekData = weeks.find(w => w.weekNumber === activeWeek);
 
+    if (profileLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#F6F6F6]">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-rose-400" />
+            </div>
+        );
+    }
+
+    if (!hasNutritionAccess) {
+        return (
+            <div className="min-h-screen bg-[#F6F6F6] flex flex-col items-center justify-center p-6 text-center">
+                <div className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-sm border border-stone-100 space-y-6">
+                    <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto border border-rose-100">
+                        <UtensilsCrossed className="w-9 h-9 text-rose-400" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-stone-900 font-serif mb-2">Программа питания</h1>
+                        <div className="inline-flex items-center gap-2 bg-stone-100 text-stone-600 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+                            Пожизненный доступ
+                        </div>
+                    </div>
+                    <ul className="text-left space-y-3 text-[14px] text-stone-600 font-light">
+                        {[
+                            '🥗 Халяль-рацион на 4 недели (1200–1800 ккал)',
+                            '🧮 Калькулятор КБЖУ и ИМТ с сохранением',
+                            '📚 Полный гид: метод тарелки, источники белка',
+                            '💧 Норма воды по стандартам EFSA / ВОЗ',
+                            '🎯 Персональные рекомендации под вашу цель',
+                        ].map(item => (
+                            <li key={item} className="flex items-start gap-3">
+                                <span className="text-base shrink-0">{item.slice(0,2)}</span>
+                                <span>{item.slice(3)}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="pt-2 space-y-3">
+                        <a href="https://t.me/testfref_bot?start=nutrition_buy" target="_blank" rel="noopener noreferrer" className="block w-full py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-bold text-[15px] transition-all shadow-lg shadow-rose-500/25">
+                            Купить доступ — 99 000 сум
+                        </a>
+                        <Link href="/dashboard" className="block text-sm text-stone-400 hover:text-stone-600 transition">
+                            ← Вернуться в дашборд
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-[#F6F6F6] text-stone-900 font-sans pb-20 overflow-x-hidden">
             <div className="w-full flex justify-between items-center p-6 md:px-12 max-w-7xl mx-auto">
