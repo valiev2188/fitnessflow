@@ -46,10 +46,36 @@ function PaymentContent() {
     const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
     const displayOldPrice = appliedPromo ? basePrice : basePriceOld;
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(humoCard);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const [creatingOrder, setCreatingOrder] = useState(false);
+    const [orderError, setOrderError] = useState('');
+
+    const handlePayWithClick = async () => {
+        if (!token) {
+            setOrderError('Необходимо войти через Telegram');
+            return;
+        }
+        setCreatingOrder(true);
+        setOrderError('');
+        try {
+            const res = await fetch('/api/payment/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setOrderError(data.error || 'Ошибка создания заказа');
+                return;
+            }
+            window.location.href = data.clickUrl;
+        } catch {
+            setOrderError('Ошибка соединения. Попробуйте снова.');
+        } finally {
+            setCreatingOrder(false);
+        }
     };
 
     const handleApplyPromo = async () => {
