@@ -159,7 +159,10 @@ function PaymentContent() {
                                         <div className="text-xl font-medium text-stone-300 line-through mb-1">{fmt(displayOldPrice)}</div>
                                     )}
                                     <div className="text-4xl font-semibold text-rose-500">
-                                        {displayPrice ? fmt(displayPrice) : 'Уточните в боте'}
+                                        {priceLoading
+                                            ? <span className="inline-block w-8 h-8 border-2 border-rose-300 border-t-rose-500 rounded-full animate-spin" />
+                                            : displayPrice ? fmt(displayPrice) : '—'
+                                        }
                                     </div>
                                 </div>
                                 {appliedPromo && (
