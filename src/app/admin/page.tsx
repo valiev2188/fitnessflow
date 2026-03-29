@@ -234,48 +234,55 @@ export default function AdminDashboard() {
                                         </td>
 
                                         <td className="px-6 py-5 align-middle">
-                                            {user.subscription?.status === 'active' ? (
-                                                <div className="flex flex-col items-start gap-1">
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 font-medium text-xs">
-                                                        {user.subscription.plan}
-                                                    </span>
-                                                    <span className="text-[11px] text-stone-400 font-medium">
-                                                        {user.subscription.expiresAt ? `До ${new Date(user.subscription.expiresAt).toLocaleDateString('ru-RU')}` : 'Пожизненный'}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-stone-100 text-stone-500 font-medium text-xs">
-                                                    Нет доступа
-                                                </span>
-                                            )}
+                                            {(() => {
+                                                const activeSubs = user.subscriptions.filter(s => s.status === 'active');
+                                                if (activeSubs.length === 0) {
+                                                    return (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-stone-100 text-stone-500 font-medium text-xs">
+                                                            Нет доступа
+                                                        </span>
+                                                    );
+                                                }
+                                                return (
+                                                    <div className="flex flex-col gap-1.5">
+                                                        {activeSubs.map(sub => (
+                                                            <div key={sub.id} className="flex items-center gap-1.5">
+                                                                <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 font-medium text-xs">
+                                                                    {sub.plan}
+                                                                </span>
+                                                                <span className="text-[10px] text-stone-400">
+                                                                    {sub.expiresAt ? `до ${new Date(sub.expiresAt).toLocaleDateString('ru-RU')}` : '∞'}
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => handleRevokeAccess(user.id, sub.plan)}
+                                                                    className="p-0.5 text-stone-300 hover:text-rose-500 transition-colors"
+                                                                    title={`Отозвать ${sub.plan}`}
+                                                                >
+                                                                    <X className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                );
+                                            })()}
                                         </td>
-                                        
+
                                         <td className="px-6 py-5 align-middle">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <button 
+                                                <button
                                                     onClick={() => setAccessModal(user)}
                                                     className="px-4 py-2 text-xs font-medium bg-white border border-stone-200 text-stone-700 rounded-xl hover:border-stone-300 hover:bg-stone-50 transition-all shadow-sm"
                                                 >
                                                     Дать доступ
                                                 </button>
-                                                
-                                                <button 
+
+                                                <button
                                                     onClick={() => setMessageModal(user)}
                                                     className="p-2 text-stone-400 hover:text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all"
                                                     title="Написать"
                                                 >
                                                     <Send className="w-4 h-4" />
                                                 </button>
-                                                
-                                                {user.subscription?.status === 'active' && (
-                                                    <button 
-                                                        onClick={() => handleRevokeAccess(user.id)}
-                                                        className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-                                                        title="Забрать"
-                                                    >
-                                                        <X className="w-4 h-4" />
-                                                    </button>
-                                                )}
                                             </div>
                                         </td>
                                     </tr>
