@@ -224,7 +224,7 @@ function PaymentContent() {
 
                     <button
                         onClick={handlePayWithClick}
-                        disabled={creatingOrder || !basePrice}
+                        disabled={creatingOrder || priceLoading || !basePrice}
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
                     >
                         <CreditCard className="w-4 h-4" />
