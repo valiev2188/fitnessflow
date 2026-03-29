@@ -527,41 +527,68 @@ const InfoBlock = ({ title, children }: { title: string; children: React.ReactNo
     );
 };
 
+const ACTIVITY_OPTIONS = [
+    { value: 1.2,   label: 'Минимальная', desc: 'Сидячий образ жизни, без тренировок' },
+    { value: 1.375, label: 'Низкая', desc: '1–3 тренировки в неделю' },
+    { value: 1.55,  label: 'Средняя', desc: '3–5 тренировок в неделю' },
+    { value: 1.725, label: 'Высокая', desc: '6–7 тренировок в неделю' },
+    { value: 1.9,   label: 'Очень высокая', desc: 'Дважды в день или физический труд' },
+];
+
+const GOAL_ADVICE: Record<string, string> = {
+    lose_weight: 'Совет: следи за дефицитом −15% и добавь кардио 3× в неделю. Приоритет — белок 30%, чтобы сохранить мышцы.',
+    gain_muscle: 'Совет: тренируйся 4–5 раз в неделю, ешь с профицитом +10%. Белок — главный макронутриент.',
+    maintain: 'Совет: придерживайся метода тарелки и следи за балансом КБЖУ.',
+    health: 'Совет: метод тарелки + 8 000 шагов в день. Акцент на цельные продукты и достаточный сон.',
+};
+
+function getBmiInfo(bmi: number) {
+    if (bmi < 18.5) return { label: 'Дефицит массы', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', pos: 9 };
+    if (bmi < 25)   return { label: 'Норма', color: 'text-green-600', bg: 'bg-green-50 border-green-100', pos: 33 };
+    if (bmi < 30)   return { label: 'Избыток веса', color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-100', pos: 55 };
+    if (bmi < 35)   return { label: 'Ожирение I', color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100', pos: 75 };
+    return           { label: 'Ожирение II', color: 'text-red-600', bg: 'bg-red-50 border-red-100', pos: 90 };
+}
+
 const CalculatorTab = ({ profile, token }: { profile: any; token: string | null }) => {
+    const hasData = !!(profile?.height && profile?.weight && profile?.age);
+    const [mode, setMode] = useState<'wizard' | 'results'>(hasData ? 'results' : 'wizard');
+    const [step, setStep] = useState(1);
+    const [saving, setSaving] = useState(false);
+
+    // wizard / editable fields — initialized from profile
     const [gender, setGender] = useState<'female' | 'male'>(profile?.gender === 'male' ? 'male' : 'female');
     const [age, setAge] = useState(profile?.age ? String(profile.age) : '');
     const [height, setHeight] = useState(profile?.height ? String(profile.height) : '');
     const [weight, setWeight] = useState(profile?.weight ? String(profile.weight) : '');
     const [activity, setActivity] = useState(1.375);
     const [goal, setGoal] = useState<string>(profile?.goal || 'maintain');
-    const [saving, setSaving] = useState(false);
 
-    // debounced autosave
-    useEffect(() => {
+    const inputClass = "w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-stone-900 text-[15px] focus:outline-none focus:border-[#D9857B] focus:ring-2 focus:ring-[#D9857B]/20 transition placeholder:text-stone-400";
+
+    const handleSave = async () => {
         if (!token) return;
-        const t = setTimeout(() => {
-            setSaving(true);
-            fetch('/api/profile', {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gender, age, height, weight, goal }),
-            }).finally(() => setSaving(false));
-        }, 1500);
-        return () => clearTimeout(t);
-    }, [gender, age, height, weight, goal, token]);
+        setSaving(true);
+        await fetch('/api/profile', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gender, age, height, weight, goal }),
+        });
+        setSaving(false);
+        setMode('results');
+        setStep(1);
+    };
 
+    const startWizard = () => { setStep(1); setMode('wizard'); };
+
+    // Computed values (used in results mode)
     const h = parseFloat(height);
     const w = parseFloat(weight);
     const a = parseFloat(age);
-
     const bmi = h > 0 && w > 0 ? w / Math.pow(h / 100, 2) : null;
-
     const bmr = h > 0 && w > 0 && a > 0
-        ? gender === 'female'
-            ? 10 * w + 6.25 * h - 5 * a - 161
-            : 10 * w + 6.25 * h - 5 * a + 5
+        ? gender === 'female' ? 10 * w + 6.25 * h - 5 * a - 161 : 10 * w + 6.25 * h - 5 * a + 5
         : null;
-
     const goalMultiplier = GOAL_OPTIONS.find(g => g.value === goal)?.multiplier ?? 1;
     const tdee = bmr ? Math.round(bmr * activity) : null;
     const calories = tdee ? Math.round(tdee * goalMultiplier) : null;
@@ -570,125 +597,153 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
     const carbs = calories ? Math.round((calories * 0.45) / 4) : null;
     const waterMl = w > 0 ? Math.round(w * 35) : null;
     const waterGlasses = waterMl ? Math.ceil(waterMl / 250) : null;
-
-    const getBmiInfo = (bmi: number) => {
-        if (bmi < 18.5) return { label: 'Дефицит массы', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', pos: 9 };
-        if (bmi < 25)   return { label: 'Норма', color: 'text-green-600', bg: 'bg-green-50 border-green-100', pos: 33 };
-        if (bmi < 30)   return { label: 'Избыток веса', color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-100', pos: 55 };
-        if (bmi < 35)   return { label: 'Ожирение I', color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100', pos: 75 };
-        return           { label: 'Ожирение II', color: 'text-red-600', bg: 'bg-red-50 border-red-100', pos: 90 };
-    };
-
     const bmiInfo = bmi ? getBmiInfo(bmi) : null;
 
-    const activityOptions = [
-        { value: 1.2,   label: 'Минимальная', desc: 'Сидячий образ жизни, без тренировок' },
-        { value: 1.375, label: 'Низкая', desc: '1–3 тренировки в неделю' },
-        { value: 1.55,  label: 'Средняя', desc: '3–5 тренировок в неделю' },
-        { value: 1.725, label: 'Высокая', desc: '6–7 тренировок в неделю' },
-        { value: 1.9,   label: 'Очень высокая', desc: 'Дважды в день или физический труд' },
-    ];
+    // ── WIZARD MODE ──────────────────────────────────────────────────────────
+    if (mode === 'wizard') {
+        const stepTitles = ['Ваша цель', 'Параметры тела', 'Уровень активности'];
+        const canNext1 = !!goal;
+        const canNext2 = !!age && !!height && !!weight;
 
-    const inputClass = "w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-stone-900 text-[15px] focus:outline-none focus:border-[#D9857B] focus:ring-2 focus:ring-[#D9857B]/20 transition placeholder:text-stone-400";
-
-    const goalAdvice: Record<string, string> = {
-        lose_weight: 'Совет: следи за дефицитом −15% и добавь кардио 3× в неделю. Приоритет — белок 30%, чтобы сохранить мышцы.',
-        gain_muscle: 'Совет: тренируйся 4–5 раз в неделю, ешь с профицитом +10%. Белок — главный макронутриент.',
-        maintain: 'Совет: придерживайся метода тарелки и следи за балансом КБЖУ.',
-        health: 'Совет: метод тарелки + 8 000 шагов в день. Акцент на цельные продукты и достаточный сон.',
-    };
-
-    return (
-        <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-8">
-            <div className="flex items-start justify-between">
+        return (
+            <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-stone-900 font-serif mb-2">Калькулятор питания</h1>
-                    <p className="text-[15px] text-stone-500 font-light">Формула Миффлина-Сан Жеора · Рекомендации EFSA/ВОЗ</p>
+                    <h1 className="text-3xl font-bold text-stone-900 font-serif mb-1">Калькулятор питания</h1>
+                    <p className="text-[14px] text-stone-400 font-light">Шаг {step} из 3 — {stepTitles[step - 1]}</p>
                 </div>
-                {saving && <span className="text-[12px] text-stone-400 font-light mt-2">Сохранение...</span>}
-            </div>
 
-            {/* Goal selection */}
-            <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
-                <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-4">Ваша цель</label>
-                <div className="grid grid-cols-2 gap-2">
-                    {GOAL_OPTIONS.map(g => (
-                        <button
-                            key={g.value}
-                            onClick={() => setGoal(g.value)}
-                            className={`py-3 px-4 rounded-2xl text-[14px] font-semibold transition-all border text-left ${
-                                goal === g.value
-                                    ? 'bg-[#D9857B] text-white border-[#D9857B] shadow-md shadow-[#D9857B]/20'
-                                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-[#D9857B]/50'
-                            }`}
-                        >
-                            {g.label}
-                        </button>
+                {/* Progress bar */}
+                <div className="flex gap-1.5">
+                    {[1, 2, 3].map(s => (
+                        <div key={s} className={`h-1.5 flex-1 rounded-full transition-all ${s <= step ? 'bg-[#D9857B]' : 'bg-stone-100'}`} />
                     ))}
                 </div>
+
+                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100 space-y-5">
+                    {/* Step 1 — Goal */}
+                    {step === 1 && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {GOAL_OPTIONS.map(g => (
+                                <button
+                                    key={g.value}
+                                    onClick={() => setGoal(g.value)}
+                                    className={`py-4 px-4 rounded-2xl text-[14px] font-semibold transition-all border text-left ${
+                                        goal === g.value
+                                            ? 'bg-[#D9857B] text-white border-[#D9857B] shadow-md'
+                                            : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-[#D9857B]/50'
+                                    }`}
+                                >
+                                    {g.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Step 2 — Body data */}
+                    {step === 2 && (
+                        <>
+                            <div>
+                                <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-3">Пол</label>
+                                <div className="flex gap-3">
+                                    {(['female', 'male'] as const).map(g => (
+                                        <button key={g} onClick={() => setGender(g)}
+                                            className={`flex-1 py-3 rounded-2xl text-[15px] font-bold transition-all border ${
+                                                gender === g
+                                                    ? 'bg-[#D9857B] text-white border-[#D9857B] shadow-md'
+                                                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-[#D9857B]/50'
+                                            }`}
+                                        >{g === 'female' ? '♀ Женщина' : '♂ Мужчина'}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Возраст (лет)</label>
+                                    <input type="number" placeholder="25" value={age} onChange={e => setAge(e.target.value)} className={inputClass} min="10" max="100" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Рост (см)</label>
+                                    <input type="number" placeholder="165" value={height} onChange={e => setHeight(e.target.value)} className={inputClass} min="100" max="250" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Вес (кг)</label>
+                                    <input type="number" placeholder="65" value={weight} onChange={e => setWeight(e.target.value)} className={inputClass} min="30" max="300" />
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Step 3 — Activity */}
+                    {step === 3 && (
+                        <div className="flex flex-col gap-2">
+                            {ACTIVITY_OPTIONS.map(opt => (
+                                <button key={opt.value} onClick={() => setActivity(opt.value)}
+                                    className={`w-full text-left px-5 py-4 rounded-2xl border transition-all ${
+                                        activity === opt.value ? 'border-[#D9857B] bg-rose-50' : 'border-stone-200 bg-stone-50 hover:border-stone-300'
+                                    }`}
+                                >
+                                    <span className={`font-bold text-[14px] ${activity === opt.value ? 'text-[#D9857B]' : 'text-stone-700'}`}>{opt.label}</span>
+                                    <span className="text-[13px] text-stone-400 font-light ml-2">— {opt.desc}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation */}
+                <div className="flex gap-3">
+                    {step > 1 && (
+                        <button onClick={() => setStep(s => s - 1)}
+                            className="flex-1 py-4 rounded-2xl border border-stone-200 text-stone-600 font-semibold hover:bg-stone-50 transition"
+                        >← Назад</button>
+                    )}
+                    {step < 3 ? (
+                        <button
+                            onClick={() => setStep(s => s + 1)}
+                            disabled={step === 1 ? !canNext1 : !canNext2}
+                            className="flex-1 py-4 rounded-2xl bg-stone-900 text-white font-semibold hover:bg-[#D9857B] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        >Далее →</button>
+                    ) : (
+                        <button onClick={handleSave} disabled={saving}
+                            className="flex-1 py-4 rounded-2xl bg-[#D9857B] text-white font-bold shadow-lg shadow-[#D9857B]/25 hover:bg-[#c97068] transition disabled:opacity-50"
+                        >{saving ? 'Сохранение...' : '✓ Сохранить'}</button>
+                    )}
+                </div>
+            </motion.div>
+        );
+    }
+
+    // ── RESULTS MODE ─────────────────────────────────────────────────────────
+    return (
+        <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-8">
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-stone-900 font-serif mb-1">Калькулятор питания</h1>
+                    <p className="text-[14px] text-stone-400 font-light">Формула Миффлина-Сан Жеора · EFSA/ВОЗ</p>
+                </div>
+                <button onClick={startWizard}
+                    className="shrink-0 mt-1 text-[13px] font-medium text-stone-500 hover:text-[#D9857B] border border-stone-200 hover:border-[#D9857B]/50 px-4 py-2 rounded-xl transition whitespace-nowrap"
+                >Изменить данные</button>
             </div>
 
-            {/* Input form */}
-            <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100 space-y-6">
-                {/* Gender */}
-                <div>
-                    <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-3">Пол</label>
-                    <div className="flex gap-3">
-                        {(['female', 'male'] as const).map(g => (
-                            <button
-                                key={g}
-                                onClick={() => setGender(g)}
-                                className={`flex-1 py-3 rounded-2xl text-[15px] font-bold transition-all border ${
-                                    gender === g
-                                        ? 'bg-[#D9857B] text-white border-[#D9857B] shadow-md shadow-[#D9857B]/20'
-                                        : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-[#D9857B]/50'
-                                }`}
-                            >
-                                {g === 'female' ? '♀ Женщина' : '♂ Мужчина'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Inputs */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Возраст (лет)</label>
-                        <input type="number" placeholder="25" value={age} onChange={e => setAge(e.target.value)} className={inputClass} min="10" max="100" />
-                    </div>
-                    <div>
-                        <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Рост (см)</label>
-                        <input type="number" placeholder="165" value={height} onChange={e => setHeight(e.target.value)} className={inputClass} min="100" max="250" />
-                    </div>
-                    <div>
-                        <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-2">Вес (кг)</label>
-                        <input type="number" placeholder="65" value={weight} onChange={e => setWeight(e.target.value)} className={inputClass} min="30" max="300" />
-                    </div>
-                </div>
-
-                {/* Activity */}
-                <div>
-                    <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-3">Уровень активности</label>
-                    <div className="flex flex-col gap-2">
-                        {activityOptions.map(opt => (
-                            <button
-                                key={opt.value}
-                                onClick={() => setActivity(opt.value)}
-                                className={`w-full text-left px-5 py-4 rounded-2xl border transition-all ${
-                                    activity === opt.value
-                                        ? 'border-[#D9857B] bg-rose-50'
-                                        : 'border-stone-200 bg-stone-50 hover:border-stone-300'
-                                }`}
-                            >
-                                <span className={`font-bold text-[14px] ${activity === opt.value ? 'text-[#D9857B]' : 'text-stone-700'}`}>{opt.label}</span>
-                                <span className="text-[13px] text-stone-400 font-light ml-2">— {opt.desc}</span>
-                            </button>
-                        ))}
-                    </div>
+            {/* Summary card */}
+            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-stone-100">
+                <p className="text-[12px] font-bold text-stone-400 uppercase tracking-widest mb-3">Ваши данные</p>
+                <div className="flex flex-wrap gap-3 text-[14px]">
+                    <span className="bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5 text-stone-700">{gender === 'female' ? '♀ Женщина' : '♂ Мужчина'}</span>
+                    <span className="bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5 text-stone-700">{age} лет</span>
+                    <span className="bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5 text-stone-700">{height} см</span>
+                    <span className="bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5 text-stone-700">{weight} кг</span>
+                    <span className="bg-rose-50 border border-rose-100 rounded-xl px-3 py-1.5 text-rose-600 font-medium">
+                        {GOAL_OPTIONS.find(g => g.value === goal)?.label ?? goal}
+                    </span>
+                    <span className="bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5 text-stone-500">
+                        {ACTIVITY_OPTIONS.find(o => o.value === activity)?.label}
+                    </span>
                 </div>
             </div>
 
-            {/* BMI Result */}
+            {/* BMI */}
             {bmi && bmiInfo && (
                 <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
                     <h2 className="text-xl font-bold text-stone-900 mb-6">Индекс массы тела (ИМТ)</h2>
@@ -697,12 +752,9 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
                         <div className={`px-4 py-2 rounded-full border text-sm font-bold ${bmiInfo.bg} ${bmiInfo.color}`}>{bmiInfo.label}</div>
                     </div>
                     <div className="relative">
-                        <div className="h-3 rounded-full overflow-hidden" style={{background: 'linear-gradient(to right, #3b82f6 0%, #22c55e 25%, #eab308 50%, #f97316 75%, #ef4444 100%)'}}>
-                        </div>
-                        <div
-                            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-stone-800 shadow transition-all"
-                            style={{ left: `clamp(0%, ${bmiInfo.pos}%, 96%)` }}
-                        />
+                        <div className="h-3 rounded-full overflow-hidden" style={{background: 'linear-gradient(to right, #3b82f6 0%, #22c55e 25%, #eab308 50%, #f97316 75%, #ef4444 100%)'}} />
+                        <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-stone-800 shadow transition-all"
+                            style={{ left: `clamp(0%, ${bmiInfo.pos}%, 96%)` }} />
                         <div className="flex justify-between text-[11px] text-stone-400 mt-2 font-light">
                             <span>Дефицит</span><span>Норма</span><span>Избыток</span><span>Ожирение</span>
                         </div>
@@ -718,13 +770,12 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
                 </div>
             )}
 
-            {/* Calorie Result */}
+            {/* Calories */}
             {calories && protein && fat && carbs && tdee && (
                 <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
                     <h2 className="text-xl font-bold text-stone-900 mb-2">Суточная норма калорий</h2>
                     <p className="text-[13px] text-stone-400 font-light mb-2">
-                        TDEE: {tdee.toLocaleString()} ккал
-                        {goalMultiplier !== 1 && ` → скорректировано под цель (×${goalMultiplier})`}
+                        TDEE: {tdee.toLocaleString()} ккал{goalMultiplier !== 1 && ` → скорректировано (×${goalMultiplier})`}
                     </p>
                     <div className="text-6xl font-black text-[#D9857B] mb-8">{calories.toLocaleString()} <span className="text-2xl font-bold text-stone-400">ккал</span></div>
                     <div className="grid grid-cols-3 gap-4">
@@ -744,20 +795,20 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
                             <p className="text-[11px] text-amber-300 font-light mt-0.5">45%</p>
                         </div>
                     </div>
-                    {goalAdvice[goal] && (
+                    {GOAL_ADVICE[goal] && (
                         <div className="mt-6 bg-rose-50 border border-rose-100 rounded-2xl px-5 py-4 text-[13px] text-rose-700 font-light">
-                            {goalAdvice[goal]}
+                            {GOAL_ADVICE[goal]}
                         </div>
                     )}
                     <InfoBlock title="Как использовать результат?">
                         <p>Это ваша целевая норма с учётом цели. Старайтесь придерживаться её ±100 ккал в день.</p>
-                        <p>Начните с отслеживания питания в приложении (Cronometer, FatSecret) 2–3 недели — это поможет почувствовать размер порций.</p>
+                        <p>Начните с отслеживания питания в приложении (Cronometer, FatSecret) 2–3 недели.</p>
                         <p>Пересчитывайте норму каждые 4–6 недель, если вес изменился более чем на 3 кг.</p>
                     </InfoBlock>
                 </div>
             )}
 
-            {/* Water Result */}
+            {/* Water */}
             {waterMl && waterGlasses && (
                 <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
                     <h2 className="text-xl font-bold text-stone-900 mb-2 flex items-center gap-2">
@@ -770,9 +821,7 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {Array.from({ length: Math.min(waterGlasses, 16) }).map((_, i) => (
-                            <div key={i} className="w-9 h-9 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-lg">
-                                🥛
-                            </div>
+                            <div key={i} className="w-9 h-9 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-lg">🥛</div>
                         ))}
                         {waterGlasses > 16 && <span className="text-stone-400 text-sm font-light self-center">+{waterGlasses - 16} ещё</span>}
                     </div>
@@ -784,12 +833,6 @@ const CalculatorTab = ({ profile, token }: { profile: any; token: string | null 
                         <p>Ориентир: моча светло-жёлтого цвета = хорошая гидратация.</p>
                         <p>Не заменяйте воду чаем, соком или газировкой — они не считаются полноценной заменой.</p>
                     </InfoBlock>
-                </div>
-            )}
-
-            {!bmi && !calories && (
-                <div className="text-center py-12 text-stone-400 font-light">
-                    Введите рост и вес, чтобы увидеть результаты
                 </div>
             )}
         </motion.div>
