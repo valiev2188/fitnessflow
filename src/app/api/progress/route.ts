@@ -66,9 +66,25 @@ export async function POST(req: Request) {
             });
         }
 
-        // Award points only on new completion (not re-marking)
+        // Award points only on first-ever completion
+        // Bug fix: wasAlreadyCompleted only checks current state, not history.
+        // After uncheck → recheck, wasAlreadyCompleted would be false again.
+        // We use pointTransactions as the source of truth for "was this ever awarded".
         if (completed && !wasAlreadyCompleted) {
-            await awardPoints(userId, 10, 'workout_complete', 'Тренировка завершена', workoutId);
+            const alreadyAwardedForWorkout = await db
+                .select()
+                .from(pointTransactions)
+                .where(and(
+                    eq(pointTransactions.userId, userId),
+                    eq(pointTransactions.type, 'workout_complete'),
+                    eq(pointTransactions.relatedId, workoutId)
+                ))
+                .limit(1)
+                .then(r => r[0]);
+
+            if (!alreadyAwardedForWorkout) {
+                await awardPoints(userId, 10, 'workout_complete', 'Тренировка завершена', workoutId);
+            }
 
             // Check if the whole course is now complete
             const workout = await db
