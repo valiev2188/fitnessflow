@@ -48,22 +48,19 @@ export async function POST(req: Request) {
             expiresAt.setDate(expiresAt.getDate() + daysInt);
         }
 
-        // Check if subscription exists
-        const existingSub = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1).then(res => res[0]);
+        // Check if subscription for this specific plan already exists
+        const existingSub = await db.select().from(subscriptions)
+            .where(and(eq(subscriptions.userId, userId), eq(subscriptions.plan, plan)))
+            .limit(1).then(res => res[0]);
 
         if (existingSub) {
-            // Update
+            // Update existing record for this plan
             await db.update(subscriptions)
-                .set({ plan, status, expiresAt })
+                .set({ status, expiresAt })
                 .where(eq(subscriptions.id, existingSub.id));
         } else {
-            // Create
-            await db.insert(subscriptions).values({
-                userId,
-                plan,
-                status,
-                expiresAt
-            });
+            // Create new subscription record for this plan
+            await db.insert(subscriptions).values({ userId, plan, status, expiresAt });
         }
 
         return NextResponse.json({ success: true });
