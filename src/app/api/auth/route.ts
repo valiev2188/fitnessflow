@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { users, referrals } from '@/db/schema';
+import { eq, and, isNull } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { validateTelegramInitData } from '@/lib/telegram';
+import { ensureReferralCode } from '@/lib/referral';
+import { awardPoints } from '@/lib/points';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev-only-change-me';
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8272000512:AAGAE_OEKRMR8SiIwtGRrdJfZb7mJ3BEuRg';
