@@ -25,7 +25,6 @@ function PaymentContent() {
     const plan = searchParams.get('plan') || '';
     const { token } = useTelegramAuth();
 
-    const [copied, setCopied] = useState(false);
     const [promoInput, setPromoInput] = useState('');
     const [promoApplying, setPromoApplying] = useState(false);
     const [promoError, setPromoError] = useState('');
