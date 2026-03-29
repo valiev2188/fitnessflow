@@ -125,11 +125,11 @@ export default function ProgramsPage() {
                                             </button>
                                         </Link>
                                     ) : (
-                                        <a href="https://t.me/testfref_bot?start=nutrition_buy" target="_blank" rel="noopener noreferrer">
+                                        <Link href="/payment?plan=Питание">
                                             <button className="w-full rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-rose-500 hover:shadow-md hover:shadow-rose-500/30 active:scale-95">
                                                 Купить доступ — 99 000 сум
                                             </button>
-                                        </a>
+                                        </Link>
                                     )}
                                 </div>
                             </div>
