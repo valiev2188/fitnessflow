@@ -96,9 +96,9 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleRevokeAccess = async (userId: number) => {
-        if (!confirm('Отключить доступ этому пользователю?')) return;
-        
+    const handleRevokeAccess = async (userId: number, plan: string) => {
+        if (!confirm(`Отключить доступ к «${plan}»?`)) return;
+
         try {
             const token = localStorage.getItem('fitness_token');
             const res = await fetch('/api/admin/subscriptions', {
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ userId, plan: 'none', status: 'inactive', days: 0 }),
+                body: JSON.stringify({ userId, plan, status: 'inactive', days: 0 }),
             });
             if (!res.ok) throw new Error('Failed to revoke access');
             fetchUsers();
