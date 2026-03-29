@@ -504,12 +504,51 @@ const AboutTab = () => (
 
 // ─── CALCULATOR TAB ───────────────────────────────────────────────────────────
 
-const CalculatorTab = () => {
-    const [gender, setGender] = useState<'female' | 'male'>('female');
-    const [age, setAge] = useState('');
-    const [height, setHeight] = useState('');
-    const [weight, setWeight] = useState('');
+const GOAL_OPTIONS = [
+    { value: 'lose_weight',   label: 'Сбросить вес',         multiplier: 0.85 },
+    { value: 'gain_muscle',   label: 'Набрать мышечную массу', multiplier: 1.10 },
+    { value: 'maintain',      label: 'Поддержать вес',        multiplier: 1.00 },
+    { value: 'health',        label: 'Улучшить здоровье',     multiplier: 1.00 },
+];
+
+const InfoBlock = ({ title, children }: { title: string; children: React.ReactNode }) => {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="mt-4 rounded-2xl border border-stone-100 overflow-hidden">
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="w-full flex items-center justify-between px-5 py-3 bg-stone-50 text-[13px] font-semibold text-stone-600 hover:bg-stone-100 transition"
+            >
+                {title}
+                <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+            {open && <div className="px-5 py-4 text-[13px] text-stone-600 font-light leading-relaxed space-y-2">{children}</div>}
+        </div>
+    );
+};
+
+const CalculatorTab = ({ profile, token }: { profile: any; token: string | null }) => {
+    const [gender, setGender] = useState<'female' | 'male'>(profile?.gender === 'male' ? 'male' : 'female');
+    const [age, setAge] = useState(profile?.age ? String(profile.age) : '');
+    const [height, setHeight] = useState(profile?.height ? String(profile.height) : '');
+    const [weight, setWeight] = useState(profile?.weight ? String(profile.weight) : '');
     const [activity, setActivity] = useState(1.375);
+    const [goal, setGoal] = useState<string>(profile?.goal || 'maintain');
+    const [saving, setSaving] = useState(false);
+
+    // debounced autosave
+    useEffect(() => {
+        if (!token) return;
+        const t = setTimeout(() => {
+            setSaving(true);
+            fetch('/api/profile', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gender, age, height, weight, goal }),
+            }).finally(() => setSaving(false));
+        }, 1500);
+        return () => clearTimeout(t);
+    }, [gender, age, height, weight, goal, token]);
 
     const h = parseFloat(height);
     const w = parseFloat(weight);
@@ -523,7 +562,9 @@ const CalculatorTab = () => {
             : 10 * w + 6.25 * h - 5 * a + 5
         : null;
 
-    const calories = bmr ? Math.round(bmr * activity) : null;
+    const goalMultiplier = GOAL_OPTIONS.find(g => g.value === goal)?.multiplier ?? 1;
+    const tdee = bmr ? Math.round(bmr * activity) : null;
+    const calories = tdee ? Math.round(tdee * goalMultiplier) : null;
     const protein = calories ? Math.round((calories * 0.30) / 4) : null;
     const fat = calories ? Math.round((calories * 0.25) / 9) : null;
     const carbs = calories ? Math.round((calories * 0.45) / 4) : null;
@@ -550,11 +591,41 @@ const CalculatorTab = () => {
 
     const inputClass = "w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-stone-900 text-[15px] focus:outline-none focus:border-[#D9857B] focus:ring-2 focus:ring-[#D9857B]/20 transition placeholder:text-stone-400";
 
+    const goalAdvice: Record<string, string> = {
+        lose_weight: 'Совет: следи за дефицитом −15% и добавь кардио 3× в неделю. Приоритет — белок 30%, чтобы сохранить мышцы.',
+        gain_muscle: 'Совет: тренируйся 4–5 раз в неделю, ешь с профицитом +10%. Белок — главный макронутриент.',
+        maintain: 'Совет: придерживайся метода тарелки и следи за балансом КБЖУ.',
+        health: 'Совет: метод тарелки + 8 000 шагов в день. Акцент на цельные продукты и достаточный сон.',
+    };
+
     return (
         <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-stone-900 font-serif mb-2">Калькулятор питания</h1>
-                <p className="text-[15px] text-stone-500 font-light">Формула Миффлина-Сан Жеора · Рекомендации EFSA/ВОЗ</p>
+            <div className="flex items-start justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-stone-900 font-serif mb-2">Калькулятор питания</h1>
+                    <p className="text-[15px] text-stone-500 font-light">Формула Миффлина-Сан Жеора · Рекомендации EFSA/ВОЗ</p>
+                </div>
+                {saving && <span className="text-[12px] text-stone-400 font-light mt-2">Сохранение...</span>}
+            </div>
+
+            {/* Goal selection */}
+            <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
+                <label className="block text-[13px] font-bold text-stone-500 uppercase tracking-widest mb-4">Ваша цель</label>
+                <div className="grid grid-cols-2 gap-2">
+                    {GOAL_OPTIONS.map(g => (
+                        <button
+                            key={g.value}
+                            onClick={() => setGoal(g.value)}
+                            className={`py-3 px-4 rounded-2xl text-[14px] font-semibold transition-all border text-left ${
+                                goal === g.value
+                                    ? 'bg-[#D9857B] text-white border-[#D9857B] shadow-md shadow-[#D9857B]/20'
+                                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-[#D9857B]/50'
+                            }`}
+                        >
+                            {g.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Input form */}
@@ -619,13 +690,12 @@ const CalculatorTab = () => {
 
             {/* BMI Result */}
             {bmi && bmiInfo && (
-                <div className={`bg-white rounded-[32px] p-8 shadow-sm border border-stone-100`}>
+                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
                     <h2 className="text-xl font-bold text-stone-900 mb-6">Индекс массы тела (ИМТ)</h2>
                     <div className="flex items-center gap-6 mb-6">
                         <div className={`text-5xl font-black ${bmiInfo.color}`}>{bmi.toFixed(1)}</div>
                         <div className={`px-4 py-2 rounded-full border text-sm font-bold ${bmiInfo.bg} ${bmiInfo.color}`}>{bmiInfo.label}</div>
                     </div>
-                    {/* Color scale */}
                     <div className="relative">
                         <div className="h-3 rounded-full overflow-hidden" style={{background: 'linear-gradient(to right, #3b82f6 0%, #22c55e 25%, #eab308 50%, #f97316 75%, #ef4444 100%)'}}>
                         </div>
@@ -638,14 +708,24 @@ const CalculatorTab = () => {
                         </div>
                     </div>
                     <p className="text-[13px] text-stone-400 font-light mt-4">ИМТ = вес (кг) ÷ рост² (м). Норма: 18.5 – 24.9</p>
+                    <InfoBlock title="Что означает мой ИМТ?">
+                        <p><strong>Менее 18.5</strong> — дефицит массы. Важно увеличить калорийность и консультироваться с врачом.</p>
+                        <p><strong>18.5 – 24.9</strong> — норма. Поддерживайте текущий режим питания и активности.</p>
+                        <p><strong>25 – 29.9</strong> — избыток веса. Умеренный дефицит калорий и больше движения.</p>
+                        <p><strong>30+</strong> — ожирение. Рекомендуется консультация специалиста и постепенное снижение веса.</p>
+                        <p className="text-stone-400 mt-2">ИМТ не учитывает состав тела: спортсмены с развитой мускулатурой могут иметь высокий ИМТ при нормальном жире.</p>
+                    </InfoBlock>
                 </div>
             )}
 
             {/* Calorie Result */}
-            {calories && protein && fat && carbs && (
+            {calories && protein && fat && carbs && tdee && (
                 <div className="bg-white rounded-[32px] p-8 shadow-sm border border-stone-100">
                     <h2 className="text-xl font-bold text-stone-900 mb-2">Суточная норма калорий</h2>
-                    <p className="text-[13px] text-stone-400 font-light mb-6">С учётом выбранного уровня активности</p>
+                    <p className="text-[13px] text-stone-400 font-light mb-2">
+                        TDEE: {tdee.toLocaleString()} ккал
+                        {goalMultiplier !== 1 && ` → скорректировано под цель (×${goalMultiplier})`}
+                    </p>
                     <div className="text-6xl font-black text-[#D9857B] mb-8">{calories.toLocaleString()} <span className="text-2xl font-bold text-stone-400">ккал</span></div>
                     <div className="grid grid-cols-3 gap-4">
                         <div className="bg-rose-50 rounded-[24px] p-5 border border-rose-100 text-center">
@@ -664,6 +744,16 @@ const CalculatorTab = () => {
                             <p className="text-[11px] text-amber-300 font-light mt-0.5">45%</p>
                         </div>
                     </div>
+                    {goalAdvice[goal] && (
+                        <div className="mt-6 bg-rose-50 border border-rose-100 rounded-2xl px-5 py-4 text-[13px] text-rose-700 font-light">
+                            {goalAdvice[goal]}
+                        </div>
+                    )}
+                    <InfoBlock title="Как использовать результат?">
+                        <p>Это ваша целевая норма с учётом цели. Старайтесь придерживаться её ±100 ккал в день.</p>
+                        <p>Начните с отслеживания питания в приложении (Cronometer, FatSecret) 2–3 недели — это поможет почувствовать размер порций.</p>
+                        <p>Пересчитывайте норму каждые 4–6 недель, если вес изменился более чем на 3 кг.</p>
+                    </InfoBlock>
                 </div>
             )}
 
@@ -678,7 +768,6 @@ const CalculatorTab = () => {
                         <span className="text-5xl font-black text-blue-600">{(waterMl / 1000).toFixed(1)} л</span>
                         <span className="text-stone-400 font-light">= {waterMl} мл / день</span>
                     </div>
-                    {/* Glasses */}
                     <div className="flex flex-wrap gap-2">
                         {Array.from({ length: Math.min(waterGlasses, 16) }).map((_, i) => (
                             <div key={i} className="w-9 h-9 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-lg">
@@ -689,6 +778,12 @@ const CalculatorTab = () => {
                     </div>
                     <p className="text-[12px] text-stone-400 font-light mt-3">1 стакан ≈ 250 мл · {waterGlasses} стаканов в день</p>
                     <p className="text-[12px] text-stone-400 font-light mt-1">Не забудьте добавить +500 мл на каждые 30 мин тренировки</p>
+                    <InfoBlock title="Советы по гидратации">
+                        <p>Выпивайте 1–2 стакана воды сразу после пробуждения — это запускает обмен веществ.</p>
+                        <p>В жаркую погоду (+30°C) увеличьте норму на 500–700 мл.</p>
+                        <p>Ориентир: моча светло-жёлтого цвета = хорошая гидратация.</p>
+                        <p>Не заменяйте воду чаем, соком или газировкой — они не считаются полноценной заменой.</p>
+                    </InfoBlock>
                 </div>
             )}
 
