@@ -45,10 +45,9 @@ export default function ProgramsPage() {
         }
     }, [token, authLoading]);
 
-    const filteredPrograms = programs.filter(p => {
-        if (category === 'Питание') return false; // Nutrition handles its own card
+    const filteredPrograms = programs.filter(() => {
         if (category === 'Все') return true;
-        if (category === 'Домашние') return true; // All our standard programs are home workouts right now
+        if (category === 'Домашние') return true;
         return true;
     });
 
