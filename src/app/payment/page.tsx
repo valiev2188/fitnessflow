@@ -202,52 +202,27 @@ function PaymentContent() {
                             </div>
                         )}
 
-                        <div className="space-y-6">
-                            <h3 className="text-lg font-medium text-stone-900 flex items-center gap-2">
-                                <CreditCard className="w-5 h-5 text-rose-400" />
-                                Реквизиты для перевода
-                            </h3>
-
-                            <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                                <p className="text-stone-500 font-light mb-4 text-sm">Переведите точную сумму на карту Humo по указанному номеру.</p>
-
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Получатель</div>
-                                        <div className="text-stone-900 font-medium">{receiverName}</div>
-                                    </div>
-
-                                    <div>
-                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Номер Humo</div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="text-xl font-mono text-stone-900 font-medium tracking-wider">{humoCard}</div>
-                                            <button
-                                                onClick={handleCopy}
-                                                className="p-2 rounded-lg hover:bg-stone-200 text-stone-500 transition-colors"
-                                                title="Копировать номер"
-                                            >
-                                                {copied ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <Copy className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10 mb-12">
-                    <h3 className="text-xl font-serif mb-3">Оплатили? Отлично!</h3>
+                    <h3 className="text-xl font-serif mb-3">Оплатите через Click</h3>
                     <p className="text-stone-300 font-light mb-8 text-sm max-w-md mx-auto">
-                        Сделайте снимок экрана (скриншот) с чеком об оплате и отправьте его администратору в Telegram (@vvveins). Я проверю перевод и открою вам доступ к тренировкам.
+                        Нажмите кнопку ниже — вы будете перенаправлены на защищённую страницу оплаты Click.
+                        После успешной оплаты доступ к тренировкам откроется автоматически.
                     </p>
 
+                    {orderError && (
+                        <p className="text-red-400 text-sm mb-4">{orderError}</p>
+                    )}
+
                     <button
-                        onClick={handleSendReceipt}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
+                        onClick={handlePayWithClick}
+                        disabled={creatingOrder || !basePrice}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
                     >
-                        <Send className="w-4 h-4" />
-                        Отправить администратору
+                        <CreditCard className="w-4 h-4" />
+                        {creatingOrder ? 'Создаём заказ...' : `Оплатить ${displayPrice ? fmt(displayPrice) : ''} через Click`}
                     </button>
                 </div>
 
