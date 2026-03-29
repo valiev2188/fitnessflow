@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, subscriptions, loginSessions } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { users, subscriptions, loginSessions, referrals } from '@/db/schema';
+import { eq, and, isNull } from 'drizzle-orm';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const WEBAPP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://fitnessflow-tau.vercel.app';
