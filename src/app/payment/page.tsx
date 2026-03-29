@@ -1,19 +1,9 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ChevronLeft, Copy, CheckCircle2, Send, CreditCard, Tag, X } from 'lucide-react';
+import { ChevronLeft, CreditCard, Tag, X } from 'lucide-react';
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
-
-const PLAN_PRICES: Record<string, number> = {
-    'Старт': 150000,
-    'Продвинутый': 450000,
-};
-
-const PLAN_OLD_PRICES: Record<string, number> = {
-    'Старт': 200000,
-    'Продвинутый': 600000,
-};
 
 function fmt(n: number) {
     return n.toLocaleString('ru-RU') + ' сум';
@@ -25,7 +15,10 @@ function PaymentContent() {
     const plan = searchParams.get('plan') || '';
     const { token } = useTelegramAuth();
 
-    const [copied, setCopied] = useState(false);
+    const [basePrice, setBasePrice] = useState<number | null>(null);
+    const [planName, setPlanName] = useState(plan || 'Неизвестный тариф');
+    const [priceLoading, setPriceLoading] = useState(true);
+
     const [promoInput, setPromoInput] = useState('');
     const [promoApplying, setPromoApplying] = useState(false);
     const [promoError, setPromoError] = useState('');
@@ -37,24 +30,55 @@ function PaymentContent() {
         discountValue: number;
     } | null>(null);
 
-    // Humo details
-    const humoCard = "8600030457183980";
-    const receiverName = "Лола Р.";
-
-    const basePrice = PLAN_PRICES[plan];
-    const basePriceOld = PLAN_OLD_PRICES[plan];
-
-    const planName = plan === 'Старт' ? 'Старт (12 занятий)'
-        : plan === 'Продвинутый' ? 'Продвинутый (21 тренировка)'
-        : plan || 'Неизвестный тариф';
+    // Fetch price from DB — single source of truth
+    useEffect(() => {
+        if (!plan) { setPriceLoading(false); return; }
+        fetch('/api/programs')
+            .then(r => r.json())
+            .then(data => {
+                const prog = (data.programs || []).find((p: any) => p.title === plan);
+                if (prog) {
+                    setBasePrice(prog.price);
+                    setPlanName(`${prog.title} (${prog.durationDays} дней)`);
+                }
+            })
+            .catch(() => {})
+            .finally(() => setPriceLoading(false));
+    }, [plan]);
 
     const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
-    const displayOldPrice = appliedPromo ? basePrice : basePriceOld;
+    const displayOldPrice = appliedPromo ? basePrice : null;
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(humoCard);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const [creatingOrder, setCreatingOrder] = useState(false);
+    const [orderError, setOrderError] = useState('');
+
+    const handlePayWithClick = async () => {
+        if (!token) {
+            setOrderError('Необходимо войти через Telegram');
+            return;
+        }
+        setCreatingOrder(true);
+        setOrderError('');
+        try {
+            const res = await fetch('/api/payment/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setOrderError(data.error || 'Ошибка создания заказа');
+                return;
+            }
+            window.location.href = data.clickUrl;
+        } catch {
+            setOrderError('Ошибка соединения. Попробуйте снова.');
+        } finally {
+            setCreatingOrder(false);
+        }
     };
 
     const handleApplyPromo = async () => {
@@ -93,21 +117,6 @@ function PaymentContent() {
     const handleRemovePromo = () => {
         setAppliedPromo(null);
         setPromoError('');
-    };
-
-    const handleSendReceipt = async () => {
-        // Record promo usage if applied
-        if (appliedPromo && token) {
-            await fetch('/api/promo/redeem', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ code: appliedPromo.code, plan }),
-            }).catch(() => {});
-        }
-        const priceStr = displayPrice ? fmt(displayPrice) : 'Уточните в боте';
-        const promoNote = appliedPromo ? ` (промокод: ${appliedPromo.code})` : '';
-        const message = encodeURIComponent(`Здравствуйте! Я хочу оплатить тариф "${planName}" за ${priceStr}${promoNote}. Прикрепляю чек об оплате:`);
-        window.open(`https://t.me/vvveins?text=${message}`, '_blank');
     };
 
     return (
@@ -150,7 +159,10 @@ function PaymentContent() {
                                         <div className="text-xl font-medium text-stone-300 line-through mb-1">{fmt(displayOldPrice)}</div>
                                     )}
                                     <div className="text-4xl font-semibold text-rose-500">
-                                        {displayPrice ? fmt(displayPrice) : 'Уточните в боте'}
+                                        {priceLoading
+                                            ? <span className="inline-block w-8 h-8 border-2 border-rose-300 border-t-rose-500 rounded-full animate-spin" />
+                                            : displayPrice ? fmt(displayPrice) : '—'
+                                        }
                                     </div>
                                 </div>
                                 {appliedPromo && (
@@ -167,7 +179,7 @@ function PaymentContent() {
                         </div>
 
                         {/* Promo code field */}
-                        {basePrice && !appliedPromo && (
+                        {!priceLoading && basePrice && !appliedPromo && (
                             <div className="mb-6">
                                 <label className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2 block">
                                     <Tag className="w-3 h-3 inline mr-1" />
@@ -196,52 +208,27 @@ function PaymentContent() {
                             </div>
                         )}
 
-                        <div className="space-y-6">
-                            <h3 className="text-lg font-medium text-stone-900 flex items-center gap-2">
-                                <CreditCard className="w-5 h-5 text-rose-400" />
-                                Реквизиты для перевода
-                            </h3>
-
-                            <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                                <p className="text-stone-500 font-light mb-4 text-sm">Переведите точную сумму на карту Humo по указанному номеру.</p>
-
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Получатель</div>
-                                        <div className="text-stone-900 font-medium">{receiverName}</div>
-                                    </div>
-
-                                    <div>
-                                        <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Номер Humo</div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="text-xl font-mono text-stone-900 font-medium tracking-wider">{humoCard}</div>
-                                            <button
-                                                onClick={handleCopy}
-                                                className="p-2 rounded-lg hover:bg-stone-200 text-stone-500 transition-colors"
-                                                title="Копировать номер"
-                                            >
-                                                {copied ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <Copy className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10 mb-12">
-                    <h3 className="text-xl font-serif mb-3">Оплатили? Отлично!</h3>
+                    <h3 className="text-xl font-serif mb-3">Оплатите через Click</h3>
                     <p className="text-stone-300 font-light mb-8 text-sm max-w-md mx-auto">
-                        Сделайте снимок экрана (скриншот) с чеком об оплате и отправьте его администратору в Telegram (@vvveins). Я проверю перевод и открою вам доступ к тренировкам.
+                        Нажмите кнопку ниже — вы будете перенаправлены на защищённую страницу оплаты Click.
+                        После успешной оплаты доступ к тренировкам откроется автоматически.
                     </p>
 
+                    {orderError && (
+                        <p className="text-red-400 text-sm mb-4">{orderError}</p>
+                    )}
+
                     <button
-                        onClick={handleSendReceipt}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
+                        onClick={handlePayWithClick}
+                        disabled={creatingOrder || priceLoading || !basePrice}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
                     >
-                        <Send className="w-4 h-4" />
-                        Отправить администратору
+                        <CreditCard className="w-4 h-4" />
+                        {creatingOrder ? 'Создаём заказ...' : `Оплатить ${displayPrice ? fmt(displayPrice) : ''} через Click`}
                     </button>
                 </div>
 

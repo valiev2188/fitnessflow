@@ -144,3 +144,20 @@ export const promoCodeUsages = sqliteTable("promo_code_usages", {
     userId: integer("user_id").references(() => users.id).notNull(),
     usedAt: integer("used_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
 });
+
+// --- Payments ---
+
+export const payments = sqliteTable("payments", {
+    id:                integer("id").primaryKey({ autoIncrement: true }),
+    userId:            integer("user_id").references(() => users.id).notNull(),
+    plan:              text("plan").notNull(),
+    amount:            integer("amount").notNull(),
+    finalAmount:       integer("final_amount").notNull(),
+    status:            text("status").notNull().default("pending"), // pending | paid | failed
+    promoCode:         text("promo_code"),
+    promoCodeId:       integer("promo_code_id").references(() => promoCodes.id),
+    clickTransId:      text("click_trans_id"),
+    merchantPrepareId: integer("merchant_prepare_id"),
+    createdAt:         integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
+    paidAt:            integer("paid_at", { mode: "timestamp" }),
+});
