@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ChevronLeft, Copy, CheckCircle2, Send, CreditCard, Tag, X } from 'lucide-react';
+import { ChevronLeft, CreditCard, Tag, X } from 'lucide-react';
 import { useTelegramAuth } from '@/hooks/useTelegramAuth';
 
 const PLAN_PRICES: Record<string, number> = {
