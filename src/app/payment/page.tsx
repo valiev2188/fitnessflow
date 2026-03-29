@@ -36,10 +36,6 @@ function PaymentContent() {
         discountValue: number;
     } | null>(null);
 
-    // Humo details
-    const humoCard = "8600030457183980";
-    const receiverName = "Лола Р.";
-
     const basePrice = PLAN_PRICES[plan];
     const basePriceOld = PLAN_OLD_PRICES[plan];
 
