@@ -3,6 +3,7 @@ import { verifyAuth } from '@/lib/auth';
 import { db } from '@/db';
 import { payments, promoCodes, promoCodeUsages, programs } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { buildPaymeUrl } from '@/lib/payme';
 
 export async function POST(req: Request) {
     const user = await verifyAuth(req);
@@ -80,5 +81,7 @@ export async function POST(req: Request) {
         `&transaction_param=${payment.id}` +
         `&return_url=${returnUrl}`;
 
-    return NextResponse.json({ orderId: payment.id, clickUrl });
+    const paymeUrl = buildPaymeUrl(payment.id, finalAmount);
+
+    return NextResponse.json({ orderId: payment.id, clickUrl, paymeUrl });
 }

@@ -49,36 +49,38 @@ function PaymentContent() {
     const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
     const displayOldPrice = appliedPromo ? basePrice : null;
 
-    const [creatingOrder, setCreatingOrder] = useState(false);
+    const [payingWith, setPayingWith] = useState<'click' | 'payme' | null>(null);
     const [orderError, setOrderError] = useState('');
 
-    const handlePayWithClick = async () => {
-        if (!token) {
-            setOrderError('Необходимо войти через Telegram');
-            return;
-        }
-        setCreatingOrder(true);
+    const createOrder = async (): Promise<{ clickUrl: string; paymeUrl: string } | null> => {
+        if (!token) { setOrderError('Необходимо войти через Telegram'); return null; }
         setOrderError('');
+        const res = await fetch('/api/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
+        });
+        const data = await res.json();
+        if (!res.ok) { setOrderError(data.error || 'Ошибка создания заказа'); return null; }
+        return data;
+    };
+
+    const handlePayWithClick = async () => {
+        setPayingWith('click');
         try {
-            const res = await fetch('/api/payment/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                setOrderError(data.error || 'Ошибка создания заказа');
-                return;
-            }
-            window.location.href = data.clickUrl;
-        } catch {
-            setOrderError('Ошибка соединения. Попробуйте снова.');
-        } finally {
-            setCreatingOrder(false);
-        }
+            const order = await createOrder();
+            if (order) window.location.href = order.clickUrl;
+        } catch { setOrderError('Ошибка соединения. Попробуйте снова.'); }
+        finally { setPayingWith(null); }
+    };
+
+    const handlePayWithPayme = async () => {
+        setPayingWith('payme');
+        try {
+            const order = await createOrder();
+            if (order) window.location.href = order.paymeUrl;
+        } catch { setOrderError('Ошибка соединения. Попробуйте снова.'); }
+        finally { setPayingWith(null); }
     };
 
     const handleApplyPromo = async () => {
@@ -212,9 +214,8 @@ function PaymentContent() {
                 </div>
 
                 <div className="bg-stone-900 rounded-3xl p-8 text-center text-white shadow-xl shadow-stone-900/10 mb-12">
-                    <h3 className="text-xl font-serif mb-3">Оплатите через Click</h3>
-                    <p className="text-stone-300 font-light mb-8 text-sm max-w-md mx-auto">
-                        Нажмите кнопку ниже — вы будете перенаправлены на защищённую страницу оплаты Click.
+                    <h3 className="text-xl font-serif mb-2">Выберите способ оплаты</h3>
+                    <p className="text-stone-400 font-light mb-8 text-sm max-w-md mx-auto">
                         После успешной оплаты доступ к тренировкам откроется автоматически.
                     </p>
 
@@ -222,14 +223,27 @@ function PaymentContent() {
                         <p className="text-red-400 text-sm mb-4">{orderError}</p>
                     )}
 
-                    <button
-                        onClick={handlePayWithClick}
-                        disabled={creatingOrder || priceLoading || !basePrice}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
-                    >
-                        <CreditCard className="w-4 h-4" />
-                        {creatingOrder ? 'Создаём заказ...' : `Оплатить ${displayPrice ? fmt(displayPrice) : ''} через Click`}
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        {/* Click */}
+                        <button
+                            onClick={handlePayWithClick}
+                            disabled={!!payingWith || priceLoading || !basePrice}
+                            className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
+                        >
+                            <CreditCard className="w-4 h-4 shrink-0" />
+                            {payingWith === 'click' ? 'Создаём заказ...' : `Click — ${displayPrice ? fmt(displayPrice) : '...'}`}
+                        </button>
+
+                        {/* Payme */}
+                        <button
+                            onClick={handlePayWithPayme}
+                            disabled={!!payingWith || priceLoading || !basePrice}
+                            className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-[#00AAFF] hover:bg-[#0099ee] disabled:opacity-50 text-white rounded-full font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
+                        >
+                            <CreditCard className="w-4 h-4 shrink-0" />
+                            {payingWith === 'payme' ? 'Создаём заказ...' : `Payme — ${displayPrice ? fmt(displayPrice) : '...'}`}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Testimonials */}
