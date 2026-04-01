@@ -3,6 +3,7 @@ import { verifyAuth } from '@/lib/auth';
 import { db } from '@/db';
 import { payments, promoCodes, promoCodeUsages, programs } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { buildPaymeUrl } from '@/lib/payme';
 
 export async function POST(req: Request) {
     const user = await verifyAuth(req);
