@@ -49,36 +49,38 @@ function PaymentContent() {
     const displayPrice = appliedPromo ? appliedPromo.discountedPrice : basePrice;
     const displayOldPrice = appliedPromo ? basePrice : null;
 
-    const [creatingOrder, setCreatingOrder] = useState(false);
+    const [payingWith, setPayingWith] = useState<'click' | 'payme' | null>(null);
     const [orderError, setOrderError] = useState('');
 
-    const handlePayWithClick = async () => {
-        if (!token) {
-            setOrderError('Необходимо войти через Telegram');
-            return;
-        }
-        setCreatingOrder(true);
+    const createOrder = async (): Promise<{ clickUrl: string; paymeUrl: string } | null> => {
+        if (!token) { setOrderError('Необходимо войти через Telegram'); return null; }
         setOrderError('');
+        const res = await fetch('/api/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
+        });
+        const data = await res.json();
+        if (!res.ok) { setOrderError(data.error || 'Ошибка создания заказа'); return null; }
+        return data;
+    };
+
+    const handlePayWithClick = async () => {
+        setPayingWith('click');
         try {
-            const res = await fetch('/api/payment/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ plan, promoCode: appliedPromo?.code ?? null }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                setOrderError(data.error || 'Ошибка создания заказа');
-                return;
-            }
-            window.location.href = data.clickUrl;
-        } catch {
-            setOrderError('Ошибка соединения. Попробуйте снова.');
-        } finally {
-            setCreatingOrder(false);
-        }
+            const order = await createOrder();
+            if (order) window.location.href = order.clickUrl;
+        } catch { setOrderError('Ошибка соединения. Попробуйте снова.'); }
+        finally { setPayingWith(null); }
+    };
+
+    const handlePayWithPayme = async () => {
+        setPayingWith('payme');
+        try {
+            const order = await createOrder();
+            if (order) window.location.href = order.paymeUrl;
+        } catch { setOrderError('Ошибка соединения. Попробуйте снова.'); }
+        finally { setPayingWith(null); }
     };
 
     const handleApplyPromo = async () => {
