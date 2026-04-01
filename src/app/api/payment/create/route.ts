@@ -81,5 +81,7 @@ export async function POST(req: Request) {
         `&transaction_param=${payment.id}` +
         `&return_url=${returnUrl}`;
 
-    return NextResponse.json({ orderId: payment.id, clickUrl });
+    const paymeUrl = buildPaymeUrl(payment.id, finalAmount);
+
+    return NextResponse.json({ orderId: payment.id, clickUrl, paymeUrl });
 }
