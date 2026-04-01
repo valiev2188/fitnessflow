@@ -154,10 +154,19 @@ export const payments = sqliteTable("payments", {
     amount:            integer("amount").notNull(),
     finalAmount:       integer("final_amount").notNull(),
     status:            text("status").notNull().default("pending"), // pending | paid | failed
+    provider:          text("provider").notNull().default("click"),  // click | payme
     promoCode:         text("promo_code"),
     promoCodeId:       integer("promo_code_id").references(() => promoCodes.id),
+    // Click fields
     clickTransId:      text("click_trans_id"),
     merchantPrepareId: integer("merchant_prepare_id"),
+    // Payme fields
+    paymeTransId:      text("payme_trans_id"),
+    paymeState:        integer("payme_state"),        // 1=created 2=completed -1=cancelled_before -2=cancelled_after
+    paymeCreateTime:   integer("payme_create_time"),  // ms timestamp
+    paymePerformTime:  integer("payme_perform_time"), // ms timestamp
+    paymeCancelTime:   integer("payme_cancel_time"),  // ms timestamp
+    paymeCancelReason: integer("payme_cancel_reason"),
     createdAt:         integer("created_at", { mode: "timestamp" }).default(sql`(unixepoch())`),
     paidAt:            integer("paid_at", { mode: "timestamp" }),
 });
