@@ -55,14 +55,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex h-screen bg-[#FDFBF7] text-stone-900 font-sans selection:bg-rose-200">
             {/* Sidebar for desktop */}
-            <aside className="hidden w-64 flex-col border-r border-stone-200 bg-white md:flex">
+            <aside className="hidden w-64 flex-col border-r border-stone-100/80 bg-white/80 backdrop-blur-xl md:flex">
                 <div className="flex h-20 items-center px-6">
                     <span className="text-xl font-serif tracking-tight font-medium">
                         <span className="text-stone-900">Lola</span>
                         <span className="text-rose-400 italic">Fitness</span>
                     </span>
                 </div>
-                <nav className="flex flex-col gap-2 p-4">
+                <nav className="flex flex-col gap-1 p-3">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
@@ -71,31 +71,31 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                                 key={item.name}
                                 href={item.href}
                                 className={cn(
-                                    'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all group',
+                                    'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group',
                                     isActive
-                                        ? 'bg-rose-50 text-rose-600'
+                                        ? 'bg-stone-900 text-white shadow-sm'
                                         : 'text-stone-500 hover:bg-stone-50 hover:text-stone-900'
                                 )}
                             >
-                                <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-rose-500" : "text-stone-400")} />
+                                <Icon className={cn("h-5 w-5 transition-transform duration-200 group-hover:scale-110", isActive ? "text-white" : "text-stone-400")} />
                                 {item.name}
                             </Link>
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-stone-100 p-6 bg-stone-50/50 flex flex-col gap-4">
+                <div className="mt-auto border-t border-stone-100 p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600 text-sm font-medium border border-rose-200">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-900 text-white text-sm font-medium">
                             {user?.name?.[0]?.toUpperCase() || 'L'}
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm font-medium text-stone-900 truncate max-w-[120px]">{user?.name || 'Гость'}</span>
-                            <span className="text-xs text-stone-500">Базовый доступ</span>
+                            <span className="text-xs text-stone-400">Базовый доступ</span>
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium mt-2"
+                        className="flex items-center gap-2 text-stone-400 hover:text-stone-900 transition-colors duration-200 text-sm font-medium"
                     >
                         <LogOut className="h-4 w-4" /> Выйти
                     </button>
