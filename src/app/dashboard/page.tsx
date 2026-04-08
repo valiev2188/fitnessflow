@@ -141,41 +141,43 @@ export default function DashboardPage() {
         <DashboardLayout>
             <div className="flex flex-col space-y-6 max-w-2xl mx-auto">
 
-                {/* Welcome card */}
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-white shadow-lg shadow-rose-500/30">
-                    <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10" />
-                    <div className="absolute -right-2 bottom-4 h-16 w-16 rounded-full bg-white/10" />
-                    <p className="text-sm font-medium text-rose-100 mb-1">Привет! 👋</p>
-                    <h1 className="text-2xl font-serif font-semibold">{user?.name || 'Спортсменка'}</h1>
-                    {profile?.goal && (
-                        <p className="text-rose-100 text-sm mt-1 font-light">Цель: {goalLabels[profile.goal] || profile.goal}</p>
-                    )}
-                    <div className="mt-4">
-                        <Link href="/dashboard/programs">
-                            <button className="flex items-center gap-2 rounded-2xl bg-white/20 backdrop-blur-sm px-4 py-2.5 text-sm font-semibold text-white border border-white/30 hover:bg-white/30 transition-all active:scale-95">
-                                Начать тренировку <ArrowRight className="h-4 w-4" />
-                            </button>
-                        </Link>
+                {/* Welcome card — double-bezel dark luxury */}
+                <div className="p-1.5 rounded-[28px] bg-black/5 ring-1 ring-black/[0.07]">
+                    <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-stone-900 via-[#221a18] to-stone-900 p-6 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]">
+                        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#C69377]/10" />
+                        <div className="absolute right-4 bottom-4 h-20 w-20 rounded-full bg-[#C69377]/5" />
+                        <p className="text-sm font-medium text-stone-400 mb-1">Привет 👋</p>
+                        <h1 className="text-2xl font-serif font-semibold text-white">{user?.name || 'Спортсменка'}</h1>
+                        {profile?.goal && (
+                            <p className="text-stone-400 text-sm mt-1 font-light">Цель: {goalLabels[profile.goal] || profile.goal}</p>
+                        )}
+                        <div className="mt-4">
+                            <Link href="/dashboard/programs">
+                                <button className="flex items-center gap-2 rounded-2xl bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm font-semibold text-white border border-white/15 hover:bg-white/15 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-95">
+                                    Начать тренировку <ArrowRight className="h-4 w-4" />
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
                 {/* Stats row */}
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mb-2">
                             <Flame className="h-5 w-5" />
                         </div>
                         <div className="text-2xl font-bold text-stone-900">{streak}</div>
                         <div className="text-[10px] font-medium text-stone-400 uppercase tracking-wide mt-0.5">Серия</div>
                     </div>
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
                             <Target className="h-5 w-5" />
                         </div>
                         <div className="text-2xl font-bold text-stone-900">{progress.length}</div>
                         <div className="text-[10px] font-medium text-stone-400 uppercase tracking-wide mt-0.5">Сделано</div>
                     </div>
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-2">
                             <Trophy className="h-5 w-5" />
                         </div>
@@ -190,28 +192,28 @@ export default function DashboardPage() {
                 {/* Quick actions */}
                 <div className="grid grid-cols-2 gap-3">
                     <Link href="/dashboard/programs">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">🏋️</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Мои Курсы</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Продолжить программу</p>
                         </div>
                     </Link>
                     <Link href="/dashboard/progress">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">📊</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Прогресс</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Моя история побед</p>
                         </div>
                     </Link>
                     <Link href="/dashboard/settings">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">⚙️</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Профиль</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Цели и настройки</p>
                         </div>
                     </Link>
                     <a href="https://t.me/vvveins" target="_blank" rel="noopener noreferrer">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">💬</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Тренер</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Написать Лоле</p>

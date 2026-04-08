@@ -55,14 +55,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex h-screen bg-[#FDFBF7] text-stone-900 font-sans selection:bg-rose-200">
             {/* Sidebar for desktop */}
-            <aside className="hidden w-64 flex-col border-r border-stone-200 bg-white md:flex">
+            <aside className="hidden w-64 flex-col border-r border-stone-100/80 bg-white/80 backdrop-blur-xl md:flex">
                 <div className="flex h-20 items-center px-6">
                     <span className="text-xl font-serif tracking-tight font-medium">
                         <span className="text-stone-900">Lola</span>
                         <span className="text-rose-400 italic">Fitness</span>
                     </span>
                 </div>
-                <nav className="flex flex-col gap-2 p-4">
+                <nav className="flex flex-col gap-1 p-3">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
@@ -71,31 +71,31 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                                 key={item.name}
                                 href={item.href}
                                 className={cn(
-                                    'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all group',
+                                    'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group',
                                     isActive
-                                        ? 'bg-rose-50 text-rose-600'
+                                        ? 'bg-stone-900 text-white shadow-sm'
                                         : 'text-stone-500 hover:bg-stone-50 hover:text-stone-900'
                                 )}
                             >
-                                <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-rose-500" : "text-stone-400")} />
+                                <Icon className={cn("h-5 w-5 transition-transform duration-200 group-hover:scale-110", isActive ? "text-white" : "text-stone-400")} />
                                 {item.name}
                             </Link>
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-stone-100 p-6 bg-stone-50/50 flex flex-col gap-4">
+                <div className="mt-auto border-t border-stone-100 p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600 text-sm font-medium border border-rose-200">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-900 text-white text-sm font-medium">
                             {user?.name?.[0]?.toUpperCase() || 'L'}
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm font-medium text-stone-900 truncate max-w-[120px]">{user?.name || 'Гость'}</span>
-                            <span className="text-xs text-stone-500">Базовый доступ</span>
+                            <span className="text-xs text-stone-400">Базовый доступ</span>
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium mt-2"
+                        className="flex items-center gap-2 text-stone-400 hover:text-stone-900 transition-colors duration-200 text-sm font-medium"
                     >
                         <LogOut className="h-4 w-4" /> Выйти
                     </button>
@@ -104,35 +104,38 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
             {/* Main content */}
             <main className="flex-1 overflow-y-auto w-full">
-                <div className="min-h-full p-4 pb-32 md:p-8 md:max-w-5xl md:mx-auto">
+                <div className="min-h-full p-4 pb-28 md:p-8 md:max-w-5xl md:mx-auto">
                     {children}
                 </div>
             </main>
 
-            {/* Mobile bottom nav */}
-            <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-20 border-t border-stone-200 bg-white/90 backdrop-blur-lg pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
-                {navItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                'flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors',
-                                isActive ? 'text-rose-500' : 'text-stone-400 hover:text-stone-600'
-                            )}
-                        >
-                            <div className={cn(
-                                "flex h-8 w-16 items-center justify-center rounded-full transition-all mb-0.5",
-                                isActive ? "bg-rose-100" : "bg-transparent"
-                            )}>
-                                <Icon className={cn("h-5 w-5", isActive ? "text-rose-600" : "")} />
-                            </div>
-                            {item.name}
-                        </Link>
-                    );
-                })}
+            {/* Mobile bottom nav — glass pill */}
+            <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+                <div className="mx-3 mb-3 flex h-16 items-center rounded-2xl bg-white/90 backdrop-blur-xl border border-stone-200/70 shadow-[0_8px_32px_rgba(0,0,0,0.07),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={cn(
+                                    'flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-90',
+                                    isActive ? 'text-stone-900' : 'text-stone-400'
+                                )}
+                            >
+                                <div className={cn(
+                                    "flex h-8 w-12 items-center justify-center rounded-xl transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)]",
+                                    isActive ? "bg-stone-900" : "bg-transparent"
+                                )}>
+                                    <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-stone-400")} />
+                                </div>
+                                {item.name}
+                            </Link>
+                        );
+                    })}
+                </div>
+                <div className="h-safe" />
             </nav>
         </div>
     );
