@@ -3,14 +3,14 @@
   "configurations": [
     {
       "name": "Next.js Dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "/tmp/lola-start-dev.sh",
+      "runtimeArgs": [],
       "port": 3000
     },
     {
       "name": "Drizzle Studio",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "db:studio"],
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["/Users/lola/Documents/Saas/my-app/node_modules/.bin/drizzle-kit", "studio"],
       "port": 4983
     }
   ]

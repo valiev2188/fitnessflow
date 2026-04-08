@@ -43,29 +43,74 @@
     overflow-x: hidden;
   }
 
-  /* ─── NAV — Floating Glass Pill ─── */
+  /* ─── NAV — morphs from full-width bar → floating glass pill on scroll ─── */
   .landing-nav {
     position: fixed;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 44px;
+    left: 0;
+    right: 0;
     z-index: 100;
     display: flex;
     align-items: center;
-    gap: 32px;
-    padding: 8px 8px 8px 24px;
-    background: rgba(253,251,247,0.88);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border-radius: 100px;
-    border: 1px solid rgba(229,221,213,0.8);
-    box-shadow: 0 2px 20px rgba(26,26,26,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: rgba(253,251,247,0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
     white-space: nowrap;
-    transition: box-shadow 0.4s var(--spring), border-color 0.4s var(--spring);
+    transition:
+      top 0.55s var(--spring),
+      left 0.55s var(--spring),
+      right 0.55s var(--spring),
+      padding 0.55s var(--spring),
+      border-radius 0.55s var(--spring),
+      background 0.55s var(--spring),
+      box-shadow 0.55s var(--spring),
+      border-color 0.55s var(--spring);
   }
   .landing-nav.scrolled {
-    box-shadow: 0 4px 32px rgba(26,26,26,0.11), inset 0 1px 0 rgba(255,255,255,0.6);
-    border-color: rgba(229,221,213,1);
+    top: 56px;
+    left: 16px;
+    right: 16px;
+    padding: 8px 8px 8px 24px;
+    border-radius: 100px;
+    background: rgba(253,251,247,0.82);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-color: transparent;
+    border: 1px solid rgba(229,221,213,0.85);
+    box-shadow: 0 4px 28px rgba(26,26,26,0.10), inset 0 1px 0 rgba(255,255,255,0.65);
+  }
+
+  /* ─── SCARCITY BANNER — fixed top bar ─── */
+  .scarcity-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 99;
+    height: 44px;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .scarcity-banner strong { color: var(--peach-light); }
+  .spots-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 13px;
   }
   .nav-logo {
     font-family: var(--font-display);
@@ -124,7 +169,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    padding: 160px 40px 80px;
+    padding: 130px 40px 80px;
     gap: 60px;
     max-width: 1280px;
     margin: 0 auto;
@@ -778,18 +823,24 @@
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 900px) {
+    /* Nav: still morphs, but uses rounded-rect instead of pill */
     .landing-nav {
-      left: 16px;
-      right: 16px;
-      top: 52px;
-      transform: none;
+      top: 44px;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      border-radius: 0;
+    }
+    .landing-nav.scrolled {
+      top: 54px;
+      left: 12px;
+      right: 12px;
       border-radius: 20px;
       padding: 8px 8px 8px 16px;
-      gap: 16px;
-      justify-content: space-between;
     }
+    .scarcity-banner { padding: 0 16px; font-size: 11px; gap: 6px; }
     .landing-section { padding: 80px 24px; }
-    .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 40px; }
+    .hero { grid-template-columns: 1fr; padding: 110px 24px 60px; gap: 40px; }
     .hero-right { order: -1; }
     .hero-card-shell { max-width: 100%; }
     .hero-card { aspect-ratio: 4/3; }
@@ -803,7 +854,6 @@
     .reviews-grid { grid-template-columns: 1fr; }
     .program-header { flex-direction: column; gap: 20px; align-items: flex-start; }
     .pricing-card { padding: 40px 24px; }
-    .scarcity-banner { padding: 10px 24px; font-size: 12px; flex-wrap: wrap; text-align: center; justify-content: center; gap: 8px; }
     .landing-footer { flex-direction: column; text-align: center; }
     .footer-links { justify-content: center; }
     .final-cta { padding: 100px 24px; }
