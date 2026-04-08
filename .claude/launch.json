@@ -4,7 +4,7 @@
     {
       "name": "Next.js Dev",
       "runtimeExecutable": "/bin/sh",
-      "runtimeArgs": ["/Users/lola/Documents/Saas/my-app/.claude/worktrees/goofy-dubinsky/.claude/start-dev.sh"],
+      "runtimeArgs": ["/tmp/lola-start-dev.sh"],
       "port": 3000
     },
     {
