@@ -163,21 +163,21 @@ export default function DashboardPage() {
 
                 {/* Stats row */}
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mb-2">
                             <Flame className="h-5 w-5" />
                         </div>
                         <div className="text-2xl font-bold text-stone-900">{streak}</div>
                         <div className="text-[10px] font-medium text-stone-400 uppercase tracking-wide mt-0.5">Серия</div>
                     </div>
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
                             <Target className="h-5 w-5" />
                         </div>
                         <div className="text-2xl font-bold text-stone-900">{progress.length}</div>
                         <div className="text-[10px] font-medium text-stone-400 uppercase tracking-wide mt-0.5">Сделано</div>
                     </div>
-                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm">
+                    <div className="rounded-2xl border border-stone-100 bg-white p-4 flex flex-col items-center text-center shadow-sm transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-md hover:border-stone-200">
                         <div className="h-9 w-9 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-2">
                             <Trophy className="h-5 w-5" />
                         </div>
