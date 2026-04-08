@@ -4,13 +4,13 @@
     {
       "name": "Next.js Dev",
       "runtimeExecutable": "/opt/homebrew/bin/node",
-      "runtimeArgs": ["/Users/lola/Documents/Saas/my-app/node_modules/.bin/next", "dev"],
+      "runtimeArgs": ["node_modules/.bin/next", "dev"],
       "port": 3000
     },
     {
       "name": "Drizzle Studio",
       "runtimeExecutable": "/opt/homebrew/bin/node",
-      "runtimeArgs": ["/Users/lola/Documents/Saas/my-app/node_modules/.bin/drizzle-kit", "studio"],
+      "runtimeArgs": ["node_modules/.bin/drizzle-kit", "studio"],
       "port": 4983
     }
   ]
