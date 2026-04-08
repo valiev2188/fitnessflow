@@ -109,30 +109,33 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </div>
             </main>
 
-            {/* Mobile bottom nav */}
-            <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-20 border-t border-stone-200 bg-white/90 backdrop-blur-lg pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
-                {navItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                'flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors',
-                                isActive ? 'text-rose-500' : 'text-stone-400 hover:text-stone-600'
-                            )}
-                        >
-                            <div className={cn(
-                                "flex h-8 w-16 items-center justify-center rounded-full transition-all mb-0.5",
-                                isActive ? "bg-rose-100" : "bg-transparent"
-                            )}>
-                                <Icon className={cn("h-5 w-5", isActive ? "text-rose-600" : "")} />
-                            </div>
-                            {item.name}
-                        </Link>
-                    );
-                })}
+            {/* Mobile bottom nav — glass pill */}
+            <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+                <div className="mx-3 mb-3 flex h-16 items-center rounded-2xl bg-white/90 backdrop-blur-xl border border-stone-200/70 shadow-[0_8px_32px_rgba(0,0,0,0.07),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={cn(
+                                    'flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-90',
+                                    isActive ? 'text-stone-900' : 'text-stone-400'
+                                )}
+                            >
+                                <div className={cn(
+                                    "flex h-8 w-12 items-center justify-center rounded-xl transition-all duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)]",
+                                    isActive ? "bg-stone-900" : "bg-transparent"
+                                )}>
+                                    <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-stone-400")} />
+                                </div>
+                                {item.name}
+                            </Link>
+                        );
+                    })}
+                </div>
+                <div className="h-safe" />
             </nav>
         </div>
     );
