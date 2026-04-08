@@ -192,28 +192,28 @@ export default function DashboardPage() {
                 {/* Quick actions */}
                 <div className="grid grid-cols-2 gap-3">
                     <Link href="/dashboard/programs">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">🏋️</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Мои Курсы</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Продолжить программу</p>
                         </div>
                     </Link>
                     <Link href="/dashboard/progress">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">📊</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Прогресс</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Моя история побед</p>
                         </div>
                     </Link>
                     <Link href="/dashboard/settings">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">⚙️</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Профиль</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Цели и настройки</p>
                         </div>
                     </Link>
                     <a href="https://t.me/vvveins" target="_blank" rel="noopener noreferrer">
-                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md transition-all cursor-pointer">
+                        <div className="rounded-2xl border border-stone-100 bg-white p-5 hover:border-rose-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] cursor-pointer">
                             <div className="text-2xl mb-2">💬</div>
                             <h3 className="font-semibold text-stone-900 text-sm">Тренер</h3>
                             <p className="text-xs text-stone-400 font-light mt-0.5">Написать Лоле</p>
