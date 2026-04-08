@@ -7,10 +7,8 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    turbo: {
-      root: process.cwd(),
-    },
+  turbopack: {
+    root: process.cwd(),
   },
 };
 
