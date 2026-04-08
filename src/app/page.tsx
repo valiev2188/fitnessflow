@@ -130,17 +130,19 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-right">
-            <div className="hero-card">
-              <img
-                className="hero-card-img"
-                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=800&auto=format&fit=crop"
-                alt="Лола — тренер LolaFitness"
-              />
-              <div className="hero-card-overlay"></div>
-              <div className="hero-card-info">
-                <div className="hero-card-name">Лола</div>
-                <div className="hero-card-desc">
-                  Сертифицированный тренер · Пилатес · Функциональный тренинг
+            <div className="hero-card-shell">
+              <div className="hero-card">
+                <img
+                  className="hero-card-img"
+                  src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=800&auto=format&fit=crop"
+                  alt="Лола — тренер LolaFitness"
+                />
+                <div className="hero-card-overlay"></div>
+                <div className="hero-card-info">
+                  <div className="hero-card-name">Лола</div>
+                  <div className="hero-card-desc">
+                    Сертифицированный тренер · Пилатес · Функциональный тренинг
+                  </div>
                 </div>
               </div>
             </div>
