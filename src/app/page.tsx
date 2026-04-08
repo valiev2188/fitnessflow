@@ -63,7 +63,7 @@ export default function Home() {
         <a href="/" className="nav-logo">
           Lola<span>Fitness</span>
         </a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="nav-links">
           <a href="/login" style={{ color: 'var(--ink)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
             Войти
           </a>
